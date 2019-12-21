@@ -28,6 +28,7 @@ namespace KK_HAutoSets
 
 		private void Start()
 		{
+			//Terminate if running Studio
 			if (Application.productName == "CharaStudio")
 			{
 				BepInEx.Bootstrap.Chainloader.Plugins.Remove(this);
@@ -39,19 +40,32 @@ namespace KK_HAutoSets
 			lockMaleGauge = new ConfigWrapper<bool>("lockMaleGauge", this, true);
 			subAccessories = new ConfigWrapper<bool>("subAccessories", this, true);
 
+			//Harmony patching
 			HarmonyInstance.Create(GUID).PatchAll(Assembly.GetExecutingAssembly());
 		}
 
-		internal static void Features (List<ChaControl> females, HSprite hSprite)
+		/// <summary>
+		/// Contains implementation of all the plugin's actions
+		/// </summary>
+		internal static void Actions (List<ChaControl> females, HSprite hSprite)
 		{
 			if (subAccessories.Value)
 			{
 				foreach (ChaControl chaCtrl in females)
-				{
-					chaCtrl.SetAccessoryStateAll(true);
-				}
+					chaCtrl.SetAccessoryStateAll(true); 
 			}
 
+			if (lockFemaleGauge.Value)
+			{
+				hSprite.OnFemaleGaugeLockOnGauge();
+				hSprite.flags.lockGugeFemale = true;
+			}
+
+			if (lockMaleGauge.Value)
+			{
+				hSprite.OnMaleGaugeLockOnGauge();
+				hSprite.flags.lockGugeMale = true;
+			}
 		}
 	}
 }
