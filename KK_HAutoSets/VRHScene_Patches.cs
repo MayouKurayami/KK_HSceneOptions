@@ -28,7 +28,13 @@ namespace KK_HAutoSets
 			var sceneObject = UnityEngine.Object.FindObjectOfType(Type.GetType("VRHScene,Assembly-CSharp.dll"));
 			var females = (List<ChaControl>)sceneObject.GetPrivate("lstFemale");
 			var hSprites = (HSprite[])sceneObject.GetPrivate("sprites");
-			KK_HAutoSets.Actions(females, hSprites[0]);
+
+			KK_HAutoSets.EquipAllAccessories(females);
+
+			foreach (HSprite sprite in hSprites)
+			{
+				KK_HAutoSets.LockGauges(sprite);
+			}
 		}
 	}
 }

@@ -45,16 +45,22 @@ namespace KK_HAutoSets
 		}
 
 		/// <summary>
-		/// Contains implementation of all the plugin's actions
+		/// Function to equip all accessories
 		/// </summary>
-		internal static void Actions (List<ChaControl> females, HSprite hSprite)
+		internal static void EquipAllAccessories(List<ChaControl> females)
 		{
 			if (subAccessories.Value)
 			{
 				foreach (ChaControl chaCtrl in females)
-					chaCtrl.SetAccessoryStateAll(true); 
+					chaCtrl.SetAccessoryStateAll(true);
 			}
+		}
 
+		/// <summary>
+		///Function to lock female/male gauge depending on config
+		/// </summary>
+		internal static void LockGauges(HSprite hSprite)
+		{
 			if (lockFemaleGauge.Value)
 			{
 				hSprite.OnFemaleGaugeLockOnGauge();

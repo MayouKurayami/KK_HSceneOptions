@@ -15,7 +15,8 @@ namespace KK_HAutoSets
 		{
 			var females = (List<ChaControl>)__instance.GetPrivate("lstFemale");
 			var hSprite = __instance.sprite;
-			KK_HAutoSets.Actions(females, hSprite);
+			KK_HAutoSets.EquipAllAccessories(females);
+			KK_HAutoSets.LockGauges(hSprite);
 		}
 	}
 }
