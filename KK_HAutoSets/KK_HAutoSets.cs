@@ -26,6 +26,10 @@ namespace KK_HAutoSets
 		[Description("Auto equip sub-accessories at H start")]
 		public static ConfigWrapper<bool> subAccessories { get; private set; }
 
+		[DisplayName("Hide shadow casted by male body")]
+		[Description("Hide shadow casted by male body")]
+		public static ConfigWrapper<bool> maleShadow { get; private set; }
+
 		private void Start()
 		{
 			//Terminate if running Studio
@@ -39,6 +43,7 @@ namespace KK_HAutoSets
 			lockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
 			lockMaleGauge = new ConfigWrapper<bool>("lockMaleGauge", this, true);
 			subAccessories = new ConfigWrapper<bool>("subAccessories", this, true);
+			maleShadow = new ConfigWrapper<bool>("maleShadow", this, true);
 
 			//Harmony patching
 			HarmonyInstance.Create(GUID).PatchAll(Assembly.GetExecutingAssembly());
@@ -71,6 +76,17 @@ namespace KK_HAutoSets
 			{
 				hSprite.OnMaleGaugeLockOnGauge();
 				hSprite.flags.lockGugeMale = true;
+			}
+		}
+
+		/// <summary>
+		///Function to disable shadow from male body
+		/// </summary>
+		internal static void HideMaleShadow()
+		{
+			if (maleShadow.Value)
+			{
+				GameObject.Find("chaM_001/BodyTop/p_cm_body_00/cf_o_root/n_cm_body/o_body_a").GetComponent<SkinnedMeshRenderer>().shadowCastingMode = 0;
 			}
 		}
 	}

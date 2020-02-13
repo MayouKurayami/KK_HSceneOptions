@@ -17,6 +17,7 @@ namespace KK_HAutoSets
 			var hSprite = __instance.sprite;
 			KK_HAutoSets.EquipAllAccessories(females);
 			KK_HAutoSets.LockGauges(hSprite);
+			KK_HAutoSets.HideMaleShadow();
 		}
 	}
 }
