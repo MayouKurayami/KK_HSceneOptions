@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel;
+﻿using BepInEx;
+using Harmony;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using UnityEngine;
-using BepInEx;
-using Harmony;
 
 namespace KK_HAutoSets
 {
@@ -16,19 +15,19 @@ namespace KK_HAutoSets
 
 		[DisplayName("Auto lock female gauge")]
 		[Description("Auto lock female gauge at H start")]
-		public static ConfigWrapper<bool> lockFemaleGauge { get; private set; }
+		public static ConfigWrapper<bool> LockFemaleGauge { get; private set; }
 
 		[DisplayName("Auto lock male gauge")]
 		[Description("Auto lock male gauge at H start")]
-		public static ConfigWrapper<bool> lockMaleGauge { get; private set; }
+		public static ConfigWrapper<bool> LockMaleGauge { get; private set; }
 
 		[DisplayName("Auto equip sub-accessories")]
 		[Description("Auto equip sub-accessories at H start")]
-		public static ConfigWrapper<bool> subAccessories { get; private set; }
+		public static ConfigWrapper<bool> SubAccessories { get; private set; }
 
 		[DisplayName("Hide shadow casted by male body")]
 		[Description("Hide shadow casted by male body")]
-		public static ConfigWrapper<bool> maleShadow { get; private set; }
+		public static ConfigWrapper<bool> MaleShadow { get; private set; }
 
 		private void Start()
 		{
@@ -40,10 +39,10 @@ namespace KK_HAutoSets
 				return;
 			}
 
-			lockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
-			lockMaleGauge = new ConfigWrapper<bool>("lockMaleGauge", this, true);
-			subAccessories = new ConfigWrapper<bool>("subAccessories", this, true);
-			maleShadow = new ConfigWrapper<bool>("maleShadow", this, true);
+			LockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
+			LockMaleGauge = new ConfigWrapper<bool>("lockMaleGauge", this, true);
+			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, true);
+			MaleShadow = new ConfigWrapper<bool>("maleShadow", this, true);
 
 			//Harmony patching
 			HarmonyInstance.Create(GUID).PatchAll(Assembly.GetExecutingAssembly());
@@ -54,7 +53,7 @@ namespace KK_HAutoSets
 		/// </summary>
 		internal static void EquipAllAccessories(List<ChaControl> females)
 		{
-			if (subAccessories.Value)
+			if (SubAccessories.Value)
 			{
 				foreach (ChaControl chaCtrl in females)
 					chaCtrl.SetAccessoryStateAll(true);
@@ -66,13 +65,13 @@ namespace KK_HAutoSets
 		/// </summary>
 		internal static void LockGauges(HSprite hSprite)
 		{
-			if (lockFemaleGauge.Value)
+			if (LockFemaleGauge.Value)
 			{
 				hSprite.OnFemaleGaugeLockOnGauge();
 				hSprite.flags.lockGugeFemale = true;
 			}
 
-			if (lockMaleGauge.Value)
+			if (LockMaleGauge.Value)
 			{
 				hSprite.OnMaleGaugeLockOnGauge();
 				hSprite.flags.lockGugeMale = true;
@@ -84,7 +83,7 @@ namespace KK_HAutoSets
 		/// </summary>
 		internal static void HideMaleShadow()
 		{
-			if (maleShadow.Value)
+			if (MaleShadow.Value)
 			{
 				GameObject.Find("chaM_001/BodyTop/p_cm_body_00/cf_o_root/n_cm_body/o_body_a").GetComponent<SkinnedMeshRenderer>().shadowCastingMode = 0;
 			}
