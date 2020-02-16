@@ -8,6 +8,10 @@ using UnityEngine;
 namespace KK_HAutoSets
 {
 	[BepInPlugin(GUID, "HAutoSets", Version)]
+	[BepInProcess("Koikatu")]
+	[BepInProcess("KoikatuVR")]
+	[BepInProcess("Koikatsu Party")]
+	[BepInProcess("Koikatsu Party VR")]
 	public class KK_HAutoSets : BaseUnityPlugin
 	{
 		public const string GUID = "MK.HAutoSets";
@@ -57,14 +61,6 @@ namespace KK_HAutoSets
 
 		private void Start()
 		{
-			//Terminate if running Studio
-			if (Application.productName == "CharaStudio")
-			{
-				BepInEx.Bootstrap.Chainloader.Plugins.Remove(this);
-				Destroy(this);
-				return;
-			}
-
 			LockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
 			LockMaleGauge = new ConfigWrapper<bool>("lockMaleGauge", this, true);
 			FemaleGaugeMin = new ConfigWrapper<float>("femaleGaugeMin", this, 0f);
