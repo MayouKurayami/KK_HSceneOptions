@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
-using ToolBox.Extensions;
 
 namespace KK_HAutoSets
 {
@@ -26,8 +25,8 @@ namespace KK_HAutoSets
 		private static void Postfix()
 		{
 			var sceneObject = UnityEngine.Object.FindObjectOfType(Type.GetType("VRHScene,Assembly-CSharp.dll"));
-			var females = (List<ChaControl>)sceneObject.GetPrivate("lstFemale");
-			var hSprites = (HSprite[])sceneObject.GetPrivate("sprites");
+			var females = (List<ChaControl>) Traverse.Create(sceneObject).Field("lstFemale").GetValue();
+			var hSprites = (HSprite[]) Traverse.Create(sceneObject).Field("sprites").GetValue();
 
 			KK_HAutoSets.EquipAllAccessories(females);
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Harmony;
-using ToolBox.Extensions;
 
 namespace KK_HAutoSets
 {
@@ -14,7 +13,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HSceneProc), "MapSameObjectDisable")]
 		public static void HSceneProcPostfix(HSceneProc __instance)
 		{
-			var females = (List<ChaControl>)__instance.GetPrivate("lstFemale");
+			var females = (List<ChaControl>)Traverse.Create(__instance).Field("lstFemale").GetValue();
 			var hSprite = __instance.sprite;
 			KK_HAutoSets.EquipAllAccessories(females);
 			KK_HAutoSets.LockGauges(hSprite);
