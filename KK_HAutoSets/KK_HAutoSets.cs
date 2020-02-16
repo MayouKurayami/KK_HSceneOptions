@@ -45,7 +45,9 @@ namespace KK_HAutoSets
 			MaleShadow = new ConfigWrapper<bool>("maleShadow", this, true);
 
 			//Harmony patching
-			HarmonyInstance.Create(GUID).PatchAll(Assembly.GetExecutingAssembly());
+			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
+			harmony.PatchAll(typeof(HSceneProc_Patches));
+			harmony.PatchAll(Assembly.GetExecutingAssembly());
 		}
 
 		/// <summary>
