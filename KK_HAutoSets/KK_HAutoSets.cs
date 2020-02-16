@@ -13,13 +13,39 @@ namespace KK_HAutoSets
 		public const string GUID = "MK.HAutoSets";
 		internal const string Version = "1.0";
 
+		[Category("Excitement Gauge")]
 		[DisplayName("Auto lock female gauge")]
 		[Description("Auto lock female gauge at H start")]
 		public static ConfigWrapper<bool> LockFemaleGauge { get; private set; }
 
+		[Category("Excitement Gauge")]
 		[DisplayName("Auto lock male gauge")]
 		[Description("Auto lock male gauge at H start")]
 		public static ConfigWrapper<bool> LockMaleGauge { get; private set; }
+
+		[Category("Excitement Gauge")]
+		[DisplayName("Female Excitement Gauge Minimum Value")]
+		[Description("Female exceitement gauge will not fall below this value")]
+		[AcceptableValueRange(0f, 100f, false)]
+		public static ConfigWrapper<float> FemaleGaugeMin { get; private set; }
+
+		[Category("Excitement Gauge")]
+		[DisplayName("Female Excitement Gauge Maximum Value")]
+		[Description("Female exceitement gauge will not go above this value")]
+		[AcceptableValueRange(0f, 100f, false)]
+		public static ConfigWrapper<float> FemaleGaugeMax { get; private set; }
+
+		[Category("Excitement Gauge")]
+		[DisplayName("Male Excitement Gauge Minimum Value")]
+		[Description("Male exceitement gauge will not fall below this value")]
+		[AcceptableValueRange(0f, 100f, false)]
+		public static ConfigWrapper<float> MaleGaugeMin { get; private set; }
+
+		[Category("Excitement Gauge")]
+		[DisplayName("Male Excitement Gauge Maximum Value")]
+		[Description("Male exceitement gauge will not go above this value")]
+		[AcceptableValueRange(0f, 100f, false)]
+		public static ConfigWrapper<float> MaleGaugeMax { get; private set; }
 
 		[DisplayName("Auto equip sub-accessories")]
 		[Description("Auto equip sub-accessories at H start")]
@@ -41,6 +67,10 @@ namespace KK_HAutoSets
 
 			LockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
 			LockMaleGauge = new ConfigWrapper<bool>("lockMaleGauge", this, true);
+			FemaleGaugeMin = new ConfigWrapper<float>("femaleGaugeMin", this, 0f);
+			FemaleGaugeMax = new ConfigWrapper<float>("femaleGaugeMax", this, 100f);
+			MaleGaugeMin = new ConfigWrapper<float>("maleGaugeMin", this, 0f);
+			MaleGaugeMax = new ConfigWrapper<float>("maleGaugeMax", this, 100f);
 			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, true);
 			MaleShadow = new ConfigWrapper<bool>("maleShadow", this, true);
 
@@ -90,5 +120,18 @@ namespace KK_HAutoSets
 				GameObject.Find("chaM_001/BodyTop/p_cm_body_00/cf_o_root/n_cm_body/o_body_a").GetComponent<SkinnedMeshRenderer>().shadowCastingMode = 0;
 			}
 		}
+
+		/// <summary>
+		/// Function to limit excitement gauges based on configured values
+		/// </summary>
+		internal static void GaugeLimiter()
+		{
+			if (FemaleGaugeMax.Value >= FemaleGaugeMin.Value)
+				hflag.gaugeFemale = Mathf.Clamp(hflag.gaugeFemale, FemaleGaugeMin.Value, FemaleGaugeMax.Value);
+			if (MaleGaugeMax.Value >= MaleGaugeMin.Value)
+				hflag.gaugeMale = Mathf.Clamp(hflag.gaugeMale, FemaleGaugeMin.Value, MaleGaugeMax.Value);
+		}
+
+		internal static HFlag hflag;
 	}
 }

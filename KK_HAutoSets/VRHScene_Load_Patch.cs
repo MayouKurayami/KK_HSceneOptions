@@ -28,6 +28,7 @@ namespace KK_HAutoSets
 			var females = (List<ChaControl>) Traverse.Create(sceneObject).Field("lstFemale").GetValue();
 			var hSprites = (HSprite[]) Traverse.Create(sceneObject).Field("sprites").GetValue();
 
+			KK_HAutoSets.hflag = (HFlag)Traverse.Create(sceneObject).Field("flags").GetValue();
 			KK_HAutoSets.EquipAllAccessories(females);
 
 			foreach (HSprite sprite in hSprites)

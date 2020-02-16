@@ -15,9 +15,17 @@ namespace KK_HAutoSets
 		{
 			var females = (List<ChaControl>)Traverse.Create(__instance).Field("lstFemale").GetValue();
 			var hSprite = __instance.sprite;
+			KK_HAutoSets.hflag = __instance.flags;
 			KK_HAutoSets.EquipAllAccessories(females);
 			KK_HAutoSets.LockGauges(hSprite);
 			KK_HAutoSets.HideMaleShadow();
+		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HSceneProc), "LateUpdate")]
+		public static void HSceneLateUpdatePostfix()
+		{
+			KK_HAutoSets.GaugeLimiter();
 		}
 	}
 }
