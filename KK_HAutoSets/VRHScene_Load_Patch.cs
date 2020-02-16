@@ -7,7 +7,7 @@ using ToolBox.Extensions;
 namespace KK_HAutoSets
 {
 	[HarmonyPatch]
-	internal static class VRHScene_Patches
+	internal static class VRHScene_Load_Patch
 	{
 		private static bool Prepare()
 		{
