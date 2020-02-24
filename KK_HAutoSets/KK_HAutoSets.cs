@@ -7,15 +7,17 @@ using UnityEngine;
 
 namespace KK_HAutoSets
 {
-	[BepInPlugin(GUID, "HAutoSets", Version)]
+	[BepInPlugin(GUID, PluginName, Version)]
 	[BepInProcess("Koikatu")]
 	[BepInProcess("KoikatuVR")]
 	[BepInProcess("Koikatsu Party")]
 	[BepInProcess("Koikatsu Party VR")]
 	public class KK_HAutoSets : BaseUnityPlugin
 	{
-		public const string GUID = "MK.HAutoSets";
-		internal const string Version = "1.0";
+		public const string GUID = "MK.KK_HAutoSets";
+		public const string PluginName = "HAutoSets";
+		public const string AssembName = "KK_HAutoSets";
+		public const string Version = "1.1";
 
 		internal static HFlag hflag;
 
