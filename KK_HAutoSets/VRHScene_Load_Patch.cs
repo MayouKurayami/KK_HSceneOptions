@@ -27,6 +27,11 @@ namespace KK_HAutoSets
 			var sceneObject = UnityEngine.Object.FindObjectOfType(Type.GetType("VRHScene,Assembly-CSharp.dll"));
 			var females = (List<ChaControl>) Traverse.Create(sceneObject).Field("lstFemale").GetValue();
 			var hSprites = (HSprite[]) Traverse.Create(sceneObject).Field("sprites").GetValue();
+			List<ChaControl> males = new List<ChaControl>
+			{
+				(ChaControl)Traverse.Create(sceneObject).Field("male").GetValue(),
+				(ChaControl)Traverse.Create(sceneObject).Field("male1").GetValue()
+			};
 
 			KK_HAutoSets.hflag = (HFlag)Traverse.Create(sceneObject).Field("flags").GetValue();
 			KK_HAutoSets.EquipAllAccessories(females);
@@ -36,7 +41,7 @@ namespace KK_HAutoSets
 				KK_HAutoSets.LockGaugesAction(sprite);
 			}
 				
-			KK_HAutoSets.HideMaleShadowAction();
+			KK_HAutoSets.HideMaleShadowAction(males);
 		}
 	}
 }

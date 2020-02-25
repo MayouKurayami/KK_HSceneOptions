@@ -14,11 +14,16 @@ namespace KK_HAutoSets
 		public static void HSceneProcPostfix(HSceneProc __instance)
 		{
 			var females = (List<ChaControl>)Traverse.Create(__instance).Field("lstFemale").GetValue();
+			List<ChaControl> males = new List<ChaControl>
+			{
+				(ChaControl)Traverse.Create(__instance).Field("male").GetValue(),
+				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
+			};
 			var hSprite = __instance.sprite;
 			KK_HAutoSets.hflag = __instance.flags;
 			KK_HAutoSets.EquipAllAccessories(females);
 			KK_HAutoSets.LockGaugesAction(hSprite);
-			KK_HAutoSets.HideMaleShadowAction();
+			KK_HAutoSets.HideMaleShadowAction(males);
 		}
 
 		[HarmonyPostfix]

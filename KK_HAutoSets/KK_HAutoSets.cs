@@ -113,11 +113,21 @@ namespace KK_HAutoSets
 		/// <summary>
 		///Function to disable shadow from male body
 		/// </summary>
-		internal static void HideMaleShadowAction()
+		internal static void HideMaleShadowAction(List<ChaControl> males)
 		{
 			if (HideMaleShadow.Value)
 			{
-				GameObject.Find("chaM_001/BodyTop/p_cm_body_00/cf_o_root/n_cm_body/o_body_a").GetComponent<SkinnedMeshRenderer>().shadowCastingMode = 0;
+				foreach (ChaControl male in males)
+				{
+					if (male != null)
+					{
+						foreach (SkinnedMeshRenderer mesh in male.objRoot.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+						{
+							if (mesh.name != "o_shadowcaster_cm")
+								mesh.shadowCastingMode = 0;
+						}		
+					}				
+				}			
 			}
 		}
 
