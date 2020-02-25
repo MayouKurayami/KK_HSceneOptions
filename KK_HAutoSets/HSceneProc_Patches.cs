@@ -17,8 +17,8 @@ namespace KK_HAutoSets
 			var hSprite = __instance.sprite;
 			KK_HAutoSets.hflag = __instance.flags;
 			KK_HAutoSets.EquipAllAccessories(females);
-			KK_HAutoSets.LockGauges(hSprite);
-			KK_HAutoSets.HideMaleShadow();
+			KK_HAutoSets.LockGaugesAction(hSprite);
+			KK_HAutoSets.HideMaleShadowAction();
 		}
 
 		[HarmonyPostfix]

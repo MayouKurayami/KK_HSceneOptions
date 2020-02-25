@@ -61,7 +61,7 @@ namespace KK_HAutoSets
 
 		[DisplayName("Hide shadow casted by male body")]
 		[Description("Hide shadow casted by male body")]
-		public static ConfigWrapper<bool> MaleShadow { get; private set; }
+		public static ConfigWrapper<bool> HideMaleShadow { get; private set; }
 
 		private void Start()
 		{
@@ -72,7 +72,7 @@ namespace KK_HAutoSets
 			MaleGaugeMin = new ConfigWrapper<float>("maleGaugeMin", this, 0f);
 			MaleGaugeMax = new ConfigWrapper<float>("maleGaugeMax", this, 100f);
 			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, true);
-			MaleShadow = new ConfigWrapper<bool>("maleShadow", this, true);
+			HideMaleShadow = new ConfigWrapper<bool>("maleShadow", this, true);
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -95,7 +95,7 @@ namespace KK_HAutoSets
 		/// <summary>
 		///Function to lock female/male gauge depending on config
 		/// </summary>
-		internal static void LockGauges(HSprite hSprite)
+		internal static void LockGaugesAction(HSprite hSprite)
 		{
 			if (LockFemaleGauge.Value)
 			{
@@ -113,9 +113,9 @@ namespace KK_HAutoSets
 		/// <summary>
 		///Function to disable shadow from male body
 		/// </summary>
-		internal static void HideMaleShadow()
+		internal static void HideMaleShadowAction()
 		{
-			if (MaleShadow.Value)
+			if (HideMaleShadow.Value)
 			{
 				GameObject.Find("chaM_001/BodyTop/p_cm_body_00/cf_o_root/n_cm_body/o_body_a").GetComponent<SkinnedMeshRenderer>().shadowCastingMode = 0;
 			}

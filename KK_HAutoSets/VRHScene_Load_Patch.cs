@@ -33,10 +33,10 @@ namespace KK_HAutoSets
 
 			foreach (HSprite sprite in hSprites)
 			{
-				KK_HAutoSets.LockGauges(sprite);
+				KK_HAutoSets.LockGaugesAction(sprite);
 			}
 				
-			KK_HAutoSets.HideMaleShadow();
+			KK_HAutoSets.HideMaleShadowAction();
 		}
 	}
 }
