@@ -11,7 +11,7 @@ namespace KK_HAutoSets
 		//https://github.com/DeathWeasel1337/KK_Plugins/blob/master/KK_EyeShaking/KK.EyeShaking.Hooks.cs#L20
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSceneProc), "MapSameObjectDisable")]
-		public static void HSceneProcPostfix(HSceneProc __instance)
+		public static void HSceneProcLoadPostfix(HSceneProc __instance)
 		{
 			var females = (List<ChaControl>)Traverse.Create(__instance).Field("lstFemale").GetValue();
 			List<ChaControl> males = new List<ChaControl>
