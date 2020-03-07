@@ -35,25 +35,25 @@ namespace KK_HAutoSets
 		[DisplayName("Female Excitement Gauge Minimum Value")]
 		[Description("Female exceitement gauge will not fall below this value")]
 		[AcceptableValueRange(0f, 100f, false)]
-		public static ConfigWrapper<float> FemaleGaugeMin { get; private set; }
+		public static ConfigWrapper<int> FemaleGaugeMin { get; private set; }
 
 		[Category("Excitement Gauge")]
 		[DisplayName("Female Excitement Gauge Maximum Value")]
 		[Description("Female exceitement gauge will not go above this value")]
 		[AcceptableValueRange(0f, 100f, false)]
-		public static ConfigWrapper<float> FemaleGaugeMax { get; private set; }
+		public static ConfigWrapper<int> FemaleGaugeMax { get; private set; }
 
 		[Category("Excitement Gauge")]
 		[DisplayName("Male Excitement Gauge Minimum Value")]
 		[Description("Male exceitement gauge will not fall below this value")]
 		[AcceptableValueRange(0f, 100f, false)]
-		public static ConfigWrapper<float> MaleGaugeMin { get; private set; }
+		public static ConfigWrapper<int> MaleGaugeMin { get; private set; }
 
 		[Category("Excitement Gauge")]
 		[DisplayName("Male Excitement Gauge Maximum Value")]
 		[Description("Male exceitement gauge will not go above this value")]
 		[AcceptableValueRange(0f, 100f, false)]
-		public static ConfigWrapper<float> MaleGaugeMax { get; private set; }
+		public static ConfigWrapper<int> MaleGaugeMax { get; private set; }
 
 		[DisplayName("Auto equip sub-accessories")]
 		[Description("Auto equip sub-accessories at H start")]
@@ -67,10 +67,10 @@ namespace KK_HAutoSets
 		{
 			LockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
 			LockMaleGauge = new ConfigWrapper<bool>("lockMaleGauge", this, true);
-			FemaleGaugeMin = new ConfigWrapper<float>("femaleGaugeMin", this, 0f);
-			FemaleGaugeMax = new ConfigWrapper<float>("femaleGaugeMax", this, 100f);
-			MaleGaugeMin = new ConfigWrapper<float>("maleGaugeMin", this, 0f);
-			MaleGaugeMax = new ConfigWrapper<float>("maleGaugeMax", this, 100f);
+			FemaleGaugeMin = new ConfigWrapper<int>("femaleGaugeMin", this, 0);
+			FemaleGaugeMax = new ConfigWrapper<int>("femaleGaugeMax", this, 100);
+			MaleGaugeMin = new ConfigWrapper<int>("maleGaugeMin", this, 0);
+			MaleGaugeMax = new ConfigWrapper<int>("maleGaugeMax", this, 100);
 			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, false);
 			HideMaleShadow = new ConfigWrapper<bool>("hideMaleShadow", this, false);
 
