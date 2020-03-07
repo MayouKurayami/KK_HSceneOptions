@@ -119,7 +119,7 @@ namespace KK_HAutoSets
 			{
 				foreach (ChaControl male in males)
 				{
-					if (male != null)
+					if (male)
 					{
 						foreach (SkinnedMeshRenderer mesh in male.objRoot.GetComponentsInChildren<SkinnedMeshRenderer>(true))
 						{
