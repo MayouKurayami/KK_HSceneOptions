@@ -71,8 +71,8 @@ namespace KK_HAutoSets
 			FemaleGaugeMax = new ConfigWrapper<float>("femaleGaugeMax", this, 100f);
 			MaleGaugeMin = new ConfigWrapper<float>("maleGaugeMin", this, 0f);
 			MaleGaugeMax = new ConfigWrapper<float>("maleGaugeMax", this, 100f);
-			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, true);
-			HideMaleShadow = new ConfigWrapper<bool>("maleShadow", this, true);
+			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, false);
+			HideMaleShadow = new ConfigWrapper<bool>("hideMaleShadow", this, false);
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
