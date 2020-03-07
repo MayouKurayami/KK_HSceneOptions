@@ -63,6 +63,10 @@ namespace KK_HAutoSets
 		[Description("Hide shadow casted by male body")]
 		public static ConfigWrapper<bool> HideMaleShadow { get; private set; }
 
+		[DisplayName("Hide shadow casted by female limbs and accessories")]
+		[Description("Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair")]
+		public static ConfigWrapper<bool> HideFemaleShadow { get; private set; }
+
 		private void Start()
 		{
 			LockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
@@ -73,6 +77,7 @@ namespace KK_HAutoSets
 			MaleGaugeMax = new ConfigWrapper<int>("maleGaugeMax", this, 100);
 			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, false);
 			HideMaleShadow = new ConfigWrapper<bool>("hideMaleShadow", this, false);
+			HideFemaleShadow = new ConfigWrapper<bool>("hideFemaleShadow", this, false);
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -113,7 +118,7 @@ namespace KK_HAutoSets
 		/// <summary>
 		///Function to disable shadow from male body
 		/// </summary>
-		internal static void HideMaleShadowAction(List<ChaControl> males)
+		internal static void HideShadow(List<ChaControl> males, List<ChaControl> females = null)
 		{
 			if (HideMaleShadow.Value)
 			{
@@ -127,8 +132,27 @@ namespace KK_HAutoSets
 								mesh.shadowCastingMode = 0;
 						}		
 					}				
-				}			
+				}	
+				
+				if(females != null && HideFemaleShadow.Value)
+				{
+					foreach (ChaControl female in females)
+					{
+						foreach (Transform child in female.objTop.transform)
+						{
+							if (child.name != "p_cf_body_bone")
+							{
+								foreach (SkinnedMeshRenderer mesh in child.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+								{
+									if (mesh.name != "o_shadowcaster")
+										mesh.shadowCastingMode = 0;
+								}
+							}
+						}
+					}
+				}
 			}
+
 		}
 
 		/// <summary>

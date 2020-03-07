@@ -41,7 +41,7 @@ namespace KK_HAutoSets
 				KK_HAutoSets.LockGaugesAction(sprite);
 			}
 				
-			KK_HAutoSets.HideMaleShadowAction(males);
+			KK_HAutoSets.HideShadow(males, females);
 		}
 	}
 }
