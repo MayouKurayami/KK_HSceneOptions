@@ -9,11 +9,12 @@
 
 ## Installation
 Place **KK_HAutoSets.dll** in BepInEx root folder.  
-This is a BepInEx 4 plugin, to run it with BepInEx 5 you'd need [BepInEx 4 Patcher](https://github.com/BepInEx/BepInEx.BepInEx4Upgrader)
+This is a BepInEx 4 plugin, to run it with BepInEx 5 you'd need [BepInEx 4 Patcher](https://github.com/BepInEx/BepInEx.BepInEx4Upgrader) (Included within HF Patch)
 
 ## Configurations
 Configurations are located in *config.ini* in the BepInEx root folder, under section **[MK.KK_HAutoSets]**.  
-It is however recommended to adjust the configs via the in-game plugin settings page instead of directly editing the config file.
+
+***It is recommended to adjust the configs via the in-game plugin settings page instead of directly editing the config file.***
 - **Auto equip sub-accessories (SubAccessories)** - Auto equip sub-accessories at the start of H **(Default: false)**  
 
 - **Hide shadow casted by female limbs and accessories (HideFemaleShadow)** - Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair **(Default: false)**  
@@ -35,5 +36,3 @@ It is however recommended to adjust the configs via the in-game plugin settings 
 
 ## Notes and Limitations
 - Works in the official VR as well.
-
-## License
