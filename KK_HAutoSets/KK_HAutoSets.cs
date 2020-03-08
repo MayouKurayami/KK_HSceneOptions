@@ -39,7 +39,7 @@ namespace KK_HAutoSets
 
 		[Category("Excitement Gauge")]
 		[DisplayName("Female Excitement Gauge Maximum Value")]
-		[Description("Female exceitement gauge will not go above this value")]
+		[Description("Female excitement gauge will not go above this value")]
 		[AcceptableValueRange(0f, 100f, false)]
 		public static ConfigWrapper<int> FemaleGaugeMax { get; private set; }
 
