@@ -17,7 +17,7 @@ namespace KK_HAutoSets
 		public const string GUID = "MK.KK_HAutoSets";
 		public const string PluginName = "HAutoSets";
 		public const string AssembName = "KK_HAutoSets";
-		public const string Version = "1.1";
+		public const string Version = "1.3.0";
 
 		internal static HFlag hflag;
 
