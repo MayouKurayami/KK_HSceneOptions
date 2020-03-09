@@ -36,3 +36,6 @@ Configurations are located in *config.ini* in the BepInEx root folder, under sec
 
 ## Notes and Limitations
 - Works in the official VR as well.
+
+## Legal  
+Copyright (C) 2020  MayouKurayami
