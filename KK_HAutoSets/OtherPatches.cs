@@ -32,5 +32,17 @@ namespace KK_HAutoSets
 		{
 			KK_HAutoSets.GaugeLimiter();
 		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HActionBase), "IsBodyTouch")]
+		public static bool IsBodyTouchPre(bool __result)
+		{
+			if (KK_HAutoSets.DisableHideBody.Value)
+			{
+				__result = false;
+				return false;
+			}
+			return true;
+		}
 	}
 }

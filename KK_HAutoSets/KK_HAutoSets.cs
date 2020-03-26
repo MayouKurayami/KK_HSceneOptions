@@ -67,6 +67,10 @@ namespace KK_HAutoSets
 		[Description("Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair")]
 		public static ConfigWrapper<bool> HideFemaleShadow { get; private set; }
 
+		[DisplayName("Disable Hiding of Male Body When Groping")]
+		[Description("If enabled, the male body will not be hidden when touching the girl during sex or service")]
+		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
+
 		private void Start()
 		{
 			LockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
@@ -78,6 +82,7 @@ namespace KK_HAutoSets
 			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, false);
 			HideMaleShadow = new ConfigWrapper<bool>("hideMaleShadow", this, false);
 			HideFemaleShadow = new ConfigWrapper<bool>("hideFemaleShadow", this, false);
+			DisableHideBody = new ConfigWrapper<bool>("disableHideBody", this, false);
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
