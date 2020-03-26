@@ -73,16 +73,16 @@ namespace KK_HAutoSets
 
 		private void Start()
 		{
-			LockFemaleGauge = new ConfigWrapper<bool>("lockFemaleGauge", this, true);
-			LockMaleGauge = new ConfigWrapper<bool>("lockMaleGauge", this, true);
-			FemaleGaugeMin = new ConfigWrapper<int>("femaleGaugeMin", this, 0);
-			FemaleGaugeMax = new ConfigWrapper<int>("femaleGaugeMax", this, 100);
-			MaleGaugeMin = new ConfigWrapper<int>("maleGaugeMin", this, 0);
-			MaleGaugeMax = new ConfigWrapper<int>("maleGaugeMax", this, 100);
-			SubAccessories = new ConfigWrapper<bool>("subAccessories", this, false);
-			HideMaleShadow = new ConfigWrapper<bool>("hideMaleShadow", this, false);
-			HideFemaleShadow = new ConfigWrapper<bool>("hideFemaleShadow", this, false);
-			DisableHideBody = new ConfigWrapper<bool>("disableHideBody", this, false);
+			LockFemaleGauge = new ConfigWrapper<bool>(nameof(LockFemaleGauge), this, true);
+			LockMaleGauge = new ConfigWrapper<bool>(nameof(LockMaleGauge), this, true);
+			FemaleGaugeMin = new ConfigWrapper<int>(nameof(FemaleGaugeMin), this, 0);
+			FemaleGaugeMax = new ConfigWrapper<int>(nameof(FemaleGaugeMax), this, 100);
+			MaleGaugeMin = new ConfigWrapper<int>(nameof(MaleGaugeMin), this, 0);
+			MaleGaugeMax = new ConfigWrapper<int>(nameof(MaleGaugeMax), this, 100);
+			SubAccessories = new ConfigWrapper<bool>(nameof(SubAccessories), this, false);
+			HideMaleShadow = new ConfigWrapper<bool>(nameof(HideMaleShadow), this, false);
+			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
+			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
