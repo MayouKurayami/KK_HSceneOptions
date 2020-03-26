@@ -22,12 +22,12 @@ namespace KK_HAutoSets
 		internal static HFlag hflag;
 
 		[Category("Excitement Gauge")]
-		[DisplayName("Auto lock female gauge")]
+		[DisplayName("Auto Lock Female Gauge")]
 		[Description("Auto lock female gauge at H start")]
 		public static ConfigWrapper<bool> LockFemaleGauge { get; private set; }
 
 		[Category("Excitement Gauge")]
-		[DisplayName("Auto lock male gauge")]
+		[DisplayName("Auto Lock Male Gauge")]
 		[Description("Auto lock male gauge at H start")]
 		public static ConfigWrapper<bool> LockMaleGauge { get; private set; }
 
@@ -55,15 +55,15 @@ namespace KK_HAutoSets
 		[AcceptableValueRange(0f, 100f, false)]
 		public static ConfigWrapper<int> MaleGaugeMax { get; private set; }
 
-		[DisplayName("Auto equip sub-accessories")]
+		[DisplayName("Auto Equip Sub-Accessories")]
 		[Description("Auto equip sub-accessories at H start")]
 		public static ConfigWrapper<bool> SubAccessories { get; private set; }
 
-		[DisplayName("Hide shadow casted by male body")]
+		[DisplayName("Hide Shadow Casted by Male Body")]
 		[Description("Hide shadow casted by male body")]
 		public static ConfigWrapper<bool> HideMaleShadow { get; private set; }
 
-		[DisplayName("Hide shadow casted by female limbs and accessories")]
+		[DisplayName("Hide Shadow Casted by Female Limbs and Accessories")]
 		[Description("Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair")]
 		public static ConfigWrapper<bool> HideFemaleShadow { get; private set; }
 
