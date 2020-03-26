@@ -81,7 +81,7 @@ namespace KK_HAutoSets
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
-			harmony.PatchAll(typeof(HSceneProc_Patches));
+			harmony.PatchAll(typeof(OtherPatches));
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 		}
 

@@ -54,7 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HSceneProc_Patches.cs" />
+    <Compile Include="OtherPatches.cs" />
     <Compile Include="KK_HAutoSets.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VRHScene_Load_Patch.cs" />
