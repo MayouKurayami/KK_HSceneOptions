@@ -73,8 +73,8 @@ namespace KK_HAutoSets
 
 		private void Start()
 		{
-			LockFemaleGauge = new ConfigWrapper<bool>(nameof(LockFemaleGauge), this, true);
-			LockMaleGauge = new ConfigWrapper<bool>(nameof(LockMaleGauge), this, true);
+			LockFemaleGauge = new ConfigWrapper<bool>(nameof(LockFemaleGauge), this, false);
+			LockMaleGauge = new ConfigWrapper<bool>(nameof(LockMaleGauge), this, false);
 			FemaleGaugeMin = new ConfigWrapper<int>(nameof(FemaleGaugeMin), this, 0);
 			FemaleGaugeMax = new ConfigWrapper<int>(nameof(FemaleGaugeMax), this, 100);
 			MaleGaugeMin = new ConfigWrapper<int>(nameof(MaleGaugeMin), this, 0);
