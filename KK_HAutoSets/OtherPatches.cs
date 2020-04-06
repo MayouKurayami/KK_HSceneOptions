@@ -20,7 +20,7 @@ namespace KK_HAutoSets
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
 			};
 			var hSprite = __instance.sprite;
-			KK_HAutoSets.hflag = __instance.flags;
+			KK_HAutoSets.flags = __instance.flags;
 			KK_HAutoSets.EquipAllAccessories(females);
 			KK_HAutoSets.LockGaugesAction(hSprite);
 			KK_HAutoSets.HideShadow(males, females);

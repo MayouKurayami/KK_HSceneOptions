@@ -33,7 +33,7 @@ namespace KK_HAutoSets
 				(ChaControl)Traverse.Create(sceneObject).Field("male1").GetValue()
 			};
 
-			KK_HAutoSets.hflag = (HFlag)Traverse.Create(sceneObject).Field("flags").GetValue();
+			KK_HAutoSets.flags = (HFlag)Traverse.Create(sceneObject).Field("flags").GetValue();
 			KK_HAutoSets.EquipAllAccessories(females);
 
 			foreach (HSprite sprite in hSprites)

@@ -19,7 +19,7 @@ namespace KK_HAutoSets
 		public const string AssembName = "KK_HAutoSets";
 		public const string Version = "1.3.0";
 
-		internal static HFlag hflag;
+		internal static HFlag flags;
 
 		[Category("Excitement Gauge")]
 		[DisplayName("Auto Lock Female Gauge")]
@@ -171,9 +171,9 @@ namespace KK_HAutoSets
 		internal static void GaugeLimiter()
 		{
 			if (FemaleGaugeMax.Value >= FemaleGaugeMin.Value)
-				hflag.gaugeFemale = Mathf.Clamp(hflag.gaugeFemale, FemaleGaugeMin.Value, FemaleGaugeMax.Value);
+				flags.gaugeFemale = Mathf.Clamp(flags.gaugeFemale, FemaleGaugeMin.Value, FemaleGaugeMax.Value);
 			if (MaleGaugeMax.Value >= MaleGaugeMin.Value)
-				hflag.gaugeMale = Mathf.Clamp(hflag.gaugeMale, FemaleGaugeMin.Value, MaleGaugeMax.Value);
+				flags.gaugeMale = Mathf.Clamp(flags.gaugeMale, FemaleGaugeMin.Value, MaleGaugeMax.Value);
 		}
 	}
 }
