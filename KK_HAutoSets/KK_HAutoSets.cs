@@ -131,7 +131,7 @@ namespace KK_HAutoSets
 				{
 					if (male)
 					{
-						foreach (SkinnedMeshRenderer mesh in male.objRoot.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+						foreach (Renderer mesh in male.objRoot.GetComponentsInChildren<Renderer>(true))
 						{
 							if (mesh.name != "o_shadowcaster_cm")
 								mesh.shadowCastingMode = 0;
@@ -145,7 +145,12 @@ namespace KK_HAutoSets
 					{
 						foreach (Transform child in female.objTop.transform)
 						{
-							if (child.name != "p_cf_body_bone")
+							if (child.name == "p_cf_body_bone")
+							{
+								foreach (MeshRenderer mesh in child.GetComponentsInChildren<MeshRenderer>(true))
+										mesh.shadowCastingMode = 0;
+							}
+							else
 							{
 								foreach (SkinnedMeshRenderer mesh in child.GetComponentsInChildren<SkinnedMeshRenderer>(true))
 								{
