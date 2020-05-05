@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Harmony;
+using UnityEngine;
 
 namespace KK_HAutoSets
 {
@@ -20,7 +20,10 @@ namespace KK_HAutoSets
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
 			};
 			var hSprite = __instance.sprite;
+
+			KK_HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
 			KK_HAutoSets.flags = __instance.flags;
+			
 			KK_HAutoSets.EquipAllAccessories(females);
 			KK_HAutoSets.LockGaugesAction(hSprite);
 			KK_HAutoSets.HideShadow(males, females);
@@ -43,6 +46,19 @@ namespace KK_HAutoSets
 				return false;
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// The vanilla game does not have any moan or breath sounds available for the precum (OLoop) animation.
+		/// This patch makes the game play sound effects as if it's in strong loop when the game is in fact playing OLoop without entering cum,
+		/// such as when forced by this plugin or when finish flag is none.
+		/// </summary>
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HVoiceCtrl), "BreathProc")]
+		public static void BreathProcPre(ref AnimatorStateInfo _ai)
+		{
+			if ((KK_HAutoSets.forceOLoop || KK_HAutoSets.flags.finish == HFlag.FinishKind.none) && KK_HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
+				_ai = KK_HAutoSets.sLoopInfo;
 		}
 	}
 }

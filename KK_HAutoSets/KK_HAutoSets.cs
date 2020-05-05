@@ -1,8 +1,10 @@
 ﻿using BepInEx;
 using Harmony;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using System.Linq;
 using UnityEngine;
 
 namespace KK_HAutoSets
@@ -20,7 +22,20 @@ namespace KK_HAutoSets
 		public const string Version = "1.3.0";
 
 		internal static HFlag flags;
+		internal static List<HActionBase> lstProc;
+		internal static HActionBase proc;
+		private static string animationName = "";
+		internal static bool forceOLoop;
+		internal static AnimatorStateInfo sLoopInfo;
+		private static bool malePresent;
 
+		private delegate bool LoopProc(bool _loop);
+		private static LoopProc loopProcDelegate;
+
+
+		/// 
+		/////////////////// Excitement Gauge //////////////////////////
+		/// 
 		[Category("Excitement Gauge")]
 		[DisplayName("Auto Lock Female Gauge")]
 		[Description("Auto lock female gauge at H start")]
@@ -55,6 +70,17 @@ namespace KK_HAutoSets
 		[AcceptableValueRange(0f, 100f, false)]
 		public static ConfigWrapper<int> MaleGaugeMax { get; private set; }
 
+		/// 
+		/////////////////// Keyboard Shortcuts //////////////////////////
+		/// 
+		[DisplayName("Precum Loop Toggle")]
+		[Description("Press this key to enter/exit precum animation")]
+		public static SavedKeyboardShortcut OLoopKey { get; private set; }
+
+
+		/// 
+		/////////////////// Others //////////////////////////
+		/// 
 		[DisplayName("Auto Equip Sub-Accessories")]
 		[Description("Auto equip sub-accessories at H start")]
 		public static ConfigWrapper<bool> SubAccessories { get; private set; }
@@ -84,10 +110,114 @@ namespace KK_HAutoSets
 			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
 			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
 
+			OLoopKey = new SavedKeyboardShortcut(nameof(OLoopKey), this, new KeyboardShortcut(KeyCode.None));
+
+			sLoopInfo = new AnimatorStateInfo();
+			object dummyInfo = sLoopInfo;
+			Traverse.Create(dummyInfo).Field("m_Name").SetValue(-1715982390);
+			Traverse.Create(dummyInfo).Field("m_SpeedMultiplier").SetValue(3f);
+			Traverse.Create(dummyInfo).Field("m_Speed").SetValue(1f);
+			Traverse.Create(dummyInfo).Field("m_Loop").SetValue(1);
+			Traverse.Create(dummyInfo).Field("m_NormalizedTime").SetValue(59.73729f);
+			Traverse.Create(dummyInfo).Field("m_Length").SetValue(0.4444448f);
+			sLoopInfo = (AnimatorStateInfo)dummyInfo;
+
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
 			harmony.PatchAll(typeof(OtherPatches));
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
+		}
+
+		private void Update()
+		{
+			if (!flags)
+				return;
+
+			if (animationName != flags.nowAnimationInfo.nameAnimation)
+				UpdateProc();
+
+			if (malePresent)
+			{
+				if (OLoopKey.IsDown())
+				{
+					if (!forceOLoop && (flags.nowAnimStateName.Contains("SLoop") || flags.nowAnimStateName.Contains("WLoop")))
+					{
+						flags.speedCalc = 1f;
+						proc.SetPlay(flags.isAnalPlay ? "A_OLoop" : "OLoop", true);
+						forceOLoop = true;
+					}
+					else if (flags.nowAnimStateName.Contains("OLoop"))
+					{
+						proc.SetPlay(flags.isAnalPlay ? "A_SLoop" : "SLoop", true);
+						forceOLoop = false;
+					}
+				}
+
+				if (forceOLoop)
+				{
+					flags.speedCalc = 1f;
+					loopProcDelegate.Invoke(true);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Update proc field to reflect the current active H mode, and point loopProcDelegate to the correct LoopProc method in modes where it exists
+		/// </summary>
+		private static void UpdateProc()
+		{
+			MethodInfo loopProcInfo;
+			Type procType = typeof(HSonyu);
+
+			switch (flags.mode)
+			{
+				case (HFlag.EMode.sonyu):
+					proc = lstProc.OfType<HSonyu>().FirstOrDefault();
+					procType = typeof(HSonyu);
+					break;
+				case (HFlag.EMode.houshi):
+					proc = lstProc.OfType<HHoushi>().FirstOrDefault();
+					procType = typeof(HHoushi);
+					break;
+				case (HFlag.EMode.houshi3P):
+					proc = lstProc.OfType<H3PHoushi>().FirstOrDefault();
+					procType = typeof(H3PHoushi);
+					break;
+				case (HFlag.EMode.houshi3PMMF):
+					proc = lstProc.OfType<H3PDarkHoushi>().FirstOrDefault();
+					procType = typeof(H3PDarkHoushi);
+					break;
+				case (HFlag.EMode.aibu):
+					proc = lstProc.OfType<HAibu>().FirstOrDefault();
+					break;
+				case (HFlag.EMode.lesbian):
+					proc = lstProc.OfType<HLesbian>().FirstOrDefault();
+					break;
+				case (HFlag.EMode.masturbation):
+					proc = lstProc.OfType<HMasturbation>().FirstOrDefault();
+					break;
+				case (HFlag.EMode.sonyu3P):
+					proc = lstProc.OfType<H3PSonyu>().FirstOrDefault();
+					procType = typeof(H3PSonyu);
+					break;
+				case (HFlag.EMode.sonyu3PMMF):
+					proc = lstProc.OfType<H3PDarkSonyu>().FirstOrDefault();
+					procType = typeof(H3PDarkSonyu);
+					break;
+				default:
+					proc = lstProc.OfType<HSonyu>().FirstOrDefault();
+					break;
+			}
+
+			if (flags.mode != HFlag.EMode.aibu && flags.mode != HFlag.EMode.lesbian && flags.mode != HFlag.EMode.masturbation)
+			{
+				loopProcInfo = AccessTools.Method(procType, "LoopProc", new Type[] { typeof(bool) });
+				loopProcDelegate = (LoopProc)Delegate.CreateDelegate(typeof(LoopProc), proc, loopProcInfo);
+
+				malePresent = true;
+			}
+			else
+				malePresent = false;
 		}
 
 		/// <summary>

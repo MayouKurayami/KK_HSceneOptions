@@ -33,6 +33,7 @@ namespace KK_HAutoSets
 				(ChaControl)Traverse.Create(sceneObject).Field("male1").GetValue()
 			};
 
+			KK_HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(sceneObject).Field("lstProc").GetValue();
 			KK_HAutoSets.flags = (HFlag)Traverse.Create(sceneObject).Field("flags").GetValue();
 			KK_HAutoSets.EquipAllAccessories(females);
 
