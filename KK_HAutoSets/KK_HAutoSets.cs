@@ -124,8 +124,10 @@ namespace KK_HAutoSets
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
-			harmony.PatchAll(typeof(OtherPatches));
-			harmony.PatchAll(Assembly.GetExecutingAssembly());
+			harmony.PatchAll(typeof(Hooks));
+
+			if (Application.dataPath.EndsWith("KoikatuVR_Data"))
+				harmony.PatchAll(typeof(VRHooks));
 		}
 
 		private void Update()

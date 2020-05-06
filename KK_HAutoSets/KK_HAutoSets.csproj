@@ -54,11 +54,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OtherPatches.cs" />
+    <Compile Include="Hooks.cs" />
     <Compile Include="KK_HAutoSets.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VRHScene_Load_Patch.cs" />
-    <Compile Include="VRHScene_Update_Patch.cs" />
+    <Compile Include="VRHooks.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
