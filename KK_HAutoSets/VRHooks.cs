@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Harmony;
 
 namespace KK_HAutoSets
@@ -23,9 +24,9 @@ namespace KK_HAutoSets
 
 			KK_HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
 			KK_HAutoSets.flags = __instance.flags;
-			
-			KK_HAutoSets.EquipAllAccessories(females);
+			KK_HAutoSets.female = females.FirstOrDefault<ChaControl>();
 
+			KK_HAutoSets.EquipAllAccessories(females);
 			foreach (HSprite sprite in hSprites)
 				KK_HAutoSets.LockGaugesAction(sprite);
 		

@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Harmony;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
@@ -24,10 +25,14 @@ namespace KK_HAutoSets
 		internal static HFlag flags;
 		internal static List<HActionBase> lstProc;
 		internal static HActionBase proc;
+		internal static ChaControl female;
 		private static string animationName = "";
+
 		internal static bool forceOLoop;
 		internal static AnimatorStateInfo sLoopInfo;
 		private static bool malePresent;
+		internal static bool forceStopVoice;
+		private float orgasmTimer;
 
 		private delegate bool LoopProc(bool _loop);
 		private static LoopProc loopProcDelegate;
@@ -77,6 +82,14 @@ namespace KK_HAutoSets
 		[Description("Press this key to enter/exit precum animation")]
 		public static SavedKeyboardShortcut OLoopKey { get; private set; }
 
+		[DisplayName("Orgasm Inside")]
+		[Description("Press this key to manually cum inside with the specified amount of time in precum")]
+		public static SavedKeyboardShortcut OrgasmInsideKey { get; private set; }
+
+		[DisplayName("Orgasm Outside")]
+		[Description("Press this key to manually cum outside with the specified amount of time in precum")]
+		public static SavedKeyboardShortcut OrgasmOutsideKey { get; private set; }
+
 
 		/// 
 		/////////////////// Others //////////////////////////
@@ -97,6 +110,10 @@ namespace KK_HAutoSets
 		[Description("If enabled, the male body will not be hidden when touching the girl during sex or service")]
 		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
 
+		[DisplayName("Precum Timer")]
+		[Description("When orgasm is triggered via the keyboard shortcut, animation will forcibly exit precum and enter orgasm after this many seconds. \nSet to 0 to disable this.")]
+		public static ConfigWrapper<float> PrecumTimer { get; private set; }
+
 		private void Start()
 		{
 			LockFemaleGauge = new ConfigWrapper<bool>(nameof(LockFemaleGauge), this, false);
@@ -109,8 +126,11 @@ namespace KK_HAutoSets
 			HideMaleShadow = new ConfigWrapper<bool>(nameof(HideMaleShadow), this, false);
 			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
 			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
+			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
 
 			OLoopKey = new SavedKeyboardShortcut(nameof(OLoopKey), this, new KeyboardShortcut(KeyCode.None));
+			OrgasmInsideKey = new SavedKeyboardShortcut(nameof(OrgasmInsideKey), this, new KeyboardShortcut(KeyCode.None));
+			OrgasmOutsideKey = new SavedKeyboardShortcut(nameof(OrgasmOutsideKey), this, new KeyboardShortcut(KeyCode.None));
 
 			sLoopInfo = new AnimatorStateInfo();
 			object dummyInfo = sLoopInfo;
@@ -138,28 +158,50 @@ namespace KK_HAutoSets
 			if (animationName != flags.nowAnimationInfo.nameAnimation)
 				UpdateProc();
 
-			if (malePresent)
+			if (Input.GetKeyDown(OLoopKey.Value.MainKey) && OLoopKey.Value.Modifiers.All(x => Input.GetKey(x)))
 			{
-				if (OLoopKey.IsDown())
-				{
-					if (!forceOLoop && (flags.nowAnimStateName.Contains("SLoop") || flags.nowAnimStateName.Contains("WLoop")))
-					{
-						flags.speedCalc = 1f;
-						proc.SetPlay(flags.isAnalPlay ? "A_OLoop" : "OLoop", true);
-						forceOLoop = true;
-					}
-					else if (flags.nowAnimStateName.Contains("OLoop"))
-					{
-						proc.SetPlay(flags.isAnalPlay ? "A_SLoop" : "SLoop", true);
-						forceOLoop = false;
-					}
-				}
-
-				if (forceOLoop)
+				//Only allow forced entering of precum loop if currently in piston loop, to prevent issues with unintended orgasm caused by entering precum loop elsewhere
+				if (!forceOLoop && (flags.nowAnimStateName.Contains("SLoop") || flags.nowAnimStateName.Contains("WLoop") || flags.nowAnimStateName.Contains("MLoop")))
 				{
 					flags.speedCalc = 1f;
-					loopProcDelegate.Invoke(true);
+					proc.SetPlay(flags.isAnalPlay ? "A_OLoop" : "OLoop", true);
+					forceOLoop = true;
 				}
+				else if (flags.nowAnimStateName.Contains("OLoop"))
+				{
+					proc.SetPlay(flags.isAnalPlay ? "A_SLoop" : "SLoop", true);
+					forceOLoop = false;
+				}
+			}
+			else if (Input.GetKeyDown(OrgasmInsideKey.Value.MainKey) && OrgasmInsideKey.Value.Modifiers.All(x => Input.GetKey(x)))
+			{
+				ManualOrgasm(inside: true);
+			}
+			else if (Input.GetKeyDown(OrgasmOutsideKey.Value.MainKey) && OrgasmOutsideKey.Value.Modifiers.All(x => Input.GetKey(x)))
+			{
+				ManualOrgasm(inside: false);
+			}			
+
+			//If currently in forced precum loop and male (penis) is involved in the action, manually proc LoopProc which otherwise wouldn't run in OLoop.
+			//LoopProc is an imporant method which takes care of essential functions such as speech and entering orgasm during regular piston loops.
+			//This method wouldn't exist in scenes where there is no male involvement
+			if (forceOLoop)
+			{
+				flags.speedCalc = 1f;
+
+				if (malePresent)
+					loopProcDelegate?.Invoke(true);			
+			}
+
+			//if orgasm countdown timer is initialized and the time since its intialization has past the configured amount, 
+			//stop the currently playing speech to allow entering orgasm, then reset counter to 0.
+			//As precaution against extravagant timer values and consequently stopping voice after orgasm has already finished, only run this if still in precum loop.
+			if (orgasmTimer > 0 && (Time.time - orgasmTimer) > PrecumTimer.Value)
+			{
+				if (flags.nowAnimStateName.Contains("OLoop"))
+					StartCoroutine(VoiceStop());
+
+				orgasmTimer = 0;
 			}
 		}
 
@@ -220,6 +262,75 @@ namespace KK_HAutoSets
 			}
 			else
 				malePresent = false;
+		}
+
+		/// <summary>
+		/// Manually start orgasm accordindg to current the condition and initialize cum countdown timer 
+		/// </summary>
+		/// <param name="inside">Whether the to cum inside or not</param>
+		private void ManualOrgasm(bool inside)
+		{
+			//In piston (intercourse) modes, set the cum click value to be processed by the game, 
+			//then set the voice state of all females to breath to allow the game to interrupt currently playing speech
+			//Then run the LoopProc method twice. The first call allows the game to set the correct HFlag.finish value based on the click value we sent, 
+			//and the second call allows the game to enter OLoop and play back the corresponding speech based on the HFlag.finish value set in the previous call
+			if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
+			{
+				flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside;
+
+				HVoiceCtrl voiceCtrl = Traverse.Create(proc).Field("voice").GetValue<HVoiceCtrl>();
+				foreach (HVoiceCtrl.Voice voice in voiceCtrl.nowVoices)
+					voice.state = HVoiceCtrl.VoiceKind.breath;
+
+				for (int i = 0; i < 2; i++)
+					loopProcDelegate?.Invoke(true);
+			}
+			//Outside of intercourse, if in service or female only modes, manually enter precum loop (OLoop) to allow the game to start looking at parameters related to entering orgasm.
+			//Then use a coroutine to set the cum click value after animation crossfade into OLoop is over, since during which the click value would be ignored and lost.
+			else if (flags.mode > HFlag.EMode.aibu)
+			{
+				proc.SetPlay("OLoop", false);
+				StartCoroutine(DelayOrgasmClick(inside));
+			}
+			//In aibu mode, simply set the cum click value to enter orgasm immediately.
+			else
+			{
+				flags.click = HFlag.ClickKind.orgW;
+			}
+
+			//Initiate timer if value is greater than 0 and male is present.
+			//No point in delaying orgasm when there is no male to sychronize to.
+			if (PrecumTimer.Value > 0 && malePresent)
+				orgasmTimer = Time.time;
+		}
+
+		/// <summary>
+		/// Wait for current animation transition to finish, then trigger orgasm according to the current condition
+		/// </summary>
+		/// <param name="inside">Whether to cum inside or not</param>
+		/// <returns></returns>
+		private IEnumerator DelayOrgasmClick(bool inside)
+		{
+			yield return new WaitUntil(() => female?.animBody.GetCurrentAnimatorStateInfo(0).IsName(flags.nowAnimStateName) ?? true);
+
+			//* In modes where male is not present (masturbation and lesbian), the condition to trigger orgasm is for the current speech to finish.
+			//  Stop the voice immediately to trigger orgasm immediately as the timer wouldn't be initialized in those modes.
+			//* In other modes, simply set the cum click flag to trigger orgasm
+			if (!malePresent)
+				StartCoroutine(VoiceStop());
+			else
+				flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside;
+		}
+
+		/// <summary>
+		/// Interrupt current playing speech by forcing the game to behave as if no speech is playing for exactly one frame. Depends on the IsVoiceCheckPre patch to work.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerator VoiceStop()
+		{
+			forceStopVoice = true;
+			yield return null;
+			forceStopVoice = false;
 		}
 
 		/// <summary>

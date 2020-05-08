@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using Harmony;
 using UnityEngine;
+using Manager;
+using System;
+using System.Linq;
 
 namespace KK_HAutoSets
 {
@@ -23,7 +26,9 @@ namespace KK_HAutoSets
 
 			KK_HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
 			KK_HAutoSets.flags = __instance.flags;
-			
+			KK_HAutoSets.female = females.FirstOrDefault<ChaControl>();
+
+
 			KK_HAutoSets.EquipAllAccessories(females);
 			KK_HAutoSets.LockGaugesAction(hSprite);
 			KK_HAutoSets.HideShadow(males, females);
@@ -60,5 +65,34 @@ namespace KK_HAutoSets
 			if ((KK_HAutoSets.forceOLoop || KK_HAutoSets.flags.finish == HFlag.FinishKind.none) && KK_HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
 				_ai = KK_HAutoSets.sLoopInfo;
 		}
+
+		/// <summary>
+		/// When the stop voice flag is set, this patch makes calls to check currently playing speech to return false,
+		/// effectively allowing the game to interrupt the current playing speech.
+		/// </summary>
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(Voice), "IsVoiceCheck", new Type[] { typeof(Transform), typeof(bool) })]
+		public static bool IsVoiceCheckPre(ref bool __result, Transform voiceTrans)
+		{
+			if (KK_HAutoSets.forceStopVoice && (voiceTrans == KK_HAutoSets.flags.transVoiceMouth[0] || voiceTrans == KK_HAutoSets.flags.transVoiceMouth[1]))
+			{
+				__result = false;
+				return false;
+			}
+			else
+				return true;
+		}
+
+		/// <summary>
+		/// Resets OLoop flag when switching animation, to account for leaving OLoop.
+		/// </summary>
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HActionBase), "SetPlay")]
+		public static void SetPlayPost()
+		{
+				KK_HAutoSets.forceOLoop = false;
+		}
+
+
 	}
 }
