@@ -15,7 +15,7 @@ namespace KK_HAutoSets
 	[BepInProcess("KoikatuVR")]
 	[BepInProcess("Koikatsu Party")]
 	[BepInProcess("Koikatsu Party VR")]
-	public class KK_HAutoSets : BaseUnityPlugin
+	public class HAutoSets : BaseUnityPlugin
 	{
 		public const string GUID = "MK.KK_HAutoSets";
 		public const string PluginName = "HAutoSets";

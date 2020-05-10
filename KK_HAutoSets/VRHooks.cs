@@ -22,22 +22,22 @@ namespace KK_HAutoSets
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
 			};
 
-			KK_HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
-			KK_HAutoSets.flags = __instance.flags;
-			KK_HAutoSets.female = females.FirstOrDefault<ChaControl>();
+			HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
+			HAutoSets.flags = __instance.flags;
+			HAutoSets.female = females.FirstOrDefault<ChaControl>();
 
-			KK_HAutoSets.EquipAllAccessories(females);
+			HAutoSets.EquipAllAccessories(females);
 			foreach (HSprite sprite in hSprites)
-				KK_HAutoSets.LockGaugesAction(sprite);
+				HAutoSets.LockGaugesAction(sprite);
 		
-			KK_HAutoSets.HideShadow(males, females);
+			HAutoSets.HideShadow(males, females);
 		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(VRHScene), "LateUpdate")]
 		public static void VRHsceneLateUpdatePostfix()
 		{
-			KK_HAutoSets.GaugeLimiter();
+			HAutoSets.GaugeLimiter();
 		}
 	}
 }

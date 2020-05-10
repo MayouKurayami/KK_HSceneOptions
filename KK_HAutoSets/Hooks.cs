@@ -24,28 +24,28 @@ namespace KK_HAutoSets
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
 			};		
 
-			KK_HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
-			KK_HAutoSets.flags = __instance.flags;
-			KK_HAutoSets.female = females.FirstOrDefault<ChaControl>();
+			HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
+			HAutoSets.flags = __instance.flags;
+			HAutoSets.female = females.FirstOrDefault<ChaControl>();
 
 
-			KK_HAutoSets.EquipAllAccessories(females);
-			KK_HAutoSets.LockGaugesAction(hSprite);
-			KK_HAutoSets.HideShadow(males, females);
+			HAutoSets.EquipAllAccessories(females);
+			HAutoSets.LockGaugesAction(hSprite);
+			HAutoSets.HideShadow(males, females);
 		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSceneProc), "LateUpdate")]
 		public static void HSceneLateUpdatePostfix()
 		{
-			KK_HAutoSets.GaugeLimiter();
+			HAutoSets.GaugeLimiter();
 		}
 
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HActionBase), "IsBodyTouch")]
 		public static bool IsBodyTouchPre(bool __result)
 		{
-			if (KK_HAutoSets.DisableHideBody.Value)
+			if (HAutoSets.DisableHideBody.Value)
 			{
 				__result = false;
 				return false;
@@ -62,8 +62,8 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HVoiceCtrl), "BreathProc")]
 		public static void BreathProcPre(ref AnimatorStateInfo _ai)
 		{
-			if (KK_HAutoSets.forceOLoop && KK_HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
-				_ai = KK_HAutoSets.sLoopInfo;
+			if (HAutoSets.forceOLoop && HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
+				_ai = HAutoSets.sLoopInfo;
 		}
 
 		/// <summary>
@@ -74,7 +74,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(Voice), "IsVoiceCheck", new Type[] { typeof(Transform), typeof(bool) })]
 		public static bool IsVoiceCheckPre(ref bool __result, Transform voiceTrans)
 		{
-			if (KK_HAutoSets.forceStopVoice && (voiceTrans == KK_HAutoSets.flags.transVoiceMouth[0] || voiceTrans == KK_HAutoSets.flags.transVoiceMouth[1]))
+			if (HAutoSets.forceStopVoice && (voiceTrans == HAutoSets.flags.transVoiceMouth[0] || voiceTrans == HAutoSets.flags.transVoiceMouth[1]))
 			{
 				__result = false;
 				return false;
@@ -90,7 +90,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HActionBase), "SetPlay")]
 		public static void SetPlayPost()
 		{
-				KK_HAutoSets.forceOLoop = false;
+				HAutoSets.forceOLoop = false;
 		}
 
 

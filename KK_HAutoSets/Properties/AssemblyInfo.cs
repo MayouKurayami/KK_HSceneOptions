@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static KK_HAutoSets.KK_HAutoSets;
+using static KK_HAutoSets.HAutoSets;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information

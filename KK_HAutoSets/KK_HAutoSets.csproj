@@ -54,8 +54,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HAutoSets.cs" />
     <Compile Include="Hooks.cs" />
-    <Compile Include="KK_HAutoSets.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VRHooks.cs" />
   </ItemGroup>
