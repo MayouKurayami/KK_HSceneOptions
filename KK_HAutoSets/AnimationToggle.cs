@@ -147,7 +147,9 @@ namespace KK_HAutoSets
 			else
 			{
 				malePresent = false;
-			}		
+			}
+
+			animationName = flags.nowAnimationInfo.nameAnimation;
 		}
 
 		/// <summary>
