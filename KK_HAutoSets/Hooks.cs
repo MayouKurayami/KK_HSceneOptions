@@ -56,13 +56,13 @@ namespace KK_HAutoSets
 		/// <summary>
 		/// The vanilla game does not have any moan or breath sounds available for the precum (OLoop) animation.
 		/// This patch makes the game play sound effects as if it's in strong loop when the game is in fact playing OLoop without entering cum,
-		/// such as when forced by this plugin or when finish flag is none.
+		/// such as when forced by this plugin.
 		/// </summary>
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HVoiceCtrl), "BreathProc")]
 		public static void BreathProcPre(ref AnimatorStateInfo _ai)
 		{
-			if ((KK_HAutoSets.forceOLoop || KK_HAutoSets.flags.finish == HFlag.FinishKind.none) && KK_HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
+			if (KK_HAutoSets.forceOLoop && KK_HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
 				_ai = KK_HAutoSets.sLoopInfo;
 		}
 
