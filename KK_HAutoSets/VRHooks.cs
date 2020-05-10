@@ -31,6 +31,8 @@ namespace KK_HAutoSets
 				HAutoSets.LockGaugesAction(sprite);
 		
 			HAutoSets.HideShadow(males, females);
+
+			__instance.gameObject.AddComponent<AnimationToggle>();
 		}
 
 		[HarmonyPostfix]

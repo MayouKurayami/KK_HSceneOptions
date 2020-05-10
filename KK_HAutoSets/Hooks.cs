@@ -28,10 +28,11 @@ namespace KK_HAutoSets
 			HAutoSets.flags = __instance.flags;
 			HAutoSets.female = females.FirstOrDefault<ChaControl>();
 
-
 			HAutoSets.EquipAllAccessories(females);
 			HAutoSets.LockGaugesAction(hSprite);
 			HAutoSets.HideShadow(males, females);
+
+			__instance.gameObject.AddComponent<AnimationToggle>();
 		}
 
 		[HarmonyPostfix]
@@ -62,8 +63,8 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HVoiceCtrl), "BreathProc")]
 		public static void BreathProcPre(ref AnimatorStateInfo _ai)
 		{
-			if (HAutoSets.forceOLoop && HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
-				_ai = HAutoSets.sLoopInfo;
+			if (AnimationToggle.forceOLoop && HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
+				_ai = AnimationToggle.sLoopInfo;
 		}
 
 		/// <summary>
@@ -74,7 +75,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(Voice), "IsVoiceCheck", new Type[] { typeof(Transform), typeof(bool) })]
 		public static bool IsVoiceCheckPre(ref bool __result, Transform voiceTrans)
 		{
-			if (HAutoSets.forceStopVoice && (voiceTrans == HAutoSets.flags.transVoiceMouth[0] || voiceTrans == HAutoSets.flags.transVoiceMouth[1]))
+			if (AnimationToggle.forceStopVoice && (voiceTrans == HAutoSets.flags.transVoiceMouth[0] || voiceTrans == HAutoSets.flags.transVoiceMouth[1]))
 			{
 				__result = false;
 				return false;
@@ -90,7 +91,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HActionBase), "SetPlay")]
 		public static void SetPlayPost()
 		{
-				HAutoSets.forceOLoop = false;
+			AnimationToggle.forceOLoop = false;
 		}
 
 
