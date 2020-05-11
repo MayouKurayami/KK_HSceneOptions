@@ -24,7 +24,7 @@ namespace KK_HAutoSets
 
 			HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
 			HAutoSets.flags = __instance.flags;
-			HAutoSets.female = females.FirstOrDefault<ChaControl>();
+			HAutoSets.lstFemale = females;
 
 			HAutoSets.EquipAllAccessories(females);
 			foreach (HSprite sprite in hSprites)

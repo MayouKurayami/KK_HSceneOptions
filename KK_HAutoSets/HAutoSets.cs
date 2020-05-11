@@ -21,7 +21,7 @@ namespace KK_HAutoSets
 		internal static HFlag flags;
 		internal static List<HActionBase> lstProc;
 		internal static HActionBase proc;
-		internal static ChaControl female;
+		internal static List<ChaControl> lstFemale;
 
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////

@@ -199,7 +199,7 @@ namespace KK_HAutoSets
 		/// <returns></returns>
 		private IEnumerator DelayOrgasmClick(bool inside)
 		{
-			yield return new WaitUntil(() => female?.animBody.GetCurrentAnimatorStateInfo(0).IsName(flags.nowAnimStateName) ?? true);
+			yield return new WaitUntil(() => lstFemale?.FirstOrDefault()?.animBody.GetCurrentAnimatorStateInfo(0).IsName(flags.nowAnimStateName) ?? true);
 
 			//* In modes where male is not present (masturbation and lesbian), the condition to trigger orgasm is for the current speech to finish.
 			//  Stop the voice immediately to trigger orgasm immediately as the timer wouldn't be initialized in those modes.
