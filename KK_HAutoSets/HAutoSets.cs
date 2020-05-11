@@ -3,6 +3,8 @@ using Harmony;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using Manager;
+using System.Linq;
 
 namespace KK_HAutoSets
 {
@@ -22,6 +24,7 @@ namespace KK_HAutoSets
 		internal static List<HActionBase> lstProc;
 		internal static HActionBase proc;
 		internal static List<ChaControl> lstFemale;
+		internal static HVoiceCtrl voice;
 
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////
@@ -76,6 +79,15 @@ namespace KK_HAutoSets
 		public static SavedKeyboardShortcut OrgasmOutsideKey { get; private set; }
 
 
+		[DisplayName("Insert Without Asking")]
+		[Description("Insert male genital without asking for permission")]
+		public static SavedKeyboardShortcut InsertNowKey { get; private set; }
+
+		[DisplayName("Insert After Asking Female")]
+		[Description("Insert male genital after female speech")]
+		public static SavedKeyboardShortcut InsertWaitKey { get; private set; }
+
+
 		/// 
 		/////////////////// Others //////////////////////////
 		/// 
@@ -116,6 +128,8 @@ namespace KK_HAutoSets
 			OLoopKey = new SavedKeyboardShortcut(nameof(OLoopKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmInsideKey = new SavedKeyboardShortcut(nameof(OrgasmInsideKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmOutsideKey = new SavedKeyboardShortcut(nameof(OrgasmOutsideKey), this, new KeyboardShortcut(KeyCode.None));
+			InsertNowKey = new SavedKeyboardShortcut(nameof(InsertNowKey), this, new KeyboardShortcut(KeyCode.None));
+			InsertWaitKey = new SavedKeyboardShortcut(nameof(InsertWaitKey), this, new KeyboardShortcut(KeyCode.None));
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -124,6 +138,17 @@ namespace KK_HAutoSets
 			if (Application.dataPath.EndsWith("KoikatuVR_Data"))
 				harmony.PatchAll(typeof(VRHooks));
 		}		
+
+		private void Update()
+		{
+			if (!flags)
+				return;
+
+			if (Input.GetKeyDown(InsertWaitKey.Value.MainKey) && InsertWaitKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				OnInsertClick();
+			else if (Input.GetKeyDown(InsertNowKey.Value.MainKey) && InsertNowKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				OnInsertNoVoiceClick();
+		}
 
 		/// <summary>
 		/// Function to equip all accessories
@@ -209,6 +234,80 @@ namespace KK_HAutoSets
 				flags.gaugeFemale = Mathf.Clamp(flags.gaugeFemale, FemaleGaugeMin.Value, FemaleGaugeMax.Value);
 			if (MaleGaugeMax.Value >= MaleGaugeMin.Value)
 				flags.gaugeMale = Mathf.Clamp(flags.gaugeMale, FemaleGaugeMin.Value, MaleGaugeMax.Value);
+		}
+
+		private void OnInsertNoVoiceClick()
+		{
+			int num = (flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.sonyu3P) ? (flags.nowAnimationInfo.id % 2) : 0;
+			if (flags.mode != HFlag.EMode.sonyu3PMMF)
+			{
+				if (flags.isInsertOK[num] || flags.isDebug)
+				{
+					flags.click = HFlag.ClickKind.insert_voice;
+					return;
+				}
+				if (flags.isCondom)
+				{
+					flags.click = HFlag.ClickKind.insert_voice;
+					return;
+				}
+				flags.AddNotCondomPlay();
+				int num2 = ((flags.mode == HFlag.EMode.sonyu3P) ? ((!flags.nowAnimationInfo.isFemaleInitiative) ? 500 : 538) : ((Game.isAdd20 && flags.nowAnimationInfo.isFemaleInitiative) ? 38 : 0));
+				flags.voice.playVoices[num] = 302 + num2;
+				flags.voice.SetSonyuIdleTime();
+				flags.isDenialvoiceWait = true;
+				if (flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.sonyu3P)
+				{
+					int num3 = num ^ 1;
+					if (voice.nowVoices[num3].state == HVoiceCtrl.VoiceKind.voice && Singleton<Voice>.Instance.IsVoiceCheck(flags.transVoiceMouth[num3]))
+					{
+						Singleton<Voice>.Instance.Stop(flags.transVoiceMouth[num3]);
+					}
+				}
+			}
+			else
+			{
+				flags.click = HFlag.ClickKind.insert_voice;
+			}
+		}
+
+		private void OnInsertClick()
+		{
+			int num2 = (flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.sonyu3P) ? (flags.nowAnimationInfo.id % 2) : 0;
+			int num = ((flags.mode == HFlag.EMode.sonyu3P) ? ((!flags.nowAnimationInfo.isFemaleInitiative) ? 500 : 538) : ((Game.isAdd20 && flags.nowAnimationInfo.isFemaleInitiative) ? 38 : 0));
+			if (flags.mode != HFlag.EMode.sonyu3PMMF)
+			{
+				if (flags.isInsertOK[num2] || flags.isDebug)
+				{
+					flags.click = HFlag.ClickKind.insert;
+					flags.voice.playVoices[num2] = 301 + num;
+				}
+				else if (flags.isCondom)
+				{
+					flags.click = HFlag.ClickKind.insert;
+					flags.voice.playVoices[num2] = 301 + num;
+				}
+				else
+				{
+					flags.AddNotCondomPlay();
+					flags.voice.playVoices[num2] = 302 + num;
+					flags.voice.SetSonyuIdleTime();
+					flags.isDenialvoiceWait = true;
+				}
+			}
+			else
+			{
+				flags.click = HFlag.ClickKind.insert;
+				flags.voice.playVoices[num2] = 1001;
+			}
+			if (flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.sonyu3P)
+			{
+				int num3 = num2 ^ 1;
+				if (voice.nowVoices[num3].state == HVoiceCtrl.VoiceKind.voice && Singleton<Voice>.Instance.IsVoiceCheck(flags.transVoiceMouth[num3]))
+				{
+					Singleton<Voice>.Instance.Stop(flags.transVoiceMouth[num3]);
+				}
+			}
 		}
 	}
 }
