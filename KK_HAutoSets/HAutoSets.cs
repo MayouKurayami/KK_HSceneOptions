@@ -1,8 +1,10 @@
 ﻿using BepInEx;
 using Harmony;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using static ChaFileDefine;
 
 namespace KK_HAutoSets
 {
@@ -75,6 +77,10 @@ namespace KK_HAutoSets
 		[Description("Press this key to manually cum outside with the specified amount of time in precum")]
 		public static SavedKeyboardShortcut OrgasmOutsideKey { get; private set; }
 
+		[DisplayName("Pantsu Stipped/Half Stripped Toggle")]
+		[Description("Toggle between a fully stripped and a partially stripped pantsu. \n(You would not be able to fully dress the pantsu with this shortcut)")]
+		public static SavedKeyboardShortcut PantsuStripKey { get; private set; }
+
 
 		/// 
 		/////////////////// Others //////////////////////////
@@ -116,6 +122,7 @@ namespace KK_HAutoSets
 			OLoopKey = new SavedKeyboardShortcut(nameof(OLoopKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmInsideKey = new SavedKeyboardShortcut(nameof(OrgasmInsideKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmOutsideKey = new SavedKeyboardShortcut(nameof(OrgasmOutsideKey), this, new KeyboardShortcut(KeyCode.None));
+			PantsuStripKey = new SavedKeyboardShortcut(nameof(PantsuStripKey), this, new KeyboardShortcut(KeyCode.None));
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -124,6 +131,15 @@ namespace KK_HAutoSets
 			if (Application.dataPath.EndsWith("KoikatuVR_Data"))
 				harmony.PatchAll(typeof(VRHooks));
 		}		
+
+		private void Update()
+		{
+			if (!flags)
+				return;
+
+			if (Input.GetKeyDown(PantsuStripKey.Value.MainKey) && PantsuStripKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				PantsuStrip();
+		}
 
 		/// <summary>
 		/// Function to equip all accessories
@@ -209,6 +225,26 @@ namespace KK_HAutoSets
 				flags.gaugeFemale = Mathf.Clamp(flags.gaugeFemale, FemaleGaugeMin.Value, FemaleGaugeMax.Value);
 			if (MaleGaugeMax.Value >= MaleGaugeMin.Value)
 				flags.gaugeMale = Mathf.Clamp(flags.gaugeMale, FemaleGaugeMin.Value, MaleGaugeMax.Value);
+		}
+
+		/// <summary>
+		/// Toggle pantsu state between open, hanging, and removed. Ignores the fully dressed state.
+		/// </summary>
+		private static void PantsuStrip()
+		{
+			foreach (ChaControl female in lstFemale)
+			{
+				byte state = female.fileStatus.clothesState[(int)ClothesKind.shorts];
+				female.SetClothesState((byte)ClothesKind.shorts, (byte)((state % 3) + 1), false);
+			}
+		}
+
+		private enum ClothesState
+		{
+			Full,
+			Open1,
+			Open2,
+			Nude
 		}
 	}
 }
