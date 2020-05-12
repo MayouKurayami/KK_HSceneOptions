@@ -95,6 +95,10 @@ namespace KK_HAutoSets
 		[Description("Shortcut key to make female spit out after blowjob")]
 		public static SavedKeyboardShortcut SpitKey { get; private set; }
 
+		[DisplayName("Toggle Sub-Accessories")]
+		[Description("Shortcut to toggle the display of sub-accessories")]
+		public static SavedKeyboardShortcut SubAccToggleKey { get; private set; }
+
 
 		/// 
 		/////////////////// Others //////////////////////////
@@ -140,6 +144,7 @@ namespace KK_HAutoSets
 			InsertWaitKey = new SavedKeyboardShortcut(nameof(InsertWaitKey), this, new KeyboardShortcut(KeyCode.None));
 			SwallowKey = new SavedKeyboardShortcut(nameof(SwallowKey), this, new KeyboardShortcut(KeyCode.None));
 			SpitKey = new SavedKeyboardShortcut(nameof(SpitKey), this, new KeyboardShortcut(KeyCode.None));
+			SubAccToggleKey = new SavedKeyboardShortcut(nameof(SubAccToggleKey), this, new KeyboardShortcut(KeyCode.None));
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -162,6 +167,8 @@ namespace KK_HAutoSets
 				flags.click = HFlag.ClickKind.drink;
 			else if (Input.GetKeyDown(SpitKey.Value.MainKey) && SpitKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				flags.click = HFlag.ClickKind.vomit;
+			else if (Input.GetKeyDown(SubAccToggleKey.Value.MainKey) && SubAccToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				ToggleMainGirlAccessories(category: 1);
 		}
 
 		/// <summary>
@@ -322,6 +329,23 @@ namespace KK_HAutoSets
 					Singleton<Voice>.Instance.Stop(flags.transVoiceMouth[num3]);
 				}
 			}
+		}
+
+		private void ToggleMainGirlAccessories(int category)
+		{
+			ChaControl mainFemale = lstFemale[flags.nowAnimationInfo.id % 2];
+			bool currentStatus = false;
+
+			for (int i = 0; i < mainFemale.nowCoordinate.accessory.parts.Length; i++)
+			{
+				if (mainFemale.nowCoordinate.accessory.parts[i].hideCategory == category)
+				{
+					currentStatus = mainFemale.fileStatus.showAccessory[i];
+					break;
+				}		
+			}
+
+			mainFemale.SetAccessoryStateCategory(category, !currentStatus);
 		}
 	}
 }
