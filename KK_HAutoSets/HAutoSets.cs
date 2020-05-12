@@ -87,6 +87,14 @@ namespace KK_HAutoSets
 		[Description("Insert male genital after female speech")]
 		public static SavedKeyboardShortcut InsertWaitKey { get; private set; }
 
+		[DisplayName("Swallow Shortcut")]
+		[Description("Shortcut key to make female swallow after blowjob")]
+		public static SavedKeyboardShortcut SwallowKey { get; private set; }
+
+		[DisplayName("Spit Out Shortcut")]
+		[Description("Shortcut key to make female spit out after blowjob")]
+		public static SavedKeyboardShortcut SpitKey { get; private set; }
+
 
 		/// 
 		/////////////////// Others //////////////////////////
@@ -130,6 +138,8 @@ namespace KK_HAutoSets
 			OrgasmOutsideKey = new SavedKeyboardShortcut(nameof(OrgasmOutsideKey), this, new KeyboardShortcut(KeyCode.None));
 			InsertNowKey = new SavedKeyboardShortcut(nameof(InsertNowKey), this, new KeyboardShortcut(KeyCode.None));
 			InsertWaitKey = new SavedKeyboardShortcut(nameof(InsertWaitKey), this, new KeyboardShortcut(KeyCode.None));
+			SwallowKey = new SavedKeyboardShortcut(nameof(SwallowKey), this, new KeyboardShortcut(KeyCode.None));
+			SpitKey = new SavedKeyboardShortcut(nameof(SpitKey), this, new KeyboardShortcut(KeyCode.None));
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -148,6 +158,10 @@ namespace KK_HAutoSets
 				OnInsertClick();
 			else if (Input.GetKeyDown(InsertNowKey.Value.MainKey) && InsertNowKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				OnInsertNoVoiceClick();
+			else if (Input.GetKeyDown(SwallowKey.Value.MainKey) && SwallowKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				flags.click = HFlag.ClickKind.drink;
+			else if (Input.GetKeyDown(SpitKey.Value.MainKey) && SpitKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				flags.click = HFlag.ClickKind.vomit;
 		}
 
 		/// <summary>
