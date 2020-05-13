@@ -26,6 +26,8 @@ namespace KK_HAutoSets
 		internal static List<ChaControl> lstFemale;
 		internal static HVoiceCtrl voice;
 
+		internal static bool malePresent;
+
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////
 		/// 

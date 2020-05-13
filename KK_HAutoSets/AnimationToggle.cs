@@ -13,7 +13,6 @@ namespace KK_HAutoSets
 		internal static bool forceOLoop;
 		internal static AnimatorStateInfo sLoopInfo;
 		internal static bool forceStopVoice;
-		private static bool malePresent;
 		private static string animationName = "";
 
 		private float orgasmTimer;
