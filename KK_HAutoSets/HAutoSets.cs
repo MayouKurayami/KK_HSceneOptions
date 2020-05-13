@@ -1,5 +1,7 @@
 ﻿using BepInEx;
 using Harmony;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
@@ -246,6 +248,30 @@ namespace KK_HAutoSets
 				}
 			}
 
+		}
+
+		/// <summary>
+		/// Toggle a boolean flag to true for one frame then toggle it back to false
+		/// </summary>
+		/// <param name="toggleFlag">The action used to assign the target of the toggle</param>
+		internal static IEnumerator ToggleFlagSingleFrame(Action<bool> toggleFlag)
+		{
+			toggleFlag(true);
+			yield return null;
+			toggleFlag(false);
+		}
+
+		/// <summary>
+		/// Modify a flag to the targetValue using the supplied delegate. Wait for one frame then restore back to its original value. Can only be used with value types.
+		/// </summary>
+		/// <param name="toggleFlagFunc">Delegate for toggling the flag and returning its original value</param>
+		/// <param name="targetValue">The value for the flag to be toggled to</param>
+		/// <returns></returns>
+		internal static IEnumerator ToggleFlagSingleFrame<T>(Func<T, T> toggleFlagFunc, T targetValue) where T : struct
+		{
+			T originalValue = toggleFlagFunc(targetValue);
+			yield return null;
+			toggleFlagFunc(originalValue);
 		}
 
 		/// <summary>

@@ -82,7 +82,7 @@ namespace KK_HAutoSets
 			if (orgasmTimer > 0 && (Time.time - orgasmTimer) > PrecumTimer.Value)
 			{
 				if (flags.nowAnimStateName.Contains("OLoop"))
-					StartCoroutine(VoiceStop());
+					StartCoroutine(ToggleFlagSingleFrame(x => forceStopVoice = x));
 
 				orgasmTimer = 0;
 			}
@@ -204,20 +204,11 @@ namespace KK_HAutoSets
 			//  Stop the voice immediately to trigger orgasm immediately as the timer wouldn't be initialized in those modes.
 			//* In other modes, simply set the cum click flag to trigger orgasm
 			if (!malePresent)
-				StartCoroutine(VoiceStop());
+				StartCoroutine(ToggleFlagSingleFrame(x => forceStopVoice = x));
 			else
 				flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside;
 		}
 
-		/// <summary>
-		/// Interrupt current playing speech by forcing the game to behave as if no speech is playing for exactly one frame. Depends on the IsVoiceCheckPre patch to work.
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerator VoiceStop()
-		{
-			forceStopVoice = true;
-			yield return null;
-			forceStopVoice = false;
-		}
+		
 	}
 }
