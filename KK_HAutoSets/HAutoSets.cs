@@ -103,6 +103,10 @@ namespace KK_HAutoSets
 		[Description("Shortcut to toggle the display of sub-accessories")]
 		public static SavedKeyboardShortcut SubAccToggleKey { get; private set; }
 
+		[DisplayName("Trigger Speech")]
+		[Description("Trigger a random voice line depending on the excitement gauge")]
+		public static SavedKeyboardShortcut TriggerVoiceKey { get; private set; }
+
 
 		/// 
 		/////////////////// Others //////////////////////////
@@ -149,6 +153,7 @@ namespace KK_HAutoSets
 			SwallowKey = new SavedKeyboardShortcut(nameof(SwallowKey), this, new KeyboardShortcut(KeyCode.None));
 			SpitKey = new SavedKeyboardShortcut(nameof(SpitKey), this, new KeyboardShortcut(KeyCode.None));
 			SubAccToggleKey = new SavedKeyboardShortcut(nameof(SubAccToggleKey), this, new KeyboardShortcut(KeyCode.None));
+			TriggerVoiceKey = new SavedKeyboardShortcut(nameof(TriggerVoiceKey), this, new KeyboardShortcut(KeyCode.None));
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -173,6 +178,8 @@ namespace KK_HAutoSets
 				flags.click = HFlag.ClickKind.vomit;
 			else if (Input.GetKeyDown(SubAccToggleKey.Value.MainKey) && SubAccToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				ToggleMainGirlAccessories(category: 1);
+			else if (Input.GetKeyDown(TriggerVoiceKey.Value.MainKey) && TriggerVoiceKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				PlayVoice();
 		}
 
 		/// <summary>
@@ -374,6 +381,80 @@ namespace KK_HAutoSets
 			}
 
 			mainFemale.SetAccessoryStateCategory(category, !currentStatus);
+		}
+
+		private void PlayVoice()
+		{
+			int voiceFlagIndex = flags.nowAnimationInfo.id % 2;
+			int voiceIdBase = 300;
+			if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
+			{
+				int femaleLead = flags.nowAnimationInfo.isFemaleInitiative ? 38 : 0;
+
+				switch (flags.mode)
+				{
+					case HFlag.EMode.sonyu3P:
+						voiceIdBase = 800;
+						break;
+					case HFlag.EMode.sonyu3PMMF:
+						voiceIdBase = 1000;
+						break;
+					case HFlag.EMode.sonyu:
+						voiceIdBase = 300;
+						break;
+				}
+
+				if (flags.nowAnimStateName == "Idle" || flags.nowAnimStateName == "A_Idle")
+				{
+					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + femaleLead;
+				}
+				else if (flags.nowAnimStateName.Contains("InsertIdle"))
+				{
+					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 9 + femaleLead;
+				}
+				else if (flags.nowAnimStateName == "IN_A" || flags.nowAnimStateName == "A_IN_A")
+				{
+					if (flags.finish == HFlag.FinishKind.inside || flags.finish == HFlag.FinishKind.outside)
+						flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 31 + femaleLead;
+					else if (flags.finish == HFlag.FinishKind.sameW || flags.finish == HFlag.FinishKind.sameS)
+						flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 32 + femaleLead;
+					else
+						flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 33 + femaleLead;
+				}
+				else if (flags.nowAnimStateName == "OUT_A" || flags.nowAnimStateName == "A_OUT_A")
+				{
+					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 35 + femaleLead;
+				}
+				else if (flags.nowAnimStateName.Contains("SLoop") || flags.nowAnimStateName.Contains("WLoop") || flags.nowAnimStateName.Contains("OLoop"))
+				{
+					if (flags.gaugeFemale >= 70f)
+						flags.voice.playVoices[voiceFlagIndex] = (flags.voice.speedMotion ? (voiceIdBase + 15) : (voiceIdBase + 14)) + femaleLead;
+					else if (flags.gaugeMale >= 70f)
+						flags.voice.playVoices[voiceFlagIndex] = (flags.voice.speedMotion ? (voiceIdBase + 17) : (voiceIdBase + 16)) + femaleLead;
+					else
+					{
+						if (flags.nowAnimStateName.Contains("WLoop"))
+							flags.voice.playVoices[voiceFlagIndex] = (flags.voice.speedMotion ? (voiceIdBase + 11) : (voiceIdBase + 10)) + femaleLead;
+						else
+							flags.voice.playVoices[voiceFlagIndex] = (flags.voice.speedMotion ? (voiceIdBase + 13) : (voiceIdBase + 12)) + femaleLead;			
+					}
+				}
+			}
+			else if (flags.mode == HFlag.EMode.houshi || flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.houshi3PMMF)
+			{
+				switch (flags.mode)
+				{
+					case HFlag.EMode.houshi:
+						voiceIdBase = 800;
+						break;
+					case HFlag.EMode.houshi3P:
+						voiceIdBase = 1000;
+						break;
+					case HFlag.EMode.houshi3PMMF:
+						voiceIdBase = 300;
+						break;
+				}
+			}
 		}
 	}
 }
