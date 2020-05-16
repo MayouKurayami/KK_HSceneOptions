@@ -95,6 +95,46 @@ namespace KK_HAutoSets
 			AnimationToggle.forceOLoop = false;
 		}
 
+		//In sex modes, force the game to play idle voice line while forceIdleVoice is true
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsSonyuIdleTime")]
+		public static bool IsSonyuIdleTimePre(ref bool __result)
+		{
+			if (HAutoSets.forceIdleVoice)
+			{
+				__result = true;
+				return false;
+			}
 
+			return true;
+		}
+
+		//In service modes, force the game to play idle voice line while forceIdleVoice is true
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsHoushiIdleTime")]
+		public static bool IsHoushiIdleTimePre(ref bool __result)
+		{
+			if (HAutoSets.forceIdleVoice)
+			{
+				__result = true;
+				return false;
+			}
+
+			return true;
+		}
+
+		//In caress modes, force the game to play idle voice line while forceIdleVoice is true
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsAibuIdleTime")]
+		public static bool IsAibuIdleTimePre(ref bool __result)
+		{
+			if (HAutoSets.forceIdleVoice)
+			{
+				__result = true;
+				return false;
+			}
+
+			return true;
+		}
 	}
 }

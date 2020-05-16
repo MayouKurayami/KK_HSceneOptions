@@ -29,6 +29,7 @@ namespace KK_HAutoSets
 		internal static HVoiceCtrl voice;
 
 		internal static bool malePresent;
+		internal static bool forceIdleVoice;
 
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////
@@ -103,6 +104,10 @@ namespace KK_HAutoSets
 		[Description("Shortcut to toggle the display of sub-accessories")]
 		public static SavedKeyboardShortcut SubAccToggleKey { get; private set; }
 
+		[DisplayName("Trigger Speech")]
+		[Description("Trigger a random voice line depending on the excitement gauge")]
+		public static SavedKeyboardShortcut TriggerVoiceKey { get; private set; }
+
 
 		/// 
 		/////////////////// Others //////////////////////////
@@ -149,6 +154,7 @@ namespace KK_HAutoSets
 			SwallowKey = new SavedKeyboardShortcut(nameof(SwallowKey), this, new KeyboardShortcut(KeyCode.None));
 			SpitKey = new SavedKeyboardShortcut(nameof(SpitKey), this, new KeyboardShortcut(KeyCode.None));
 			SubAccToggleKey = new SavedKeyboardShortcut(nameof(SubAccToggleKey), this, new KeyboardShortcut(KeyCode.None));
+			TriggerVoiceKey = new SavedKeyboardShortcut(nameof(TriggerVoiceKey), this, new KeyboardShortcut(KeyCode.None));
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -173,6 +179,8 @@ namespace KK_HAutoSets
 				flags.click = HFlag.ClickKind.vomit;
 			else if (Input.GetKeyDown(SubAccToggleKey.Value.MainKey) && SubAccToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				ToggleMainGirlAccessories(category: 1);
+			else if (Input.GetKeyDown(TriggerVoiceKey.Value.MainKey) && TriggerVoiceKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				PlayIdleVoice();
 		}
 
 		/// <summary>
@@ -374,6 +382,36 @@ namespace KK_HAutoSets
 			}
 
 			mainFemale.SetAccessoryStateCategory(category, !currentStatus);
+		}
+
+		private void PlayIdleVoice()
+		{
+			string[] afterOrg = new string[] { "IN_A", "A_IN_A", "OUT_A", "A_OUT_A" };
+
+			//Take care of edge cases where there would be no idle voice lines by satifying the conditions for them to be played,
+			//by flipping some flags for one frame and returning them to their original values afterward
+			if (afterOrg.Any(x => flags.nowAnimStateName == x))
+			{
+				StartCoroutine(ToggleFlagSingleFrame(targetValue => {
+					bool oldValue = flags.voice.isAfterVoicePlay;
+					flags.voice.isAfterVoicePlay = targetValue;
+					return oldValue;
+				}
+				, false));
+
+				if (flags.finish != HFlag.FinishKind.outside)
+				{
+					StartCoroutine(ToggleFlagSingleFrame(targetValue => {
+						HFlag.FinishKind oldValue = flags.finish;
+						flags.finish = targetValue;
+						return oldValue;
+					}
+					, HFlag.FinishKind.outside));
+				}
+			}
+
+			//Set the flag used by hooks to force idle voice line playback
+			StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
 		}
 	}
 }
