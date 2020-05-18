@@ -22,13 +22,17 @@ namespace KK_HAutoSets
 		public const string AssembName = "KK_HAutoSets";
 		public const string Version = "1.3.0";
 
+		internal static bool isVR;
+
 		internal static HFlag flags;
 		internal static List<HActionBase> lstProc;
 		internal static HActionBase proc;
 		internal static List<ChaControl> lstFemale;
 		internal static HVoiceCtrl voice;
+		internal static object[] hands = new object[2];
 
 		internal static bool malePresent;
+		internal static bool forceIdleVoice;
 
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////
@@ -159,7 +163,7 @@ namespace KK_HAutoSets
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
 			harmony.PatchAll(typeof(Hooks));
 
-			if (Application.dataPath.EndsWith("KoikatuVR_Data"))
+			if (isVR = Application.dataPath.EndsWith("KoikatuVR_Data"))
 				harmony.PatchAll(typeof(VRHooks));
 		}		
 
@@ -383,78 +387,146 @@ namespace KK_HAutoSets
 			mainFemale.SetAccessoryStateCategory(category, !currentStatus);
 		}
 
+		/// <summary>
+		/// Trigger a voice line based on the current context
+		/// </summary>
 		private void PlayVoice()
 		{
-			int voiceFlagIndex = flags.nowAnimationInfo.id % 2;
-			int voiceIdBase = 300;
 			if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
 			{
-				int femaleLead = flags.nowAnimationInfo.isFemaleInitiative ? 38 : 0;
+				//Take care of edge cases where there would be no idle voice lines by satifying the conditions for them to be played,
+				//by flipping some flags for one frame and returning them to their original values afterward
+				string[] afterOrg = new string[] { "IN_A", "A_IN_A", "OUT_A", "A_OUT_A" };
+				if (afterOrg.Any(x => flags.nowAnimStateName == x))
+				{
+					StartCoroutine(ToggleFlagSingleFrame(targetValue => {
+						bool oldValue = flags.voice.isAfterVoicePlay;
+						flags.voice.isAfterVoicePlay = targetValue;
+						return oldValue;
+					}
+					, false));
 
-				switch (flags.mode)
-				{
-					case HFlag.EMode.sonyu3P:
-						voiceIdBase = 800;
-						break;
-					case HFlag.EMode.sonyu3PMMF:
-						voiceIdBase = 1000;
-						break;
-					case HFlag.EMode.sonyu:
-						voiceIdBase = 300;
-						break;
-				}
-
-				if (flags.nowAnimStateName == "Idle" || flags.nowAnimStateName == "A_Idle")
-				{
-					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + femaleLead;
-				}
-				else if (flags.nowAnimStateName.Contains("InsertIdle"))
-				{
-					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 9 + femaleLead;
-				}
-				else if (flags.nowAnimStateName == "IN_A" || flags.nowAnimStateName == "A_IN_A")
-				{
-					if (flags.finish == HFlag.FinishKind.inside || flags.finish == HFlag.FinishKind.outside)
-						flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 31 + femaleLead;
-					else if (flags.finish == HFlag.FinishKind.sameW || flags.finish == HFlag.FinishKind.sameS)
-						flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 32 + femaleLead;
-					else
-						flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 33 + femaleLead;
-				}
-				else if (flags.nowAnimStateName == "OUT_A" || flags.nowAnimStateName == "A_OUT_A")
-				{
-					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 35 + femaleLead;
-				}
-				else if (flags.nowAnimStateName.Contains("SLoop") || flags.nowAnimStateName.Contains("WLoop") || flags.nowAnimStateName.Contains("OLoop"))
-				{
-					if (flags.gaugeFemale >= 70f)
-						flags.voice.playVoices[voiceFlagIndex] = (flags.voice.speedMotion ? (voiceIdBase + 15) : (voiceIdBase + 14)) + femaleLead;
-					else if (flags.gaugeMale >= 70f)
-						flags.voice.playVoices[voiceFlagIndex] = (flags.voice.speedMotion ? (voiceIdBase + 17) : (voiceIdBase + 16)) + femaleLead;
-					else
+					if (flags.finish != HFlag.FinishKind.outside)
 					{
-						if (flags.nowAnimStateName.Contains("WLoop"))
-							flags.voice.playVoices[voiceFlagIndex] = (flags.voice.speedMotion ? (voiceIdBase + 11) : (voiceIdBase + 10)) + femaleLead;
-						else
-							flags.voice.playVoices[voiceFlagIndex] = (flags.voice.speedMotion ? (voiceIdBase + 13) : (voiceIdBase + 12)) + femaleLead;			
+						StartCoroutine(ToggleFlagSingleFrame(targetValue => {
+							HFlag.FinishKind oldValue = flags.finish;
+							flags.finish = targetValue;
+							return oldValue;
+						}
+						, HFlag.FinishKind.outside));
 					}
 				}
+				//Set the flag used by hooks to force idle voice line playback
+				StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
 			}
 			else if (flags.mode == HFlag.EMode.houshi || flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.houshi3PMMF)
 			{
+				//Prepare variables to store the indexer values used to manually trigger voice with flags.voice.playVoices.
+				//houshi3P is the only mode with two females, and we see whether the flags.nowAnimationInfo.id is even or odd to determine which girl's voice should be triggered
+				int voiceFlagIndex = flags.mode == HFlag.EMode.houshi3P ? flags.nowAnimationInfo.id % 2 : 0;
+				int voiceIdBase = 198;
 				switch (flags.mode)
 				{
 					case HFlag.EMode.houshi:
-						voiceIdBase = 800;
+						voiceIdBase = 198;
 						break;
 					case HFlag.EMode.houshi3P:
-						voiceIdBase = 1000;
+						voiceIdBase = 700;
 						break;
 					case HFlag.EMode.houshi3PMMF:
-						voiceIdBase = 300;
+						voiceIdBase = 900;
 						break;
 				}
+
+				if (flags.nowAnimStateName.Contains("OLoop"))
+				{
+					if (flags.click == HFlag.ClickKind.inside)
+						flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 7;
+					else
+						flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 6;
+				}
+				else if (flags.nowAnimStateName == "OUT_A")
+					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 9;
+				else if (flags.nowAnimStateName == "Drink_A")
+					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 10;
+				else if (flags.nowAnimStateName == "Vomit_A")
+					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 11;
+				//outside of the above animations, we should be able to proc idle voice with the following
+				else
+				{
+					StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
+				}
 			}
+			else if (flags.mode == HFlag.EMode.aibu)
+			{
+				//If currently groping, as indicated by the animation state name ending in "_Idle", 
+				// find the first hand that's currently using an item/hand as indicated by an non-empty useItem field,
+				// then retrive the kind of object being used as well as the body part being touched, then use those values to determine which voice line to proc.
+				if (flags.nowAnimStateName.Contains("_Idle"))
+				{
+					foreach (object hand in hands)
+					{
+						object useItem;
+						if (isVR)
+							useItem = Traverse.Create(hand).Field("useItem").GetValue<object>();
+						else
+							useItem = Traverse.Create(hand).Field("useItems").GetValue<object[]>().FirstOrDefault(x => x != null);
+
+						if (useItem != null)
+						{
+							var idObj = Traverse.Create(useItem).Field("idObj").GetValue<int>();
+							var kindTouch = Traverse.Create(useItem).Field("kindTouch").GetValue<int>();
+							int[,] voicePattern = new int[6, 5]
+							{
+								{ -1, 112, 114, 116, 118 },
+								{ -1, 124, 120, 122, -1 },
+								{ -1, 132, 126, 128, 130 },
+								{ -1, 138, 134, -1, 136 },
+								{ -1, -1, 140, -1, -1 },
+								{ -1, -1, -1, -1, -1 }
+							};
+							int[] touchArea = new int[7] { 0, 1, 1, 2, 3, 4, 4 };
+
+							//Clamp the indexer variables to avoid index out of range exception
+							flags.voice.playVoices[0] = voicePattern[Mathf.Clamp(idObj, 0, 5), touchArea[Mathf.Clamp(kindTouch - 1, 0, 6)]];
+							break;
+						}
+					}
+				}
+				//Proc a fixed line if after orgasm, or use the idle line for all other situations.
+				else if (flags.nowAnimStateName == "Orgasm_A")
+					flags.voice.playVoices[0] = 143;
+				else
+					StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
+			}
+			else if (flags.mode == HFlag.EMode.lesbian || flags.mode == HFlag.EMode.masturbation)
+			{
+				//Based on the current mode, prepare variables to store the indexer values used to manually trigger voice with flags.voice.playVoices.
+				//Randomly choose one of the two females to speak if in lesbian mode.
+				//Note that UnityEngine.Random.Range's upper bound is EXCLUSIVE instead of inclusive like the lower bound, for fuck's sake.
+				int voiceFlagIndex = 0;
+				int[] voicePattern = { 400, 402, 403, 404, 405};
+
+				if (flags.mode == HFlag.EMode.lesbian)
+				{
+					voiceFlagIndex = UnityEngine.Random.Range(0, 2);
+					voicePattern = new int[5] { 600, 601, 602, 603, 606 };
+				}
+			
+				if (flags.nowAnimStateName == "WLoop" || flags.nowAnimStateName == "MLoop")
+					flags.voice.playVoices[voiceFlagIndex] = voicePattern[UnityEngine.Random.Range(0, 2)];
+				else if (flags.nowAnimStateName == "SLoop" || flags.nowAnimStateName == "OLoop")
+					flags.voice.playVoices[voiceFlagIndex] = voicePattern[UnityEngine.Random.Range(2, 4)];
+				// After orgasm, there is only one female, then proc line 405. 
+				// If there are two females, then proc either 606 for the first female, or 605 for the second female. (There are no line 605 for the first female, or 606 for the second)
+				else if (flags.nowAnimStateName.Contains("Orgasm_"))
+					flags.voice.playVoices[voiceFlagIndex] = voicePattern[4] - voiceFlagIndex;
+			}
+			//If all other conditions are not met, proc the idle line just in case.
+			else
+			{
+				StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
+			}				
 		}
 	}
 }
