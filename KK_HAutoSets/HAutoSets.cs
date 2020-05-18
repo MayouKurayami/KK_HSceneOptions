@@ -1,12 +1,13 @@
 ﻿using BepInEx;
 using Harmony;
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using static ChaFileDefine;
 using Manager;
-using System.Linq;
 
 namespace KK_HAutoSets
 {
@@ -86,6 +87,13 @@ namespace KK_HAutoSets
 		[Description("Press this key to manually cum outside with the specified amount of time in precum")]
 		public static SavedKeyboardShortcut OrgasmOutsideKey { get; private set; }
 
+		[DisplayName("Pantsu Stipped/Half Stripped Toggle")]
+		[Description("Toggle between a fully stripped and a partially stripped pantsu. \n(You would not be able to fully dress the pantsu with this shortcut)")]
+		public static SavedKeyboardShortcut PantsuStripKey { get; private set; }
+
+		[DisplayName("Toggle All Clothes")]
+		[Description("Toggle through states of all clothes of all females")]
+		public static SavedKeyboardShortcut ClothesToggleKey { get; private set; }
 
 		[DisplayName("Insert Without Asking")]
 		[Description("Insert male genital without asking for permission")]
@@ -158,6 +166,8 @@ namespace KK_HAutoSets
 			SpitKey = new SavedKeyboardShortcut(nameof(SpitKey), this, new KeyboardShortcut(KeyCode.None));
 			SubAccToggleKey = new SavedKeyboardShortcut(nameof(SubAccToggleKey), this, new KeyboardShortcut(KeyCode.None));
 			TriggerVoiceKey = new SavedKeyboardShortcut(nameof(TriggerVoiceKey), this, new KeyboardShortcut(KeyCode.None));
+			PantsuStripKey = new SavedKeyboardShortcut(nameof(PantsuStripKey), this, new KeyboardShortcut(KeyCode.None));
+			ClothesToggleKey = new SavedKeyboardShortcut(nameof(ClothesToggleKey), this, new KeyboardShortcut(KeyCode.None));
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -184,6 +194,10 @@ namespace KK_HAutoSets
 				ToggleMainGirlAccessories(category: 1);
 			else if (Input.GetKeyDown(TriggerVoiceKey.Value.MainKey) && TriggerVoiceKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				PlayVoice();
+			else if (Input.GetKeyDown(PantsuStripKey.Value.MainKey) && PantsuStripKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				PantsuStrip();
+			else if (Input.GetKeyDown(ClothesToggleKey.Value.MainKey) && ClothesToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				SetAllClothesStateNext();
 		}
 
 		/// <summary>
@@ -527,6 +541,54 @@ namespace KK_HAutoSets
 			{
 				StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
 			}				
+		}
+
+		/// <summary>
+		/// Toggle pantsu state between open, hanging, and removed. Ignores the fully dressed state.
+		/// </summary>
+		private static void PantsuStrip()
+		{
+			foreach (ChaControl female in lstFemale)
+			{
+				byte state = female.fileStatus.clothesState[(int)ClothesKind.shorts];
+				female.SetClothesState((byte)ClothesKind.shorts, (byte)((state % 3) + 1), false);
+			}
+		}
+
+		/// <summary>
+		/// Toggle through full, opened, and nude states of all clothes based on the condition of the top cloth
+		/// </summary>
+		private void SetAllClothesStateNext()
+		{
+			int num = Enum.GetNames(typeof(ClothesKind)).Length;
+
+			foreach (ChaControl female in lstFemale)
+			{
+				switch (female.fileStatus.clothesState[(int)ClothesKind.top])
+				{
+					case (int)ClothesState.Full:
+						female.SetClothesStateAll((int)ClothesState.Open1);
+						break;
+
+					case (int)ClothesState.Open1:
+					case (int)ClothesState.Open2:
+						female.SetClothesStateAll((int)ClothesState.Nude);
+						break;
+
+					case (int)ClothesState.Nude:
+					default:
+						female.SetClothesStateAll((int)ClothesState.Full);
+						break;
+				}
+			}
+		}
+
+		private enum ClothesState
+		{
+			Full,
+			Open1,
+			Open2,
+			Nude
 		}
 	}
 }
