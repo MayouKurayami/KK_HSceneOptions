@@ -195,9 +195,9 @@ namespace KK_HAutoSets
 			else if (Input.GetKeyDown(TriggerVoiceKey.Value.MainKey) && TriggerVoiceKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				PlayVoice();
 			else if (Input.GetKeyDown(PantsuStripKey.Value.MainKey) && PantsuStripKey.Value.Modifiers.All(x => Input.GetKey(x)))
-				PantsuStrip();
+				SetClothesStateRange(new ClothesKind[] { ClothesKind.shorts }, true);
 			else if (Input.GetKeyDown(ClothesToggleKey.Value.MainKey) && ClothesToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
-				SetAllClothesStateNext();
+				SetClothesStateRange((ClothesKind[])Enum.GetValues(typeof(ClothesKind)));
 		}
 
 		/// <summary>
@@ -544,43 +544,27 @@ namespace KK_HAutoSets
 		}
 
 		/// <summary>
-		/// Toggle pantsu state between open, hanging, and removed. Ignores the fully dressed state.
+		/// Toggle through the states of the kinds of clothes provided in the parameter while keeping their states synchronized, using the state of the first cloth in the parameter as basis.
 		/// </summary>
-		private static void PantsuStrip()
+		/// <param name="clotheSelection">The list of clothes that should be affected.</param>
+		/// <param name="partialOnly">Whether to toggle through fully dressed and fully stripped states</param>
+		private void SetClothesStateRange(ClothesKind[] clotheSelection, bool partialOnly = false)
 		{
-			foreach (ChaControl female in lstFemale)
-			{
-				byte state = female.fileStatus.clothesState[(int)ClothesKind.shorts];
-				female.SetClothesState((byte)ClothesKind.shorts, (byte)((state % 3) + 1), false);
-			}
-		}
+			//In modes with two females, use flags.nowAnimationInfo.id to determine which girl's clothes should be affected.
+			int femaleIndex = (flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.sonyu3P) ? flags.nowAnimationInfo.id % 2 : 0;
 
-		/// <summary>
-		/// Toggle through full, opened, and nude states of all clothes based on the condition of the top cloth
-		/// </summary>
-		private void SetAllClothesStateNext()
-		{
-			int num = Enum.GetNames(typeof(ClothesKind)).Length;
+			//Trigger the next state of the first cloth provided by the parameters, then use its state to synchronize other clothes in the parameter.
+			//  If partialOnly is true, only toggle between the two paritally stripped states
+			byte state = lstFemale[femaleIndex].fileStatus.clothesState[(int)clotheSelection[0]];
+			if (partialOnly)
+				lstFemale[femaleIndex].SetClothesState((int)clotheSelection[0], (byte)((state % 2) + 1), false);
+			else
+				lstFemale[femaleIndex].SetClothesStateNext((int)clotheSelection[0]);
 
-			foreach (ChaControl female in lstFemale)
-			{
-				switch (female.fileStatus.clothesState[(int)ClothesKind.top])
-				{
-					case (int)ClothesState.Full:
-						female.SetClothesStateAll((int)ClothesState.Open1);
-						break;
+			state = lstFemale[femaleIndex].fileStatus.clothesState[(int)clotheSelection[0]];
 
-					case (int)ClothesState.Open1:
-					case (int)ClothesState.Open2:
-						female.SetClothesStateAll((int)ClothesState.Nude);
-						break;
-
-					case (int)ClothesState.Nude:
-					default:
-						female.SetClothesStateAll((int)ClothesState.Full);
-						break;
-				}
-			}
+			for (int i = 1; i < clotheSelection.Length; i++)
+				lstFemale[femaleIndex].SetClothesState((int)clotheSelection[i], state, next: false);
 		}
 
 		private enum ClothesState
