@@ -91,9 +91,13 @@ namespace KK_HAutoSets
 		[Description("Toggle between a fully stripped and a partially stripped pantsu. \n(You would not be able to fully dress the pantsu with this shortcut)")]
 		public static SavedKeyboardShortcut PantsuStripKey { get; private set; }
 
-		[DisplayName("Toggle All Clothes")]
-		[Description("Toggle through states of all clothes of all females")]
-		public static SavedKeyboardShortcut ClothesToggleKey { get; private set; }
+		[DisplayName("Toggle Top Clothes")]
+		[Description("Toggle through states of top clothes of the main female, including top and bra.")]
+		public static SavedKeyboardShortcut TopClothesToggleKey { get; private set; }
+
+		[DisplayName("Toggle Bottom Clothes")]
+		[Description("Toggle through states of bottom cloth (skirt, pants...etc) of the main female.")]
+		public static SavedKeyboardShortcut BottomClothesToggleKey { get; private set; }
 
 		[DisplayName("Insert Without Asking")]
 		[Description("Insert male genital without asking for permission")]
@@ -167,7 +171,8 @@ namespace KK_HAutoSets
 			SubAccToggleKey = new SavedKeyboardShortcut(nameof(SubAccToggleKey), this, new KeyboardShortcut(KeyCode.None));
 			TriggerVoiceKey = new SavedKeyboardShortcut(nameof(TriggerVoiceKey), this, new KeyboardShortcut(KeyCode.None));
 			PantsuStripKey = new SavedKeyboardShortcut(nameof(PantsuStripKey), this, new KeyboardShortcut(KeyCode.None));
-			ClothesToggleKey = new SavedKeyboardShortcut(nameof(ClothesToggleKey), this, new KeyboardShortcut(KeyCode.None));
+			TopClothesToggleKey = new SavedKeyboardShortcut(nameof(TopClothesToggleKey), this, new KeyboardShortcut(KeyCode.None));
+			BottomClothesToggleKey = new SavedKeyboardShortcut(nameof(BottomClothesToggleKey), this, new KeyboardShortcut(KeyCode.None));
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
@@ -196,8 +201,10 @@ namespace KK_HAutoSets
 				PlayVoice();
 			else if (Input.GetKeyDown(PantsuStripKey.Value.MainKey) && PantsuStripKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				SetClothesStateRange(new ClothesKind[] { ClothesKind.shorts }, true);
-			else if (Input.GetKeyDown(ClothesToggleKey.Value.MainKey) && ClothesToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
-				SetClothesStateRange((ClothesKind[])Enum.GetValues(typeof(ClothesKind)));
+			else if (Input.GetKeyDown(TopClothesToggleKey.Value.MainKey) && TopClothesToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				SetClothesStateRange(new ClothesKind[] { ClothesKind.top, ClothesKind.bra });
+			else if (Input.GetKeyDown(BottomClothesToggleKey.Value.MainKey) && BottomClothesToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
+				SetClothesStateRange(new ClothesKind[] { ClothesKind.bot });
 		}
 
 		/// <summary>
