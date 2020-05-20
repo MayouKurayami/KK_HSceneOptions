@@ -386,7 +386,8 @@ namespace KK_HAutoSets
 
 		private void ToggleMainGirlAccessories(int category)
 		{
-			ChaControl mainFemale = lstFemale[flags.nowAnimationInfo.id % 2];
+			//In modes with two females, use flags.nowAnimationInfo.id to determine which girl's accessories should be affected.
+			ChaControl mainFemale = lstFemale[(flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.sonyu3P) ? flags.nowAnimationInfo.id % 2 : 0];
 			bool currentStatus = false;
 
 			for (int i = 0; i < mainFemale.nowCoordinate.accessory.parts.Length; i++)
