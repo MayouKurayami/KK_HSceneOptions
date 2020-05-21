@@ -21,7 +21,7 @@ namespace KK_HAutoSets
 		public const string GUID = "MK.KK_HAutoSets";
 		public const string PluginName = "HAutoSets";
 		public const string AssembName = "KK_HAutoSets";
-		public const string Version = "1.3.0";
+		public const string Version = "2.0.0";
 
 		internal static bool isVR;
 
@@ -87,16 +87,16 @@ namespace KK_HAutoSets
 		[Description("Press this key to manually cum outside with the specified amount of time in precum")]
 		public static SavedKeyboardShortcut OrgasmOutsideKey { get; private set; }
 
-		[DisplayName("Pantsu Stipped/Half Stripped Toggle")]
+		[DisplayName("Toggle Pantsu Stipped/Half Stripped")]
 		[Description("Toggle between a fully stripped and a partially stripped pantsu. \n(You would not be able to fully dress the pantsu with this shortcut)")]
 		public static SavedKeyboardShortcut PantsuStripKey { get; private set; }
 
 		[DisplayName("Toggle Top Clothes")]
-		[Description("Toggle through states of top clothes of the main female, including top and bra.")]
+		[Description("Toggle through states of the top clothes of the main female, including top and bra.")]
 		public static SavedKeyboardShortcut TopClothesToggleKey { get; private set; }
 
 		[DisplayName("Toggle Bottom Clothes")]
-		[Description("Toggle through states of bottom cloth (skirt, pants...etc) of the main female.")]
+		[Description("Toggle through states of the bottom cloth (skirt, pants...etc) of the main female.")]
 		public static SavedKeyboardShortcut BottomClothesToggleKey { get; private set; }
 
 		[DisplayName("Insert Without Asking")]
@@ -107,20 +107,20 @@ namespace KK_HAutoSets
 		[Description("Insert male genital after female speech")]
 		public static SavedKeyboardShortcut InsertWaitKey { get; private set; }
 
-		[DisplayName("Swallow Shortcut")]
-		[Description("Shortcut key to make female swallow after blowjob")]
+		[DisplayName("Swallow")]
+		[Description("Press this key to make female swallow after blowjob")]
 		public static SavedKeyboardShortcut SwallowKey { get; private set; }
 
-		[DisplayName("Spit Out Shortcut")]
-		[Description("Shortcut key to make female spit out after blowjob")]
+		[DisplayName("Spit Out")]
+		[Description("Press this key to make female spit out after blowjob")]
 		public static SavedKeyboardShortcut SpitKey { get; private set; }
 
 		[DisplayName("Toggle Sub-Accessories")]
-		[Description("Shortcut to toggle the display of sub-accessories")]
+		[Description("Toggle the display of sub-accessories")]
 		public static SavedKeyboardShortcut SubAccToggleKey { get; private set; }
 
 		[DisplayName("Trigger Speech")]
-		[Description("Trigger a random voice line depending on the excitement gauge")]
+		[Description("Trigger a random voice line depending on the current context")]
 		public static SavedKeyboardShortcut TriggerVoiceKey { get; private set; }
 
 
