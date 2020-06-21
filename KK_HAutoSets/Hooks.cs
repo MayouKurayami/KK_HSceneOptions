@@ -138,5 +138,14 @@ namespace KK_HAutoSets
 
 			return true;
 		}
+
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
+		public static void VoiceProcPost(bool __result)
+		{
+			if (__result && HAutoSets.AutoVoiceTime.Value > HAutoSets.voiceMinInterval)
+				HAutoSets.SetVoiceTimer(2f);
+		}
 	}
 }

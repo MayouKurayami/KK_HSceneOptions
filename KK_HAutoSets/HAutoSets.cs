@@ -22,6 +22,7 @@ namespace KK_HAutoSets
 		public const string PluginName = "HAutoSets";
 		public const string AssembName = "KK_HAutoSets";
 		public const string Version = "2.0.0";
+		internal const float voiceMinInterval = 7f;
 
 		internal static bool isVR;
 
@@ -34,6 +35,7 @@ namespace KK_HAutoSets
 
 		internal static bool malePresent;
 		internal static bool forceIdleVoice;
+		private static float voiceTimer = 0;
 
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////
@@ -147,6 +149,11 @@ namespace KK_HAutoSets
 		[Description("When orgasm is triggered via the keyboard shortcut, animation will forcibly exit precum and enter orgasm after this many seconds. \nSet to 0 to disable this.")]
 		public static ConfigWrapper<float> PrecumTimer { get; private set; }
 
+		[DisplayName("Auto Voice Time")]
+		[Description("Sets the frequency at which female will randomly speak. From roughly 7 to 60 seconds.\nSet to 0% to disable this feature.")]
+		[AcceptableValueRange(voiceMinInterval, 60f, true)]
+		public static ConfigWrapper<float> AutoVoiceTime { get; private set; }
+
 		private void Start()
 		{
 			LockFemaleGauge = new ConfigWrapper<bool>(nameof(LockFemaleGauge), this, false);
@@ -160,6 +167,7 @@ namespace KK_HAutoSets
 			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
 			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
 			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
+			AutoVoiceTime = new ConfigWrapper<float>(nameof(AutoVoiceTime), this, voiceMinInterval);
 
 			OLoopKey = new SavedKeyboardShortcut(nameof(OLoopKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmInsideKey = new SavedKeyboardShortcut(nameof(OrgasmInsideKey), this, new KeyboardShortcut(KeyCode.None));
@@ -180,6 +188,9 @@ namespace KK_HAutoSets
 
 			if (isVR = Application.dataPath.EndsWith("KoikatuVR_Data"))
 				harmony.PatchAll(typeof(VRHooks));
+
+			if (AutoVoiceTime.Value > voiceMinInterval)
+				SetVoiceTimer(2f);
 		}		
 
 		private void Update()
@@ -200,6 +211,18 @@ namespace KK_HAutoSets
 				ToggleMainGirlAccessories(category: 1);
 			if (Input.GetKeyDown(TriggerVoiceKey.Value.MainKey) && TriggerVoiceKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				PlayVoice();
+			else if (AutoVoiceTime.Value > voiceMinInterval)
+			{
+				voiceTimer -= Time.deltaTime;
+
+				if (voiceTimer <= 0)
+				{
+					PlayVoice();
+					SetVoiceTimer(2f);
+				}
+					
+			}
+
 			if (Input.GetKeyDown(PantsuStripKey.Value.MainKey) && PantsuStripKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				SetClothesStateRange(new ClothesKind[] { ClothesKind.shorts }, true);
 			if (Input.GetKeyDown(TopClothesToggleKey.Value.MainKey) && TopClothesToggleKey.Value.Modifiers.All(x => Input.GetKey(x)))
@@ -591,6 +614,12 @@ namespace KK_HAutoSets
 
 			for (int i = 1; i < clotheSelection.Length; i++)
 				lstFemale[femaleIndex].SetClothesState((int)clotheSelection[i], state, next: false);
+		}
+
+
+		internal static void SetVoiceTimer(float deviation)
+		{
+			voiceTimer = UnityEngine.Random.Range(AutoVoiceTime.Value - deviation, AutoVoiceTime.Value + deviation);
 		}
 
 		private enum ClothesState
