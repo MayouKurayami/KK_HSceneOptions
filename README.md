@@ -3,6 +3,8 @@
 
 
 ## Prerequisites  
+- Afterschool DLC  
+- Darkness DLC  
 - BepInEx 4 and above  
 
 
@@ -15,12 +17,14 @@ This is a BepInEx 4 plugin, to run it with BepInEx 5 you'd need [BepInEx 4 Patch
 ## Configurations
 Configurations are located in *config.ini* in the BepInEx root folder, under section **[MK.KK_HAutoSets]**.  
 
-**It is recommended to adjust the configs via the in-game plugin settings page instead of directly editing the config file. Press *F1* when not in VR to access the plugin settings at the upper right of the screen.**  
+**It is recommended to adjust the configs via the in-game plugin settings page instead of directly editing the config file.  
+Press *F1* when not in VR to access the plugin settings at the upper right of the screen.**  
 ![](https://github.com/MayouKurayami/KK_HAutoSets/blob/master/images/HautoSets_settings.png)  
 
-### Miscellaneous Settings  
 
 - **Auto equip sub-accessories (SubAccessories)** - Auto equip sub-accessories at the start of H **(Default: false)**  
+
+- **Auto Voice Time (AutoVoiceTime)** - Sets the frequency at which the female will randomly speak. From roughly 7 to 60 seconds. Set to the lowest value to disable this feature (female will speak at original frequency).
 
 - **Disable Hiding of Male Body When Groping (DisableHideBody)** - If enabled, the male body will not be hidden when touching the girl during sex or service. Enable this if you don't want the male body suddenly disappearing when you touch the girl **(Default: false)**  
 
@@ -29,6 +33,11 @@ Configurations are located in *config.ini* in the BepInEx root folder, under sec
 - **Hide shadow casted by male body (HideMaleShadow)** - Hide shadow casted by male body. Very useful for POV view or VR. **(Default: false)**  
 
 - **Precum Timer** - When orgasm is triggered **via the keyboard shortcut**, animation will forcibly exit precum and enter orgasm after this many seconds. Set to 0 to disable this **(Default: 0)**  
+
+### Official VR  
+
+- **Reset Camera At Position Change (VRResetCamera)** - Resets the camera back to the male's head when switching to a different position in official VR. **(Default: True)**  
+
 
 ### Excitement Gauge  
 
@@ -71,7 +80,11 @@ Configurations are located in *config.ini* in the BepInEx root folder, under sec
 <br>
 
 ## Notes and Limitations  
-- Works in the official VR as well.
+- Unknown compatibility with Koikatsu Party (Steam release)  
+
+- Unknown compatibility with kPlug
+
+- Works in the official VR as well.  
 
 ## Legal  
 Copyright (C) 2020  MayouKurayami
