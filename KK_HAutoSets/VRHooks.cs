@@ -42,5 +42,13 @@ namespace KK_HAutoSets
 		{
 			HAutoSets.GaugeLimiter();
 		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(VRHScene), "ChangeAnimator")]
+		public static void ChangeAnimatorPrefix(ref bool _isForceCameraReset)
+		{
+			if (HAutoSets.VRResetCamera.Value)
+				_isForceCameraReset = true;
+		}
 	}
 }

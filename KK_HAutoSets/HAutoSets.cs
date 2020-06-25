@@ -154,6 +154,14 @@ namespace KK_HAutoSets
 		[AcceptableValueRange(voiceMinInterval, 60f, true)]
 		public static ConfigWrapper<float> AutoVoiceTime { get; private set; }
 
+		/// 
+		/////////////////// VR //////////////////////////
+		/// 
+		[Category("Official VR")]
+		[DisplayName("Reset Camera At Position Change")]
+		[Description("Resets the camera back to the male's head when switching to a different position in official VR.")]
+		public static ConfigWrapper<bool> VRResetCamera { get; private set; }
+
 		private void Start()
 		{
 			LockFemaleGauge = new ConfigWrapper<bool>(nameof(LockFemaleGauge), this, false);
@@ -181,6 +189,8 @@ namespace KK_HAutoSets
 			PantsuStripKey = new SavedKeyboardShortcut(nameof(PantsuStripKey), this, new KeyboardShortcut(KeyCode.None));
 			TopClothesToggleKey = new SavedKeyboardShortcut(nameof(TopClothesToggleKey), this, new KeyboardShortcut(KeyCode.None));
 			BottomClothesToggleKey = new SavedKeyboardShortcut(nameof(BottomClothesToggleKey), this, new KeyboardShortcut(KeyCode.None));
+
+			VRResetCamera = new ConfigWrapper<bool>(nameof(VRResetCamera), this, true);
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
