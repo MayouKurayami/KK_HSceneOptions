@@ -23,6 +23,7 @@ namespace KK_HAutoSets
 		public const string AssembName = "KK_HAutoSets";
 		public const string Version = "2.0.3";
 		internal const float voiceMinInterval = 7f;
+		internal const float voiceMaxInterval = 60f;
 
 		internal static bool isVR;
 
@@ -151,7 +152,7 @@ namespace KK_HAutoSets
 
 		[DisplayName("Auto Voice Time")]
 		[Description("Sets the frequency at which female will randomly speak. From roughly 7 to 60 seconds.\nSet to 0% to disable this feature.")]
-		[AcceptableValueRange(voiceMinInterval, 60f, true)]
+		[AcceptableValueRange(voiceMinInterval, voiceMaxInterval, true)]
 		public static ConfigWrapper<float> AutoVoiceTime { get; private set; }
 
 		/// 
