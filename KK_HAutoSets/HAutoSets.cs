@@ -630,7 +630,7 @@ namespace KK_HAutoSets
 
 		internal static void SetVoiceTimer(float deviation)
 		{
-			voiceTimer = UnityEngine.Random.Range(AutoVoiceTime.Value - deviation, AutoVoiceTime.Value + deviation);
+			voiceTimer = Math.Max(voiceMinInterval, UnityEngine.Random.Range(AutoVoiceTime.Value - deviation, AutoVoiceTime.Value + deviation));
 		}
 
 		private enum ClothesState
