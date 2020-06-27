@@ -200,9 +200,6 @@ namespace KK_HAutoSets
 
 			if (isVR = Application.dataPath.EndsWith("KoikatuVR_Data"))
 				harmony.PatchAll(typeof(VRHooks));
-
-			if (AutoVoiceTime.Value > voiceMinInterval)
-				SetVoiceTimer(2f);
 		}		
 
 		private void Update()

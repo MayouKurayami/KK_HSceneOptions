@@ -35,6 +35,9 @@ namespace KK_HAutoSets
 			HAutoSets.LockGaugesAction(hSprite);
 			HAutoSets.HideShadow(males, females);
 
+			if (HAutoSets.AutoVoiceTime.Value > HAutoSets.voiceMinInterval)
+				HAutoSets.SetVoiceTimer(2f);
+
 			__instance.gameObject.AddComponent<AnimationToggle>();
 		}
 
