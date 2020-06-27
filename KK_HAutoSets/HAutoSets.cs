@@ -36,7 +36,7 @@ namespace KK_HAutoSets
 
 		internal static bool malePresent;
 		internal static bool forceIdleVoice;
-		private static float voiceTimer = 0;
+		internal static float voiceTimer = 0;
 
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////

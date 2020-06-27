@@ -107,6 +107,11 @@ namespace KK_HAutoSets
 				__result = true;
 				return false;
 			}
+			else if (HAutoSets.voiceTimer > 0)
+			{
+				__result = false;
+				return false;
+			}
 
 			return true;
 		}
@@ -121,6 +126,11 @@ namespace KK_HAutoSets
 				__result = true;
 				return false;
 			}
+			else if (HAutoSets.voiceTimer > 0)
+			{
+				__result = false;
+				return false;
+			}
 
 			return true;
 		}
@@ -133,6 +143,11 @@ namespace KK_HAutoSets
 			if (HAutoSets.forceIdleVoice)
 			{
 				__result = true;
+				return false;
+			}
+			else if (HAutoSets.voiceTimer > 0)
+			{
+				__result = false;
 				return false;
 			}
 
