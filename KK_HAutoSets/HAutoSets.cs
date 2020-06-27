@@ -150,8 +150,9 @@ namespace KK_HAutoSets
 		[Description("When orgasm is triggered via the keyboard shortcut, animation will forcibly exit precum and enter orgasm after this many seconds. \nSet to 0 to disable this.")]
 		public static ConfigWrapper<float> PrecumTimer { get; private set; }
 
-		[DisplayName("Auto Voice Time")]
-		[Description("Sets the frequency at which female will randomly speak. From roughly 7 to 60 seconds.\nSet to 0% to disable this feature.")]
+		[DisplayName("Auto Voice Time Interval")]
+		[Description("Sets the time interval at which the girl will randomly speak. \nThe lower the value the more frequent the girl would speak. From roughly 7 to 60 seconds." +
+			"\nSet to 0% to disable this feature and return to vanilla behavior. \nSet to 100% to prevent the girl from speaking at all at idle (she would still speak during events such as insertion)")]
 		[AcceptableValueRange(voiceMinInterval, voiceMaxInterval, true)]
 		public static ConfigWrapper<float> AutoVoiceTime { get; private set; }
 
@@ -222,7 +223,7 @@ namespace KK_HAutoSets
 				ToggleMainGirlAccessories(category: 1);
 			if (Input.GetKeyDown(TriggerVoiceKey.Value.MainKey) && TriggerVoiceKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				PlayVoice();
-			else if (AutoVoiceTime.Value > voiceMinInterval)
+			else if (AutoVoiceTime.Value > voiceMinInterval && AutoVoiceTime.Value < voiceMaxInterval)
 			{
 				voiceTimer -= Time.deltaTime;
 
