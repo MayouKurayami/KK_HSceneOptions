@@ -184,6 +184,7 @@ namespace KK_HAutoSets
 			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
 			AutoVoice = new ConfigWrapper<SpeechMode>(nameof(AutoVoice), this, SpeechMode.Disabled);
 			AutoVoiceTime = new ConfigWrapper<float>(nameof(AutoVoiceTime), this, 20f);
+			AutoVoiceTime.SettingChanged += (sender, args) => { SetVoiceTimer(2f); };
 
 			OLoopKey = new SavedKeyboardShortcut(nameof(OLoopKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmInsideKey = new SavedKeyboardShortcut(nameof(OrgasmInsideKey), this, new KeyboardShortcut(KeyCode.None));
