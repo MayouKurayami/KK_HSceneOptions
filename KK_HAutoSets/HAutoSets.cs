@@ -36,7 +36,7 @@ namespace KK_HAutoSets
 
 		internal static bool malePresent;
 		internal static bool forceIdleVoice;
-		internal static float voiceTimer = 0;
+		internal static float voiceTimer = voiceMinInterval;
 
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////
@@ -150,10 +150,15 @@ namespace KK_HAutoSets
 		[Description("When orgasm is triggered via the keyboard shortcut, animation will forcibly exit precum and enter orgasm after this many seconds. \nSet to 0 to disable this.")]
 		public static ConfigWrapper<float> PrecumTimer { get; private set; }
 
-		[DisplayName("Auto Voice Time Interval")]
-		[Description("Sets the time interval at which the girl will randomly speak. \nThe lower the value the more frequent the girl would speak. From roughly 8 to 60 seconds." +
-			"\nSet to 0% to disable this feature and return to vanilla behavior. \nSet to 100% to prevent the girl from speaking at all at idle (she would still speak during events such as insertion)")]
-		[AcceptableValueRange(voiceMinInterval, voiceMaxInterval, true)]
+		[DisplayName("Speech Mode")]
+		[Description("Set to Based on Timer to automatically trigger speech at set interval" +
+			"\n\nSet to Mute Idle Speech to prevent the girl from speaking at all during idle (she would still speak during events such as insertion)" +
+			"\n\nSet to Default Behavior to disable this feature and return to vanilla behavior")]
+		public static ConfigWrapper<SpeechMode> AutoVoice { get; private set; }
+
+		[DisplayName("Speech Timer  (Effective only if Speech Mode is set to Based on Timer)")]
+		[Description("Sets the time interval at which the girl will randomly speak")]
+		[AcceptableValueRange(voiceMinInterval, voiceMaxInterval, false)]
 		public static ConfigWrapper<float> AutoVoiceTime { get; private set; }
 
 		/// 
@@ -177,7 +182,8 @@ namespace KK_HAutoSets
 			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
 			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
 			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
-			AutoVoiceTime = new ConfigWrapper<float>(nameof(AutoVoiceTime), this, voiceMinInterval);
+			AutoVoice = new ConfigWrapper<SpeechMode>(nameof(AutoVoice), this, SpeechMode.Disabled);
+			AutoVoiceTime = new ConfigWrapper<float>(nameof(AutoVoiceTime), this, 20f);
 
 			OLoopKey = new SavedKeyboardShortcut(nameof(OLoopKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmInsideKey = new SavedKeyboardShortcut(nameof(OrgasmInsideKey), this, new KeyboardShortcut(KeyCode.None));
@@ -220,7 +226,7 @@ namespace KK_HAutoSets
 				ToggleMainGirlAccessories(category: 1);
 			if (Input.GetKeyDown(TriggerVoiceKey.Value.MainKey) && TriggerVoiceKey.Value.Modifiers.All(x => Input.GetKey(x)))
 				PlayVoice();
-			else if (AutoVoiceTime.Value > voiceMinInterval && AutoVoiceTime.Value < voiceMaxInterval)
+			else if (AutoVoice.Value == SpeechMode.Timer)
 			{
 				voiceTimer -= Time.deltaTime;
 
@@ -637,6 +643,16 @@ namespace KK_HAutoSets
 			Open1,
 			Open2,
 			Nude
+		}
+
+		public enum SpeechMode
+		{
+			[Description("Based on Timer")]
+			Timer,
+			[Description("Mute Idle Speech")]
+			MuteIdle,
+			[Description("Default Behavior")]
+			Disabled
 		}
 	}
 }

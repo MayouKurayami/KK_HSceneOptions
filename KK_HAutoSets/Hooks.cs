@@ -35,7 +35,7 @@ namespace KK_HAutoSets
 			HAutoSets.LockGaugesAction(hSprite);
 			HAutoSets.HideShadow(males, females);
 
-			if (HAutoSets.AutoVoiceTime.Value > HAutoSets.voiceMinInterval)
+			if (HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.Timer)
 				HAutoSets.SetVoiceTimer(2f);
 
 			__instance.gameObject.AddComponent<AnimationToggle>();
@@ -110,7 +110,10 @@ namespace KK_HAutoSets
 				__result = true;
 				return false;
 			}
-			else if (HAutoSets.voiceTimer > 0)
+			//If speech control is not disabled and timer has a positive value, 
+			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
+			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
+			else if (HAutoSets.voiceTimer > 0 && HAutoSets.AutoVoice.Value != HAutoSets.SpeechMode.Disabled)
 			{
 				__result = false;
 				return false;
@@ -129,7 +132,10 @@ namespace KK_HAutoSets
 				__result = true;
 				return false;
 			}
-			else if (HAutoSets.voiceTimer > 0)
+			//If speech control is not disabled and timer has a positive value, 
+			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
+			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
+			else if (HAutoSets.voiceTimer > 0 && HAutoSets.AutoVoice.Value != HAutoSets.SpeechMode.Disabled)
 			{
 				__result = false;
 				return false;
@@ -148,7 +154,10 @@ namespace KK_HAutoSets
 				__result = true;
 				return false;
 			}
-			else if (HAutoSets.voiceTimer > 0)
+			//If speech control is not disabled and timer has a positive value, 
+			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
+			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
+			else if (HAutoSets.voiceTimer > 0 && HAutoSets.AutoVoice.Value != HAutoSets.SpeechMode.Disabled)
 			{
 				__result = false;
 				return false;
@@ -162,7 +171,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
 		public static void VoiceProcPost(bool __result)
 		{
-			if (__result && HAutoSets.AutoVoiceTime.Value > HAutoSets.voiceMinInterval)
+			if (__result && HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.Timer)
 				HAutoSets.SetVoiceTimer(2f);
 		}
 	}
