@@ -166,6 +166,19 @@ namespace KK_HAutoSets
 			return true;
 		}
 
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
+		public static bool VoiceProcPre(ref bool __result)
+		{
+			if (HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.MuteAll && !HAutoSets.forceIdleVoice)
+			{
+				__result = false;
+				return false;
+			}
+			else
+				return true;
+		}
+
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]

@@ -454,6 +454,10 @@ namespace KK_HAutoSets
 		/// </summary>
 		private void PlayVoice()
 		{
+			//Set the flag used by hooks to force idle voice line playback
+			StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
+
+			//Take care of singular/edge cases
 			if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
 			{
 				//Take care of edge cases where there would be no idle voice lines by satifying the conditions for them to be played,
@@ -478,11 +482,9 @@ namespace KK_HAutoSets
 						, HFlag.FinishKind.outside));
 					}
 				}
-				//Set the flag used by hooks to force idle voice line playback
+
 				//Set 70PercentageVoicePlay flag to false to allow idle voice to proc when excitement gauge is over 70.
 				//If both male and female gauges are over 70, randomly allow either one to play
-				StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
-
 				if (flags.gaugeMale >= 70f && flags.gaugeFemale >= 70f)
 				{
 					int maleORFemale = UnityEngine.Random.Range(0, 2);
@@ -530,11 +532,6 @@ namespace KK_HAutoSets
 					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 10;
 				else if (flags.nowAnimStateName == "Vomit_A")
 					flags.voice.playVoices[voiceFlagIndex] = voiceIdBase + 11;
-				//outside of the above animations, we should be able to proc idle voice with the following
-				else
-				{
-					StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
-				}
 			}
 			else if (flags.mode == HFlag.EMode.aibu)
 			{
@@ -575,8 +572,6 @@ namespace KK_HAutoSets
 				//Proc a fixed line if after orgasm, or use the idle line for all other situations.
 				else if (flags.nowAnimStateName == "Orgasm_A")
 					flags.voice.playVoices[0] = 143;
-				else
-					StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
 			}
 			else if (flags.mode == HFlag.EMode.lesbian || flags.mode == HFlag.EMode.masturbation)
 			{
@@ -600,12 +595,7 @@ namespace KK_HAutoSets
 				// If there are two females, then proc either 606 for the first female, or 605 for the second female. (There are no line 605 for the first female, or 606 for the second)
 				else if (flags.nowAnimStateName.Contains("Orgasm_"))
 					flags.voice.playVoices[voiceFlagIndex] = voicePattern[4] - voiceFlagIndex;
-			}
-			//If all other conditions are not met, proc the idle line just in case.
-			else
-			{
-				StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
-			}				
+			}			
 		}
 
 		/// <summary>
@@ -648,12 +638,14 @@ namespace KK_HAutoSets
 
 		public enum SpeechMode
 		{
+			[Description("Default Behavior")]
+			Disabled,
 			[Description("Based on Timer")]
 			Timer,
 			[Description("Mute Idle Speech")]
 			MuteIdle,
-			[Description("Default Behavior")]
-			Disabled
+			[Description("Mute All Spoken Lines")]
+			MuteAll
 		}
 	}
 }
