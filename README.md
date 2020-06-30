@@ -24,8 +24,6 @@ Press *F1* when not in VR to access the plugin settings at the upper right of th
 
 - **Auto equip sub-accessories (SubAccessories)** - Auto equip sub-accessories at the start of H **(Default: false)**  
 
-- **Auto Voice Time (AutoVoiceTime)** - Sets the frequency at which the female will randomly speak. From roughly 7 to 60 seconds. Set to the lowest value to disable this feature (female will speak at original frequency).
-
 - **Disable Hiding of Male Body When Groping (DisableHideBody)** - If enabled, the male body will not be hidden when touching the girl during sex or service. Enable this if you don't want the male body suddenly disappearing when you touch the girl **(Default: false)**  
 
 - **Hide shadow casted by female limbs and accessories (HideFemaleShadow)** - Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair **(Default: false)**  
@@ -33,6 +31,10 @@ Press *F1* when not in VR to access the plugin settings at the upper right of th
 - **Hide shadow casted by male body (HideMaleShadow)** - Hide shadow casted by male body. Very useful for POV view or VR. **(Default: false)**  
 
 - **Precum Timer** - When orgasm is triggered **via the keyboard shortcut**, animation will forcibly exit precum and enter orgasm after this many seconds. Set to 0 to disable this **(Default: 0)**  
+
+- **Speech Mode (AutoVoice)** - Configures how the plugin controls the female's speech. Set to *Based on Timer* to automatically trigger speech at set interval. Set to *Mute Idle Speech* to prevent the girl from speaking at all at idle (she would still speak during events such as insertion). Set to *Default Behavior* to disable this feature and return to vanilla behavior. **(Default: Disabled)**
+
+- **Speech Timer (AutoVoiceTime)** - Sets the time interval at which the girl will randomly speak, from roughly 8 to 60 seconds. ***This option is effective only if Speech Mode is set to Based on Timer*** **(Default: 20)**
 
 ### Official VR  
 
@@ -80,11 +82,12 @@ Press *F1* when not in VR to access the plugin settings at the upper right of th
 <br>
 
 ## Notes and Limitations  
+- Fully supports the official VR
+
 - Unknown compatibility with Koikatsu Party (Steam release)  
 
 - Unknown compatibility with kPlug
 
-- Works in the official VR as well.  
 
 ## Legal  
 Copyright (C) 2020  MayouKurayami
