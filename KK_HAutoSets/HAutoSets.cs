@@ -151,9 +151,10 @@ namespace KK_HAutoSets
 		public static ConfigWrapper<float> PrecumTimer { get; private set; }
 
 		[DisplayName("Speech Mode")]
-		[Description("Set to Based on Timer to automatically trigger speech at set interval" +
-			"\n\nSet to Mute Idle Speech to prevent the girl from speaking at all during idle (she would still speak during events such as insertion)" +
-			"\n\nSet to Default Behavior to disable this feature and return to vanilla behavior")]
+		[Description("Default Behavior: Disable this feature and return to vanilla behavior" +
+			"\n\nBased on Timer: Automatically trigger speech at set interval" +
+			"\n\nMute Idle Speech: Prevent the girl from speaking at all during idle (she would still speak during events such as insertion)" +
+			"\n\nMute All Spoken Lines: Mute all speech other than moans")]
 		public static ConfigWrapper<SpeechMode> AutoVoice { get; private set; }
 
 		[DisplayName("Speech Timer  (Effective only if Speech Mode is set to Based on Timer)")]
