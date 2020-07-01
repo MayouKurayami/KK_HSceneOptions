@@ -480,17 +480,25 @@ namespace KK_HAutoSets
 						bool oldValue = flags.voice.isAfterVoicePlay;
 						flags.voice.isAfterVoicePlay = targetValue;
 						return oldValue;
-					}
-					, false));
+					}, false));
 
-					if (flags.finish != HFlag.FinishKind.outside)
+					//Takes care of situations when guy pulls out after ejaculating inside
+					if (flags.finish != HFlag.FinishKind.outside && flags.nowAnimStateName.Contains("OUT"))
 					{
-						StartCoroutine(ToggleFlagSingleFrame(targetValue => {
-							HFlag.FinishKind oldValue = flags.finish;
-							flags.finish = targetValue;
-							return oldValue;
+						int femaleLeadIndex = flags.nowAnimationInfo.isFemaleInitiative ? 38 : 0;
+						int condomIndex = flags.isCondom ? 0 : 36;
+						switch (flags.mode)
+						{
+							case HFlag.EMode.sonyu:
+								flags.voice.playVoices[0] = 300 + condomIndex + femaleLeadIndex;
+								break;
+							case HFlag.EMode.sonyu3P:
+								flags.voice.playVoices[UnityEngine.Random.Range(0, 2)] = 800 + condomIndex + femaleLeadIndex;
+								break;
+							case HFlag.EMode.sonyu3PMMF:
+								flags.voice.playVoices[0] = 1000 + condomIndex;
+								break;
 						}
-						, HFlag.FinishKind.outside));
 					}
 				}
 				else
