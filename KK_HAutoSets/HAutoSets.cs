@@ -493,23 +493,24 @@ namespace KK_HAutoSets
 						, HFlag.FinishKind.outside));
 					}
 				}
-
-				//Set 70PercentageVoicePlay flag to false to allow idle voice to proc when excitement gauge is over 70.
-				//If both male and female gauges are over 70, randomly allow either one to play
-				if (flags.gaugeMale >= 70f && flags.gaugeFemale >= 70f)
-				{
-					int maleORFemale = UnityEngine.Random.Range(0, 2);
-					if (maleORFemale == 0)
-						flags.voice.isFemale70PercentageVoicePlay = false;
-					else
-						flags.voice.isMale70PercentageVoicePlay = false;
-				}
 				else
 				{
-					flags.voice.isFemale70PercentageVoicePlay = false;
-					flags.voice.isMale70PercentageVoicePlay = false;
-				}
-				
+					//Set 70PercentageVoicePlay flag to false to allow idle voice to proc when excitement gauge is over 70.
+					//If both male and female gauges are over 70, randomly allow either one to play
+					if (flags.gaugeMale >= 70f && flags.gaugeFemale >= 70f)
+					{
+						int maleORFemale = UnityEngine.Random.Range(0, 2);
+						if (maleORFemale == 0)
+							flags.voice.isFemale70PercentageVoicePlay = false;
+						else
+							flags.voice.isMale70PercentageVoicePlay = false;
+					}
+					else
+					{
+						flags.voice.isFemale70PercentageVoicePlay = false;
+						flags.voice.isMale70PercentageVoicePlay = false;
+					}
+				}		
 			}
 			else if (flags.mode == HFlag.EMode.houshi || flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.houshi3PMMF)
 			{
