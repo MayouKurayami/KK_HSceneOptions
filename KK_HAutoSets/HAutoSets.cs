@@ -237,7 +237,17 @@ namespace KK_HAutoSets
 					PlayVoice();
 					SetVoiceTimer(2f);
 				}
-					
+				
+				//In masturbation and lesbian modes, post orgasm cooldown only starts counting if no girl is speaking.
+				//When timer is set to low values, this behavior causes it to take forever for action to restart after orgasm.
+				//The below block circumvents this behavior by forcing the cooldown timer to keep increasing during post orgasm animation.
+				if (flags.nowAnimStateName == "Orgasm_B")
+				{
+					if (flags.mode == HFlag.EMode.masturbation)
+						flags.timeMasturbation.timeIdleCalc += Time.deltaTime;
+					else if (flags.mode == HFlag.EMode.lesbian)
+						flags.timeLesbian.timeIdleCalc += Time.deltaTime;
+				}
 			}
 
 			if (Input.GetKeyDown(PantsuStripKey.Value.MainKey) && PantsuStripKey.Value.Modifiers.All(x => Input.GetKey(x)))
