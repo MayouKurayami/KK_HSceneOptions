@@ -232,7 +232,7 @@ namespace KK_HAutoSets
 			{
 				voiceTimer -= Time.deltaTime;
 
-				if (voiceTimer <= 0)
+				if (voiceTimer <= 0 && voice.nowVoices[0].state < HVoiceCtrl.VoiceKind.startvoice && voice.nowVoices[1]?.state < HVoiceCtrl.VoiceKind.startvoice)
 				{
 					PlayVoice();
 					SetVoiceTimer(2f);
