@@ -515,7 +515,7 @@ namespace KK_HAutoSets
 			{
 				//Prepare variables to store the indexer values used to manually trigger voice with flags.voice.playVoices.
 				//houshi3P is the only mode with two females, and we see whether the flags.nowAnimationInfo.id is even or odd to determine which girl's voice should be triggered
-				int voiceFlagIndex = flags.mode == HFlag.EMode.houshi3P ? flags.nowAnimationInfo.id % 2 : 0;
+				int voiceFlagIndex = flags.mode == HFlag.EMode.houshi3P ? UnityEngine.Random.Range(0, 2) : 0;
 				int voiceIdBase = 198;
 				switch (flags.mode)
 				{
