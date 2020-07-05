@@ -21,7 +21,7 @@ namespace KK_HAutoSets
 		public const string GUID = "MK.KK_HAutoSets";
 		public const string PluginName = "HAutoSets";
 		public const string AssembName = "KK_HAutoSets";
-		public const string Version = "2.0.4";
+		public const string Version = "2.0.5";
 		internal const float voiceMinInterval = 3f;
 		internal const float voiceMaxInterval = 60f;
 
