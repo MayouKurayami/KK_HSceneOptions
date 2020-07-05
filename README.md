@@ -5,14 +5,13 @@
 ## Prerequisites  
 - Afterschool DLC  
 - Darkness DLC  
-- BepInEx 4 and above  
+- BepInEx 4 and above (to run it with BepInEx 5 you'd need [BepInEx 4 Patcher](https://github.com/BepInEx/BepInEx.BepInEx4Upgrader), which is included within the HF Patch)
 
 
 
 ## Installation  
-- Download the latest **KK_HAutoSets.dll** from [releases](https://github.com/MayouKurayami/KK_HAutoSets/releases).
-- Place **KK_HAutoSets.dll** in BepInEx root folder.  
-This is a BepInEx 4 plugin, to run it with BepInEx 5 you'd need [BepInEx 4 Patcher](https://github.com/BepInEx/BepInEx.BepInEx4Upgrader) (Included within HF Patch)
+Download [**KK_HAutoSets.zip** from the latest release](https://github.com/MayouKurayami/KK_HAutoSets/releases) then extract it into your game directory (where the game exe and BepInEx folder are located). Replace old files if asked. <br>
+(*KK_HAutoSets.dll* should end up in the root BepInEx directory as it's a BepInEx 4 plugin)
 
 ## Configurations
 Configurations are located in *config.ini* in the BepInEx root folder, under section **[MK.KK_HAutoSets]**.  
@@ -32,9 +31,14 @@ Press *F1* when not in VR to access the plugin settings at the upper right of th
 
 - **Precum Timer** - When orgasm is triggered **via the keyboard shortcut**, animation will forcibly exit precum and enter orgasm after this many seconds. Set to 0 to disable this **(Default: 0)**  
 
-- **Speech Mode (AutoVoice)** - Configures how the plugin controls the female's speech. Set to *Based on Timer* to automatically trigger speech at set interval. Set to *Mute Idle Speech* to prevent the girl from speaking at all at idle (she would still speak during events such as insertion). Set to *Default Behavior* to disable this feature and return to vanilla behavior. **(Default: Disabled)**
+- **Speech Mode (AutoVoice)** - Configures how the plugin controls the female's speech.
+  - *Default Behavior* - Disable this feature and return to vanilla behavior. **(Default)**
+  - *Based on Timer* - Automatically trigger speech at set interval.
+  - *Mute Idle Speech* - Prevent the girl from speaking at all at idle (she would still speak during events such as insertion).
+  - *Mute All Spoken Lines* - Mute all speech other than moans.  
 
-- **Speech Timer (AutoVoiceTime)** - Sets the time interval at which the girl will randomly speak, from roughly 8 to 60 seconds. ***This option is effective only if Speech Mode is set to Based on Timer*** **(Default: 20)**
+
+- **Speech Timer (AutoVoiceTime)** - Sets the time interval at which the girl will randomly speak, from roughly 3 to 60 seconds. ***This option is effective only if Speech Mode is set to Based on Timer*** **(Default: 20)**
 
 ### Official VR  
 
