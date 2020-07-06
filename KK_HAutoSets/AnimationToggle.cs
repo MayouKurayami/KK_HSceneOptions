@@ -88,52 +88,70 @@ namespace KK_HAutoSets
 			}
 		}
 
-		/// <summary>
-		/// Update proc field to reflect the current active H mode, and point loopProcDelegate to the correct LoopProc method in modes where it exists
-		/// </summary>
-		private static void UpdateProc()
+		private Type FindProc()
 		{
-			MethodInfo loopProcInfo;
-			Type procType = typeof(HSonyu);
-
 			switch (flags.mode)
 			{
 				case (HFlag.EMode.sonyu):
 					proc = lstProc.OfType<HSonyu>().FirstOrDefault();
-					procType = typeof(HSonyu);
-					break;
+					return typeof(HSonyu);
 				case (HFlag.EMode.houshi):
 					proc = lstProc.OfType<HHoushi>().FirstOrDefault();
-					procType = typeof(HHoushi);
-					break;
+					return typeof(HHoushi);
 				case (HFlag.EMode.houshi3P):
 					proc = lstProc.OfType<H3PHoushi>().FirstOrDefault();
-					procType = typeof(H3PHoushi);
-					break;
-				case (HFlag.EMode.houshi3PMMF):
-					proc = lstProc.OfType<H3PDarkHoushi>().FirstOrDefault();
-					procType = typeof(H3PDarkHoushi);
-					break;
+					return typeof(H3PHoushi);
 				case (HFlag.EMode.aibu):
 					proc = lstProc.OfType<HAibu>().FirstOrDefault();
-					break;
+					return typeof(HAibu);
 				case (HFlag.EMode.lesbian):
 					proc = lstProc.OfType<HLesbian>().FirstOrDefault();
-					break;
+					return typeof(HLesbian);
 				case (HFlag.EMode.masturbation):
 					proc = lstProc.OfType<HMasturbation>().FirstOrDefault();
-					break;
+					return typeof(HMasturbation);
 				case (HFlag.EMode.sonyu3P):
 					proc = lstProc.OfType<H3PSonyu>().FirstOrDefault();
-					procType = typeof(H3PSonyu);
-					break;
+					return typeof(H3PSonyu);
+				default:
+					return null;
+			}
+		}
+
+		private Type FindProcDarkness()
+		{
+			switch (flags.mode)
+			{
+				case (HFlag.EMode.houshi3PMMF):
+					proc = lstProc.OfType<H3PDarkHoushi>().FirstOrDefault();
+					return typeof(H3PDarkHoushi);
 				case (HFlag.EMode.sonyu3PMMF):
 					proc = lstProc.OfType<H3PDarkSonyu>().FirstOrDefault();
-					procType = typeof(H3PDarkSonyu);
-					break;
+					return typeof(H3PDarkSonyu);
 				default:
-					proc = lstProc.OfType<HSonyu>().FirstOrDefault();
-					break;
+					return null;
+			}
+		}
+
+		/// <summary>
+		/// Update proc field to reflect the current active H mode, and point loopProcDelegate to the correct LoopProc method in modes where it exists
+		/// </summary>
+		private void UpdateProc()
+		{
+			MethodInfo loopProcInfo;
+			Type procType = null;
+
+			procType = FindProc();
+
+			if (procType == null && Type.GetType("H3PDarkSonyu, Assembly-CSharp") != null)
+			{
+				procType = FindProcDarkness();
+			}
+
+			if (procType == null)
+			{
+				Destroy(this);
+				return;
 			}
 
 			if (flags.mode != HFlag.EMode.aibu && flags.mode != HFlag.EMode.lesbian && flags.mode != HFlag.EMode.masturbation)
