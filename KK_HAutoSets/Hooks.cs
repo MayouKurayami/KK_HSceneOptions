@@ -187,5 +187,21 @@ namespace KK_HAutoSets
 			if (__result && HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.Timer)
 				HAutoSets.SetVoiceTimer(2f);
 		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HSprite), "OnInsideClick")]
+		public static void OnInsideClickPost()
+		{
+			if (HAutoSets.PrecumTimerMode.Value != HAutoSets.PrecumMode.Keyboard && HAutoSets.PrecumTimer.Value > 0)
+				AnimationToggle.orgasmTimer = Time.time;
+		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HSprite), "OnOutsideClick")]
+		public static void OnOutsideClickPost()
+		{
+			if (HAutoSets.PrecumTimerMode.Value != HAutoSets.PrecumMode.Keyboard && HAutoSets.PrecumTimer.Value > 0)
+				AnimationToggle.orgasmTimer = Time.time;
+		}
 	}
 }

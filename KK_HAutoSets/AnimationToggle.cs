@@ -15,7 +15,7 @@ namespace KK_HAutoSets
 		internal static bool forceStopVoice;
 		private static string animationName = "";
 
-		private float orgasmTimer;
+		internal static float orgasmTimer;
 
 		private delegate bool LoopProc(bool _loop);
 		private static LoopProc loopProcDelegate;
@@ -205,7 +205,7 @@ namespace KK_HAutoSets
 
 			//Initiate timer if value is greater than 0 and male is present.
 			//No point in delaying orgasm when there is no male to sychronize to.
-			if (PrecumTimer.Value > 0 && malePresent)
+			if (PrecumTimerMode.Value != PrecumMode.GameMenu && PrecumTimer.Value > 0 && malePresent)
 				orgasmTimer = Time.time;
 		}
 
