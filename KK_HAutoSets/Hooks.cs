@@ -79,9 +79,9 @@ namespace KK_HAutoSets
 		/// </summary>
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(Voice), "IsVoiceCheck", new Type[] { typeof(Transform), typeof(bool) })]
-		public static bool IsVoiceCheckPre(ref bool __result, Transform voiceTrans)
+		public static bool IsVoiceCheckPre(ref bool __result)
 		{
-			if (AnimationToggle.forceStopVoice && (voiceTrans == HAutoSets.flags.transVoiceMouth[0] || voiceTrans == HAutoSets.flags.transVoiceMouth[1]))
+			if (AnimationToggle.forceStopVoice)
 			{
 				__result = false;
 				return false;
