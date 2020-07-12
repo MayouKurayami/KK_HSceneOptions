@@ -38,7 +38,7 @@ namespace KK_HAutoSets
 			if (HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.Timer)
 				HAutoSets.SetVoiceTimer(2f);
 
-			__instance.gameObject.AddComponent<AnimationToggle>();
+			HAutoSets.animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
 		}
 
 		[HarmonyPostfix]
@@ -192,16 +192,16 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HSprite), "OnInsideClick")]
 		public static void OnInsideClickPost()
 		{
-			if (HAutoSets.PrecumTimerMode.Value != HAutoSets.PrecumMode.Keyboard && HAutoSets.PrecumTimer.Value > 0)
-				AnimationToggle.orgasmTimer = Time.time;
+			if (HAutoSets.PrecumTimer.Value > 0)
+				HAutoSets.animationToggle.ManualOrgasm(inside: true);
 		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnOutsideClick")]
 		public static void OnOutsideClickPost()
 		{
-			if (HAutoSets.PrecumTimerMode.Value != HAutoSets.PrecumMode.Keyboard && HAutoSets.PrecumTimer.Value > 0)
-				AnimationToggle.orgasmTimer = Time.time;
+			if (HAutoSets.PrecumTimer.Value > 0)
+				HAutoSets.animationToggle.ManualOrgasm(inside: false);
 		}
 	}
 }

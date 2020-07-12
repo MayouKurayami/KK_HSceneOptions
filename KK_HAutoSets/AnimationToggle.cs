@@ -15,7 +15,7 @@ namespace KK_HAutoSets
 		internal static bool forceStopVoice;
 		private static string animationName = "";
 
-		internal static float orgasmTimer;
+		private float orgasmTimer;
 
 		private delegate bool LoopProc(bool _loop);
 		private static LoopProc loopProcDelegate;
@@ -173,7 +173,7 @@ namespace KK_HAutoSets
 		/// Manually start orgasm accordindg to current the condition and initialize cum countdown timer 
 		/// </summary>
 		/// <param name="inside">Whether the to cum inside or not</param>
-		private void ManualOrgasm(bool inside)
+		internal void ManualOrgasm(bool inside)
 		{
 			//In piston (intercourse) modes, set the cum click value to be processed by the game, 
 			//then set the voice state of all females to breath to allow the game to interrupt currently playing speech
@@ -205,7 +205,7 @@ namespace KK_HAutoSets
 
 			//Initiate timer if value is greater than 0 and male is present.
 			//No point in delaying orgasm when there is no male to sychronize to.
-			if (PrecumTimerMode.Value != PrecumMode.GameMenu && PrecumTimer.Value > 0 && malePresent)
+			if (PrecumTimer.Value > 0 && malePresent)
 				orgasmTimer = Time.time;
 		}
 

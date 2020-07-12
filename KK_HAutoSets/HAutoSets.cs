@@ -33,6 +33,7 @@ namespace KK_HAutoSets
 		internal static List<ChaControl> lstFemale;
 		internal static HVoiceCtrl voice;
 		internal static object[] hands = new object[2];
+		internal static AnimationToggle animationToggle;
 
 		internal static bool malePresent;
 		internal static bool forceIdleVoice;
@@ -146,12 +147,8 @@ namespace KK_HAutoSets
 		[Description("If enabled, the male body will not be hidden when touching the girl during sex or service")]
 		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
 
-		[DisplayName("Precum Mode")]
-		[Description("Choose when orgasm is controlled by the precum timer")]
-		public static ConfigWrapper<PrecumMode> PrecumTimerMode { get; private set; }
-
 		[DisplayName("Precum Timer")]
-		[Description("During orgasm, animation will forcibly exit precum and enter orgasm after this many seconds. \nSet to 0 to disable this.")]
+		[Description("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. \n\nSet to 0 to disable this.")]
 		public static ConfigWrapper<float> PrecumTimer { get; private set; }
 
 		[DisplayName("Speech Mode")]
@@ -187,7 +184,6 @@ namespace KK_HAutoSets
 			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
 			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
 			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
-			PrecumTimerMode = new ConfigWrapper<PrecumMode>(nameof(PrecumTimerMode), this, PrecumMode.All);
 			AutoVoice = new ConfigWrapper<SpeechMode>(nameof(AutoVoice), this, SpeechMode.Disabled);
 			AutoVoiceTime = new ConfigWrapper<float>(nameof(AutoVoiceTime), this, 20f);
 			AutoVoiceTime.SettingChanged += (sender, args) => { SetVoiceTimer(2f); };
@@ -671,15 +667,6 @@ namespace KK_HAutoSets
 			MuteIdle,
 			[Description("Mute All Spoken Lines")]
 			MuteAll
-		}
-
-		public enum PrecumMode
-		{
-			[Description("When initiated by keyboard shortcuts")]
-			Keyboard,
-			[Description("When initiated by the menu buttons")]
-			GameMenu,
-			All
 		}
 	}
 }

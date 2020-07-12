@@ -36,7 +36,7 @@ namespace KK_HAutoSets
 			if (HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.Timer)
 				HAutoSets.SetVoiceTimer(2f);
 
-			__instance.gameObject.AddComponent<AnimationToggle>();
+			HAutoSets.animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
 		}
 
 		[HarmonyPostfix]
