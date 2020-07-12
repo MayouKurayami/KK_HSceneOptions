@@ -148,8 +148,15 @@ namespace KK_HAutoSets
 		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
 
 		[DisplayName("Precum Timer")]
-		[Description("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. \n\nSet to 0 to disable this.")]
+		[AcceptableValueRange(0f, 15f, false)]
+		[Description("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. " +
+			"\n\nSet to 0 to disable this.")]
 		public static ConfigWrapper<float> PrecumTimer { get; private set; }
+
+		[DisplayName("Precum Timer Extension")]
+		[Description("Enable this to allow the precum timer to extend the precum animation even after female is done speaking. " +
+			"\nNote that the female will be completely silent after she is done speaking, so use this with discretion.")]
+		public static ConfigWrapper<bool> PrecumExtend { get; private set; }
 
 		[DisplayName("Speech Mode")]
 		[Description("Default Behavior: Disable this feature and return to vanilla behavior" +
@@ -184,6 +191,7 @@ namespace KK_HAutoSets
 			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
 			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
 			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
+			PrecumExtend = new ConfigWrapper<bool>(nameof(PrecumExtend), this, false);
 			AutoVoice = new ConfigWrapper<SpeechMode>(nameof(AutoVoice), this, SpeechMode.Disabled);
 			AutoVoiceTime = new ConfigWrapper<float>(nameof(AutoVoiceTime), this, 20f);
 			AutoVoiceTime.SettingChanged += (sender, args) => { SetVoiceTimer(2f); };

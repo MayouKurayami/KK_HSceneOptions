@@ -86,8 +86,15 @@ namespace KK_HAutoSets
 				__result = false;
 				return false;
 			}
+			else if (HAutoSets.PrecumExtend.Value && AnimationToggle.orgasmTimer > 0)
+			{
+				__result = true;
+				return false;
+			}
 			else
+			{
 				return true;
+			}			
 		}
 
 		/// <summary>

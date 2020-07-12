@@ -15,7 +15,7 @@ namespace KK_HAutoSets
 		internal static bool forceStopVoice;
 		private static string animationName = "";
 
-		private float orgasmTimer;
+		internal static float orgasmTimer;
 
 		private delegate bool LoopProc(bool _loop);
 		private static LoopProc loopProcDelegate;
