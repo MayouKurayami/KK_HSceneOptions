@@ -147,14 +147,14 @@ namespace KK_HAutoSets
 		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
 
 		[DisplayName("Precum Timer")]
-		[AcceptableValueRange(0f, 15f, false)]
+		[AcceptableValueRange(0f, 13f, false)]
 		[Description("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. " +
 			"\n\nSet to 0 to disable this.")]
 		public static ConfigWrapper<float> PrecumTimer { get; private set; }
 
 		[DisplayName("Precum Timer Extension")]
 		[Description("Enable this to allow the precum timer to extend the precum animation even after female is done speaking. " +
-			"\nNote that the female will be completely silent after she is done speaking, so use this with discretion.")]
+			"\n\nNote that the female will be completely silent after she is done speaking, so use this with discretion.")]
 		public static ConfigWrapper<bool> PrecumExtend { get; private set; }
 
 		[DisplayName("Speech Mode")]
