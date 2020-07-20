@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Harmony;
+using static KK_HAutoSets.HAutoSets;
 
 namespace KK_HAutoSets
 {
@@ -22,35 +22,35 @@ namespace KK_HAutoSets
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
 			};
 
-			HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
-			HAutoSets.flags = __instance.flags;
-			HAutoSets.lstFemale = females;
-			HAutoSets.voice = __instance.voice;
+			lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
+			flags = __instance.flags;
+			lstFemale = females;
+			voice = __instance.voice;
 
-			HAutoSets.EquipAllAccessories(females);
+			EquipAllAccessories(females);
 			foreach (HSprite sprite in hSprites)
-				HAutoSets.LockGaugesAction(sprite);
-		
-			HAutoSets.HideShadow(males, females);
+				LockGaugesAction(sprite);
 
-			if (HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.Timer)
-				HAutoSets.SetVoiceTimer(2f);
+			HideShadow(males, females);
 
-			HAutoSets.animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
+			if (AutoVoice.Value == SpeechMode.Timer)
+				SetVoiceTimer(2f);
+
+			animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
 		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(VRHScene), "LateUpdate")]
 		public static void VRHsceneLateUpdatePostfix()
 		{
-			HAutoSets.GaugeLimiter();
+			GaugeLimiter();
 		}
 
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(VRHScene), "ChangeAnimator")]
 		public static void ChangeAnimatorPrefix(ref bool _isForceCameraReset)
 		{
-			if (HAutoSets.VRResetCamera.Value)
+			if (VRResetCamera.Value)
 				_isForceCameraReset = true;
 		}
 	}

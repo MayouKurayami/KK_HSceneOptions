@@ -3,7 +3,7 @@ using Harmony;
 using UnityEngine;
 using Manager;
 using System;
-using System.Linq;
+using static KK_HAutoSets.HAutoSets;
 
 namespace KK_HAutoSets
 {
@@ -22,37 +22,37 @@ namespace KK_HAutoSets
 			{
 				(ChaControl)Traverse.Create(__instance).Field("male").GetValue(),
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
-			};		
+			};
 
-			HAutoSets.lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
-			HAutoSets.flags = __instance.flags;
-			HAutoSets.lstFemale = females;
-			HAutoSets.voice = __instance.voice;
-			HAutoSets.hands[0] = __instance.hand;
-			HAutoSets.hands[1] = __instance.hand1;
+			lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
+			flags = __instance.flags;
+			lstFemale = females;
+			voice = __instance.voice;
+			hands[0] = __instance.hand;
+			hands[1] = __instance.hand1;
 
-			HAutoSets.EquipAllAccessories(females);
-			HAutoSets.LockGaugesAction(hSprite);
-			HAutoSets.HideShadow(males, females);
+			EquipAllAccessories(females);
+			LockGaugesAction(hSprite);
+			HideShadow(males, females);
 
-			if (HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.Timer)
-				HAutoSets.SetVoiceTimer(2f);
+			if (AutoVoice.Value == SpeechMode.Timer)
+				SetVoiceTimer(2f);
 
-			HAutoSets.animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
+			animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
 		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSceneProc), "LateUpdate")]
 		public static void HSceneLateUpdatePostfix()
 		{
-			HAutoSets.GaugeLimiter();
+			GaugeLimiter();
 		}
 
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HActionBase), "IsBodyTouch")]
 		public static bool IsBodyTouchPre(bool __result)
 		{
-			if (HAutoSets.DisableHideBody.Value)
+			if (DisableHideBody.Value)
 			{
 				__result = false;
 				return false;
@@ -69,7 +69,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HVoiceCtrl), "BreathProc")]
 		public static void BreathProcPre(ref AnimatorStateInfo _ai)
 		{
-			if (HAutoSets.animationToggle.forceOLoop && HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
+			if (animationToggle.forceOLoop && flags.nowAnimStateName.Contains("OLoop"))
 				_ai = AnimationToggle.sLoopInfo;
 		}
 
@@ -81,12 +81,12 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(Voice), "IsVoiceCheck", new Type[] { typeof(Transform), typeof(bool) })]
 		public static bool IsVoiceCheckPre(ref bool __result)
 		{
-			if (HAutoSets.animationToggle.forceStopVoice)
+			if (animationToggle.forceStopVoice)
 			{
 				__result = false;
 				return false;
 			}
-			else if (HAutoSets.PrecumExtend.Value && HAutoSets.animationToggle.orgasmTimer > 0)
+			else if (PrecumExtend.Value && animationToggle.orgasmTimer > 0)
 			{
 				__result = true;
 				return false;
@@ -104,8 +104,8 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HActionBase), "SetPlay")]
 		public static void SetPlayPost()
 		{
-			if (HAutoSets.animationToggle)
-				HAutoSets.animationToggle.forceOLoop = false;
+			if (animationToggle)
+				animationToggle.forceOLoop = false;
 		}
 
 		//In sex modes, force the game to play idle voice line while forceIdleVoice is true
@@ -113,7 +113,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsSonyuIdleTime")]
 		public static bool IsSonyuIdleTimePre(ref bool __result)
 		{
-			if (HAutoSets.forceIdleVoice)
+			if (forceIdleVoice)
 			{
 				__result = true;
 				return false;
@@ -121,7 +121,7 @@ namespace KK_HAutoSets
 			//If speech control is not disabled and timer has a positive value, 
 			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
 			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
-			else if (HAutoSets.voiceTimer > 0 && HAutoSets.AutoVoice.Value != HAutoSets.SpeechMode.Disabled)
+			else if (voiceTimer > 0 && AutoVoice.Value != SpeechMode.Disabled)
 			{
 				__result = false;
 				return false;
@@ -135,7 +135,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsHoushiIdleTime")]
 		public static bool IsHoushiIdleTimePre(ref bool __result)
 		{
-			if (HAutoSets.forceIdleVoice)
+			if (forceIdleVoice)
 			{
 				__result = true;
 				return false;
@@ -143,7 +143,7 @@ namespace KK_HAutoSets
 			//If speech control is not disabled and timer has a positive value, 
 			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
 			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
-			else if (HAutoSets.voiceTimer > 0 && HAutoSets.AutoVoice.Value != HAutoSets.SpeechMode.Disabled)
+			else if (voiceTimer > 0 && AutoVoice.Value != SpeechMode.Disabled)
 			{
 				__result = false;
 				return false;
@@ -157,7 +157,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsAibuIdleTime")]
 		public static bool IsAibuIdleTimePre(ref bool __result)
 		{
-			if (HAutoSets.forceIdleVoice)
+			if (forceIdleVoice)
 			{
 				__result = true;
 				return false;
@@ -165,7 +165,7 @@ namespace KK_HAutoSets
 			//If speech control is not disabled and timer has a positive value, 
 			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
 			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
-			else if (HAutoSets.voiceTimer > 0 && HAutoSets.AutoVoice.Value != HAutoSets.SpeechMode.Disabled)
+			else if (voiceTimer > 0 && AutoVoice.Value != SpeechMode.Disabled)
 			{
 				__result = false;
 				return false;
@@ -178,7 +178,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
 		public static bool VoiceProcPre(ref bool __result)
 		{
-			if (HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.MuteAll && !HAutoSets.forceIdleVoice)
+			if (AutoVoice.Value == SpeechMode.MuteAll && !forceIdleVoice)
 			{
 				__result = false;
 				return false;
@@ -192,24 +192,24 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
 		public static void VoiceProcPost(bool __result)
 		{
-			if (__result && HAutoSets.AutoVoice.Value == HAutoSets.SpeechMode.Timer)
-				HAutoSets.SetVoiceTimer(2f);
+			if (__result && AutoVoice.Value == SpeechMode.Timer)
+				SetVoiceTimer(2f);
 		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnInsideClick")]
 		public static void OnInsideClickPost()
 		{
-			if (HAutoSets.PrecumTimer.Value > 0)
-				HAutoSets.animationToggle.ManualOrgasm(inside: true);
+			if (PrecumTimer.Value > 0)
+				animationToggle.ManualOrgasm(inside: true);
 		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnOutsideClick")]
 		public static void OnOutsideClickPost()
 		{
-			if (HAutoSets.PrecumTimer.Value > 0)
-				HAutoSets.animationToggle.ManualOrgasm(inside: false);
+			if (PrecumTimer.Value > 0)
+				animationToggle.ManualOrgasm(inside: false);
 		}
 	}
 }
