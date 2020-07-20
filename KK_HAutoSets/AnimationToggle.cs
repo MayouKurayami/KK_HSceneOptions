@@ -53,10 +53,22 @@ namespace KK_HAutoSets
 					proc.SetPlay(flags.isAnalPlay ? "A_OLoop" : "OLoop", true);
 					forceOLoop = true;
 				}
+				//Only allow exiting OLoop via keyboard shortcut if orgasm has not been initiated, 
+				//by checking flags.finish in intercourse modes, or the "rePlay" field in service modes which would be at a non-zero value if orgasm sequence has been initiated.
 				else if (flags.nowAnimStateName.Contains("OLoop"))
 				{
-					proc.SetPlay(flags.isAnalPlay ? "A_SLoop" : "SLoop", true);
-					forceOLoop = false;
+					bool notOrgasm = true;
+
+					if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
+						notOrgasm = flags.finish == HFlag.FinishKind.none;
+					else if (flags.mode > HFlag.EMode.aibu)
+						notOrgasm = (Traverse.Create(proc).Field("rePlay")?.GetValue<int>() ?? 0) == 0;
+
+					if (notOrgasm)
+					{
+						proc.SetPlay(flags.isAnalPlay ? "A_SLoop" : "SLoop", true);
+						forceOLoop = false;
+					}				
 				}
 			}
 			else if (Input.GetKeyDown(OrgasmInsideKey.Value.MainKey) && OrgasmInsideKey.Value.Modifiers.All(x => Input.GetKey(x)))
