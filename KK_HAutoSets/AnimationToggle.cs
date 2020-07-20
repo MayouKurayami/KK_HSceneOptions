@@ -10,6 +10,7 @@ namespace KK_HAutoSets
 {
 	internal class AnimationToggle : MonoBehaviour
 	{
+		private HActionBase proc;
 
 		internal bool forceOLoop;
 		internal bool forceStopVoice;

@@ -29,7 +29,6 @@ namespace KK_HAutoSets
 
 		internal static HFlag flags;
 		internal static List<HActionBase> lstProc;
-		internal static HActionBase proc;
 		internal static List<ChaControl> lstFemale;
 		internal static HVoiceCtrl voice;
 		internal static object[] hands = new object[2];
