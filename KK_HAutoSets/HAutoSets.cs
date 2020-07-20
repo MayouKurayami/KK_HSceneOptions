@@ -146,6 +146,11 @@ namespace KK_HAutoSets
 		[Description("If enabled, the male body will not be hidden when touching the girl during sex or service")]
 		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
 
+		[DisplayName("Precum Toggle")]
+		[Description("Allow toggling throhgh precum loop when right clicking the speed control pad." +
+			"\n\nToggle order: weak motion > strong motion > precum > back to weak motion")]
+		public static ConfigWrapper<bool> PrecumToggle { get; private set; }
+
 		[DisplayName("Precum Timer")]
 		[AcceptableValueRange(0f, 13f, false)]
 		[Description("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. " +
@@ -191,6 +196,7 @@ namespace KK_HAutoSets
 			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
 			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
 			PrecumExtend = new ConfigWrapper<bool>(nameof(PrecumExtend), this, false);
+			PrecumToggle = new ConfigWrapper<bool>(nameof(PrecumToggle), this, false);
 			AutoVoice = new ConfigWrapper<SpeechMode>(nameof(AutoVoice), this, SpeechMode.Disabled);
 			AutoVoiceTime = new ConfigWrapper<float>(nameof(AutoVoiceTime), this, 20f);
 			AutoVoiceTime.SettingChanged += (sender, args) => { SetVoiceTimer(2f); };

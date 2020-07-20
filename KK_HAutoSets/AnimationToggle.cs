@@ -46,30 +46,7 @@ namespace KK_HAutoSets
 
 			if (Input.GetKeyDown(OLoopKey.Value.MainKey) && OLoopKey.Value.Modifiers.All(x => Input.GetKey(x)))
 			{
-				//Only allow forced entering of precum loop if currently in piston loop, to prevent issues with unintended orgasm caused by entering precum loop elsewhere
-				if (!forceOLoop && (flags.nowAnimStateName.Contains("SLoop") || flags.nowAnimStateName.Contains("WLoop") || flags.nowAnimStateName.Contains("MLoop")))
-				{
-					flags.speedCalc = 1f;
-					proc.SetPlay(flags.isAnalPlay ? "A_OLoop" : "OLoop", true);
-					forceOLoop = true;
-				}
-				//Only allow exiting OLoop via keyboard shortcut if orgasm has not been initiated, 
-				//by checking flags.finish in intercourse modes, or the "rePlay" field in service modes which would be at a non-zero value if orgasm sequence has been initiated.
-				else if (flags.nowAnimStateName.Contains("OLoop"))
-				{
-					bool notOrgasm = true;
-
-					if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
-						notOrgasm = flags.finish == HFlag.FinishKind.none;
-					else if (flags.mode > HFlag.EMode.aibu)
-						notOrgasm = (Traverse.Create(proc).Field("rePlay")?.GetValue<int>() ?? 0) == 0;
-
-					if (notOrgasm)
-					{
-						proc.SetPlay(flags.isAnalPlay ? "A_SLoop" : "SLoop", true);
-						forceOLoop = false;
-					}				
-				}
+				ManualOLoop();
 			}
 			else if (Input.GetKeyDown(OrgasmInsideKey.Value.MainKey) && OrgasmInsideKey.Value.Modifiers.All(x => Input.GetKey(x)))
 			{
@@ -200,6 +177,35 @@ namespace KK_HAutoSets
 
 			animationName = flags.nowAnimationInfo.nameAnimation;
 		}
+
+		internal void ManualOLoop()
+		{
+			//Only allow forced entering of precum loop if currently in piston loop, to prevent issues with unintended orgasm caused by entering precum loop elsewhere
+			if (!forceOLoop && (flags.nowAnimStateName.Contains("SLoop") || flags.nowAnimStateName.Contains("WLoop") || flags.nowAnimStateName.Contains("MLoop")))
+			{
+				flags.speedCalc = 1f;
+				proc.SetPlay(flags.isAnalPlay ? "A_OLoop" : "OLoop", true);
+				forceOLoop = true;
+			}
+			//Only allow exiting OLoop via keyboard shortcut if orgasm has not been initiated, 
+			//by checking flags.finish in intercourse modes, or the "rePlay" field in service modes which would be at a non-zero value if orgasm sequence has been initiated.
+			else if (flags.nowAnimStateName.Contains("OLoop"))
+			{
+				bool notOrgasm = true;
+
+				if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
+					notOrgasm = flags.finish == HFlag.FinishKind.none;
+				else if (flags.mode > HFlag.EMode.aibu)
+					notOrgasm = (Traverse.Create(proc).Field("rePlay")?.GetValue<int>() ?? 0) == 0;
+
+				if (notOrgasm)
+				{
+					proc.SetPlay(flags.isAnalPlay ? "A_SLoop" : "SLoop", true);
+					forceOLoop = false;
+				}
+			}
+		}
+
 
 		/// <summary>
 		/// Manually start orgasm accordindg to current the condition and initialize cum countdown timer 

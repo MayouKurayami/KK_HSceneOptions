@@ -212,6 +212,17 @@ namespace KK_HAutoSets
 				animationToggle.ManualOrgasm(inside: false);
 		}
 
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HSprite), "OnSpeedUpClick")]
+		public static void OnSpeedUpClickPost()
+		{
+			if (flags.click == HFlag.ClickKind.motionchange && PrecumToggle.Value && flags.nowAnimStateName.Contains("SLoop"))
+			{
+				flags.click = HFlag.ClickKind.none;
+				animationToggle.ManualOLoop();
+			}
+		}
+
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HSprite), "SonyuProc")]
 		public static bool HSpriteSonyuPre(HSprite __instance)
