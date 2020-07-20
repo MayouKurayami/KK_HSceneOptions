@@ -10,15 +10,17 @@ namespace KK_HAutoSets
 {
 	internal class AnimationToggle : MonoBehaviour
 	{
-		internal static bool forceOLoop;
-		internal static AnimatorStateInfo sLoopInfo;
-		internal static bool forceStopVoice;
-		private static string animationName = "";
 
-		internal static float orgasmTimer;
+		internal bool forceOLoop;
+		internal bool forceStopVoice;
+		
+		internal float orgasmTimer;
+
+		private string animationName = "";
+		internal static AnimatorStateInfo sLoopInfo;
 
 		private delegate bool LoopProc(bool _loop);
-		private static LoopProc loopProcDelegate;
+		private LoopProc loopProcDelegate;
 
 		private void Start()
 		{

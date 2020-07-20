@@ -69,7 +69,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HVoiceCtrl), "BreathProc")]
 		public static void BreathProcPre(ref AnimatorStateInfo _ai)
 		{
-			if (AnimationToggle.forceOLoop && HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
+			if (HAutoSets.animationToggle.forceOLoop && HAutoSets.flags.nowAnimStateName.Contains("OLoop"))
 				_ai = AnimationToggle.sLoopInfo;
 		}
 
@@ -81,12 +81,12 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(Voice), "IsVoiceCheck", new Type[] { typeof(Transform), typeof(bool) })]
 		public static bool IsVoiceCheckPre(ref bool __result)
 		{
-			if (AnimationToggle.forceStopVoice)
+			if (HAutoSets.animationToggle.forceStopVoice)
 			{
 				__result = false;
 				return false;
 			}
-			else if (HAutoSets.PrecumExtend.Value && AnimationToggle.orgasmTimer > 0)
+			else if (HAutoSets.PrecumExtend.Value && HAutoSets.animationToggle.orgasmTimer > 0)
 			{
 				__result = true;
 				return false;
@@ -104,7 +104,8 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HActionBase), "SetPlay")]
 		public static void SetPlayPost()
 		{
-			AnimationToggle.forceOLoop = false;
+			if (HAutoSets.animationToggle)
+				HAutoSets.animationToggle.forceOLoop = false;
 		}
 
 		//In sex modes, force the game to play idle voice line while forceIdleVoice is true
