@@ -82,12 +82,29 @@ namespace KK_HAutoSets
 			//if orgasm countdown timer is initialized and the time since its intialization has past the configured amount, 
 			//stop the currently playing speech to allow entering orgasm, then reset counter to 0.
 			//As precaution against extravagant timer values and consequently stopping voice after orgasm has already finished, only run this if still in precum loop.
-			if (orgasmTimer > 0 && (Time.time - orgasmTimer) > PrecumTimer.Value)
-			{
+			if (orgasmTimer > 0)
+			{			
 				if (flags.nowAnimStateName.Contains("OLoop"))
-					StartCoroutine(ToggleFlagSingleFrame(x => forceStopVoice = x));
+				{
+					if ((Time.time - orgasmTimer) > PrecumTimer.Value)
+					{
+						StartCoroutine(ToggleFlagSingleFrame(x => forceStopVoice = x));
 
-				orgasmTimer = 0;
+						orgasmTimer = 0;
+					}
+					//When set to extend precum time, the following statement makes sure the game does not enter actual orgasm prematurely during service modes
+					//by satisfying certain conditions. (Need to confirm whether this causes potential side effects in other modes)
+					else if (PrecumExtend.Value && voice.nowVoices[0].state == HVoiceCtrl.VoiceKind.breath)
+					{
+						voice.nowVoices[0].state = HVoiceCtrl.VoiceKind.voice;
+					}		
+				}
+				//Reset the timer back to 0 once time is reached regardless of current animation state
+				else if ((Time.time - orgasmTimer) > PrecumTimer.Value)
+				{
+					orgasmTimer = 0;
+				}
+
 			}
 		}
 
