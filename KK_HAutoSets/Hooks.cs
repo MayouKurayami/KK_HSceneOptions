@@ -211,5 +211,67 @@ namespace KK_HAutoSets
 			if (PrecumTimer.Value > 0)
 				animationToggle.ManualOrgasm(inside: false);
 		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HSprite), "SonyuProc")]
+		public static bool HSpriteSonyuPre(HSprite __instance)
+		{
+			if (animationToggle.forceOLoop)
+			{
+				int index = ((flags.selectAnimationListInfo != null) ? (flags.selectAnimationListInfo.isFemaleInitiative ? 1 : 0) : (flags.nowAnimationInfo.isFemaleInitiative ? 1 : 0)) * 7;
+				HSceneSpriteCategorySetActive(__instance.sonyu.categoryActionButton.lstButton, __instance.sonyu.tglAutoFinish.isOn, 4 + index);
+
+				return false;
+			}	
+			else
+			{
+				return true;
+			}				
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HSprite), "Sonyu3PProc")]
+		public static bool HSpriteSonyu3PProcPre(HSprite __instance)
+		{
+			if (animationToggle.forceOLoop)
+			{
+				int index = ((flags.selectAnimationListInfo != null) ? (flags.selectAnimationListInfo.isFemaleInitiative ? 1 : 0) : (flags.nowAnimationInfo.isFemaleInitiative ? 1 : 0)) * 7;
+				HSceneSpriteCategorySetActive(__instance.sonyu3P.categoryActionButton.lstButton, __instance.sonyu3P.tglAutoFinish.isOn, 4 + index);
+
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HSprite), "Sonyu3PDarkProc")]
+		public static bool HSpriteSonyu3PDarkProcPre(HSprite __instance)
+		{
+			if (animationToggle.forceOLoop)
+			{
+				HSceneSpriteCategorySetActive(__instance.sonyu3PDark.categoryActionButton.lstButton, __instance.sonyu3PDark.tglAutoFinish.isOn, 18);
+
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		private static void HSceneSpriteCategorySetActive(List<UnityEngine.UI.Button> lstButton, bool autoFinish, int array)
+		{
+			bool active = flags.gaugeMale >= 70f && !autoFinish;
+			if (lstButton.Count > array && (lstButton[array].isActiveAndEnabled != active))
+				lstButton[array].gameObject.SetActive(active);
+
+			array++;
+			active = flags.gaugeMale >= 70f && autoFinish;
+			if (lstButton.Count > array && (lstButton[array].isActiveAndEnabled != active))
+				lstButton[array].gameObject.SetActive(active);
+		}
 	}
 }
