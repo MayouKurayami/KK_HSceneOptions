@@ -39,6 +39,27 @@ namespace KK_HAutoSets
 		internal static bool forceIdleVoice;
 		internal static float voiceTimer = voiceMinInterval;
 
+
+		/// 
+		/////////////////// Miscellaneous //////////////////////////
+		/// 
+		[DisplayName("Auto Equip Sub-Accessories")]
+		[Description("Auto equip sub-accessories at H start")]
+		public static ConfigWrapper<bool> SubAccessories { get; private set; }
+
+		[DisplayName("Hide Shadow Casted by Male Body")]
+		[Description("Hide shadow casted by male body")]
+		public static ConfigWrapper<bool> HideMaleShadow { get; private set; }
+
+		[DisplayName("Hide Shadow Casted by Female Limbs and Accessories")]
+		[Description("Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair")]
+		public static ConfigWrapper<bool> HideFemaleShadow { get; private set; }
+
+		[DisplayName("Disable Hiding of Male Body When Groping")]
+		[Description("If enabled, the male body will not be hidden when touching the girl during sex or service")]
+		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
+
+
 		/// 
 		/////////////////// Excitement Gauge //////////////////////////
 		/// 
@@ -75,6 +96,62 @@ namespace KK_HAutoSets
 		[Description("Male exceitement gauge will not go above this value")]
 		[AcceptableValueRange(0f, 100f, false)]
 		public static ConfigWrapper<int> MaleGaugeMax { get; private set; }
+
+
+		/// 
+		/////////////////// Female Speech //////////////////////////
+		/// 
+		[Category("Female Speech")]
+		[DisplayName("Speech Mode")]
+		[Description("Default Behavior: Disable this feature and return to vanilla behavior" +
+			"\n\nBased on Timer: Automatically trigger speech at set interval" +
+			"\n\nMute Idle Speech: Prevent the girl from speaking at all during idle (she would still speak during events such as insertion)" +
+			"\n\nMute All Spoken Lines: Mute all speech other than moans")]
+		public static ConfigWrapper<SpeechMode> AutoVoice { get; private set; }
+
+		[Category("Female Speech")]
+		[DisplayName("Speech Timer  (Effective only if Speech Mode is set to Based on Timer)")]
+		[Description("Sets the time interval at which the girl will randomly speak")]
+		[AcceptableValueRange(voiceMinInterval, voiceMaxInterval, false)]
+		public static ConfigWrapper<float> AutoVoiceTime { get; private set; }
+
+
+		/// 
+		/////////////////// VR //////////////////////////
+		/// 
+		[Category("Official VR")]
+		[DisplayName("Reset Camera At Position Change")]
+		[Description("Resets the camera back to the male's head when switching to a different position in official VR.")]
+		public static ConfigWrapper<bool> VRResetCamera { get; private set; }
+
+
+		/// 
+		/////////////////// Precum Related //////////////////////////
+		/// 
+		[Category("Precum Related")]
+		[DisplayName("Disable Auto Finish in Service Mode")]
+		[Description("If enabled, animation will not automatically enter the fast precum animation when male's excitement gauge is past the 70% threshold")]
+		public static ConfigWrapper<bool> DisableAutoPrecum { get; private set; }
+
+		[Category("Precum Related")]
+		[DisplayName("Precum Toggle")]
+		[Description("Allow toggling throhgh precum loop when right clicking the speed control pad." +
+			"\n\nToggle order: weak motion > strong motion > precum > back to weak motion")]
+		public static ConfigWrapper<bool> PrecumToggle { get; private set; }
+
+		[Category("Precum Related")]
+		[DisplayName("Precum Timer")]
+		[AcceptableValueRange(0f, 13f, false)]
+		[Description("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. " +
+			"\n\nSet to 0 to disable this.")]
+		public static ConfigWrapper<float> PrecumTimer { get; private set; }
+
+		[Category("Precum Related")]
+		[DisplayName("Precum Timer Extension")]
+		[Description("Enable this to allow the precum timer to extend the precum animation even after female is done speaking. " +
+			"\n\nNote that the female will be completely silent after she is done speaking, so use this with discretion.")]
+		public static ConfigWrapper<bool> PrecumExtend { get; private set; }
+
 
 		/// 
 		/////////////////// Keyboard Shortcuts //////////////////////////
@@ -128,85 +205,32 @@ namespace KK_HAutoSets
 		public static SavedKeyboardShortcut TriggerVoiceKey { get; private set; }
 
 
-		/// 
-		/////////////////// Others //////////////////////////
-		/// 
-		[DisplayName("Auto Equip Sub-Accessories")]
-		[Description("Auto equip sub-accessories at H start")]
-		public static ConfigWrapper<bool> SubAccessories { get; private set; }
-
-		[DisplayName("Hide Shadow Casted by Male Body")]
-		[Description("Hide shadow casted by male body")]
-		public static ConfigWrapper<bool> HideMaleShadow { get; private set; }
-
-		[DisplayName("Hide Shadow Casted by Female Limbs and Accessories")]
-		[Description("Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair")]
-		public static ConfigWrapper<bool> HideFemaleShadow { get; private set; }
-
-		[DisplayName("Disable Hiding of Male Body When Groping")]
-		[Description("If enabled, the male body will not be hidden when touching the girl during sex or service")]
-		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
-
-		[DisplayName("Disable Auto Finish in Service Mode")]
-		[Description("If enabled, animation will not automatically enter the fast precum animation when male's excitement gauge is past the 70% threshold")]
-		public static ConfigWrapper<bool> DisableAutoPrecum { get; private set; }
-
-		[DisplayName("Precum Toggle")]
-		[Description("Allow toggling throhgh precum loop when right clicking the speed control pad." +
-			"\n\nToggle order: weak motion > strong motion > precum > back to weak motion")]
-		public static ConfigWrapper<bool> PrecumToggle { get; private set; }
-
-		[DisplayName("Precum Timer")]
-		[AcceptableValueRange(0f, 13f, false)]
-		[Description("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. " +
-			"\n\nSet to 0 to disable this.")]
-		public static ConfigWrapper<float> PrecumTimer { get; private set; }
-
-		[DisplayName("Precum Timer Extension")]
-		[Description("Enable this to allow the precum timer to extend the precum animation even after female is done speaking. " +
-			"\n\nNote that the female will be completely silent after she is done speaking, so use this with discretion.")]
-		public static ConfigWrapper<bool> PrecumExtend { get; private set; }
-
-		[DisplayName("Speech Mode")]
-		[Description("Default Behavior: Disable this feature and return to vanilla behavior" +
-			"\n\nBased on Timer: Automatically trigger speech at set interval" +
-			"\n\nMute Idle Speech: Prevent the girl from speaking at all during idle (she would still speak during events such as insertion)" +
-			"\n\nMute All Spoken Lines: Mute all speech other than moans")]
-		public static ConfigWrapper<SpeechMode> AutoVoice { get; private set; }
-
-		[DisplayName("Speech Timer  (Effective only if Speech Mode is set to Based on Timer)")]
-		[Description("Sets the time interval at which the girl will randomly speak")]
-		[AcceptableValueRange(voiceMinInterval, voiceMaxInterval, false)]
-		public static ConfigWrapper<float> AutoVoiceTime { get; private set; }
-
-		/// 
-		/////////////////// VR //////////////////////////
-		/// 
-		[Category("Official VR")]
-		[DisplayName("Reset Camera At Position Change")]
-		[Description("Resets the camera back to the male's head when switching to a different position in official VR.")]
-		public static ConfigWrapper<bool> VRResetCamera { get; private set; }
 
 		private void Start()
 		{
+			SubAccessories = new ConfigWrapper<bool>(nameof(SubAccessories), this, false);
+			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
+			HideMaleShadow = new ConfigWrapper<bool>(nameof(HideMaleShadow), this, false);
+			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
+
 			LockFemaleGauge = new ConfigWrapper<bool>(nameof(LockFemaleGauge), this, false);
 			LockMaleGauge = new ConfigWrapper<bool>(nameof(LockMaleGauge), this, false);
 			FemaleGaugeMin = new ConfigWrapper<int>(nameof(FemaleGaugeMin), this, 0);
 			FemaleGaugeMax = new ConfigWrapper<int>(nameof(FemaleGaugeMax), this, 100);
 			MaleGaugeMin = new ConfigWrapper<int>(nameof(MaleGaugeMin), this, 0);
 			MaleGaugeMax = new ConfigWrapper<int>(nameof(MaleGaugeMax), this, 100);
-			SubAccessories = new ConfigWrapper<bool>(nameof(SubAccessories), this, false);
-			HideMaleShadow = new ConfigWrapper<bool>(nameof(HideMaleShadow), this, false);
-			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
-			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
-			DisableAutoPrecum = new ConfigWrapper<bool>(nameof(DisableAutoPrecum), this, false);
-			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
-			PrecumExtend = new ConfigWrapper<bool>(nameof(PrecumExtend), this, false);
-			PrecumToggle = new ConfigWrapper<bool>(nameof(PrecumToggle), this, false);
+
 			AutoVoice = new ConfigWrapper<SpeechMode>(nameof(AutoVoice), this, SpeechMode.Disabled);
 			AutoVoiceTime = new ConfigWrapper<float>(nameof(AutoVoiceTime), this, 20f);
 			AutoVoiceTime.SettingChanged += (sender, args) => { SetVoiceTimer(2f); };
 
+			VRResetCamera = new ConfigWrapper<bool>(nameof(VRResetCamera), this, true);
+
+			DisableAutoPrecum = new ConfigWrapper<bool>(nameof(DisableAutoPrecum), this, false);
+			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
+			PrecumExtend = new ConfigWrapper<bool>(nameof(PrecumExtend), this, false);
+			PrecumToggle = new ConfigWrapper<bool>(nameof(PrecumToggle), this, false);
+			
 			OLoopKey = new SavedKeyboardShortcut(nameof(OLoopKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmInsideKey = new SavedKeyboardShortcut(nameof(OrgasmInsideKey), this, new KeyboardShortcut(KeyCode.None));
 			OrgasmOutsideKey = new SavedKeyboardShortcut(nameof(OrgasmOutsideKey), this, new KeyboardShortcut(KeyCode.None));
@@ -219,8 +243,7 @@ namespace KK_HAutoSets
 			PantsuStripKey = new SavedKeyboardShortcut(nameof(PantsuStripKey), this, new KeyboardShortcut(KeyCode.None));
 			TopClothesToggleKey = new SavedKeyboardShortcut(nameof(TopClothesToggleKey), this, new KeyboardShortcut(KeyCode.None));
 			BottomClothesToggleKey = new SavedKeyboardShortcut(nameof(BottomClothesToggleKey), this, new KeyboardShortcut(KeyCode.None));
-
-			VRResetCamera = new ConfigWrapper<bool>(nameof(VRResetCamera), this, true);
+			
 
 			//Harmony patching
 			HarmonyInstance harmony = HarmonyInstance.Create(GUID);
