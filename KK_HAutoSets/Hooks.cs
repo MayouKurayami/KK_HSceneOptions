@@ -9,6 +9,9 @@ namespace KK_HAutoSets
 {
 	public static class Hooks
 	{
+		private static float maleGaugeOld = -1;
+		private static bool houshiRestoreGauge;
+
 		//This should hook to a method that loads as late as possible in the loading phase
 		//Hooking method "MapSameObjectDisable" because: "Something that happens at the end of H scene loading, good enough place to hook" - DeathWeasel1337/Anon11
 		//https://github.com/DeathWeasel1337/KK_Plugins/blob/master/KK_EyeShaking/KK.EyeShaking.Hooks.cs#L20
@@ -286,6 +289,91 @@ namespace KK_HAutoSets
 			active = flags.gaugeMale >= 70f && autoFinish;
 			if (lstButton.Count > array && (lstButton[array].isActiveAndEnabled != active))
 				lstButton[array].gameObject.SetActive(active);
+		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HFlag), "MaleGaugeUp")]
+		public static void HoushiOLoopGaugePre()
+		{
+			if (houshiRestoreGauge && flags.gaugeMale >= 70f)
+			{
+				maleGaugeOld = flags.gaugeMale;
+				flags.gaugeMale = 65f;
+			}
+			else
+				houshiRestoreGauge = false;
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HHoushi), "LoopProc")]
+		public static void HoushiOLoopInit()
+		{
+			if (DisableAutoPrecum.Value)
+				houshiRestoreGauge = true;
+		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HHoushi), "LoopProc")]
+		public static void HoushiOLoopGaugePost()
+		{
+			if (houshiRestoreGauge)
+			{
+				flags.gaugeMale = maleGaugeOld;
+				maleGaugeOld = -1;
+
+				foreach (HSprite sprite in sprites)
+					sprite.SetHoushiAutoFinish(_force: true);
+
+				houshiRestoreGauge = false;
+			}		
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(H3PHoushi), "LoopProc")]
+		public static void Houshi3POLoopInit()
+		{
+			if (DisableAutoPrecum.Value)
+				houshiRestoreGauge = true;
+		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(H3PHoushi), "LoopProc")]
+		public static void Houshi3POLoopGaugePost()
+		{
+			if (houshiRestoreGauge)
+			{
+				flags.gaugeMale = maleGaugeOld;
+				maleGaugeOld = -1;
+
+				foreach (HSprite sprite in sprites)
+					sprite.SetHoushi3PAutoFinish(_force: true);
+
+				houshiRestoreGauge = false;
+			}
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(H3PDarkHoushi), "LoopProc")]
+		public static void Houshi3PDarkOLoopInit()
+		{
+			if (DisableAutoPrecum.Value)
+				houshiRestoreGauge = true;
+		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(H3PDarkHoushi), "LoopProc")]
+		public static void Houshi3PDarkOLoopGaugePost()
+		{
+			if (houshiRestoreGauge)
+			{
+				flags.gaugeMale = maleGaugeOld;
+				maleGaugeOld = -1;
+
+				foreach (HSprite sprite in sprites)
+					sprite.SetHoushi3PDarkAutoFinish(_force: true);
+
+				houshiRestoreGauge = false;
+			}
 		}
 	}
 }

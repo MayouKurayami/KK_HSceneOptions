@@ -147,6 +147,10 @@ namespace KK_HAutoSets
 		[Description("If enabled, the male body will not be hidden when touching the girl during sex or service")]
 		public static ConfigWrapper<bool> DisableHideBody { get; private set; }
 
+		[DisplayName("Disable Auto Finish in Service Mode")]
+		[Description("If enabled, animation will not automatically enter the fast precum animation when male's excitement gauge is past the 70% threshold")]
+		public static ConfigWrapper<bool> DisableAutoPrecum { get; private set; }
+
 		[DisplayName("Precum Toggle")]
 		[Description("Allow toggling throhgh precum loop when right clicking the speed control pad." +
 			"\n\nToggle order: weak motion > strong motion > precum > back to weak motion")]
@@ -195,6 +199,7 @@ namespace KK_HAutoSets
 			HideMaleShadow = new ConfigWrapper<bool>(nameof(HideMaleShadow), this, false);
 			HideFemaleShadow = new ConfigWrapper<bool>(nameof(HideFemaleShadow), this, false);
 			DisableHideBody = new ConfigWrapper<bool>(nameof(DisableHideBody), this, false);
+			DisableAutoPrecum = new ConfigWrapper<bool>(nameof(DisableAutoPrecum), this, false);
 			PrecumTimer = new ConfigWrapper<float>(nameof(PrecumTimer), this, 0);
 			PrecumExtend = new ConfigWrapper<bool>(nameof(PrecumExtend), this, false);
 			PrecumToggle = new ConfigWrapper<bool>(nameof(PrecumToggle), this, false);
