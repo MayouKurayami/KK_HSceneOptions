@@ -15,7 +15,14 @@ namespace KK_HAutoSets
 		public static void VRHSceneLoadPostFix(VRHScene __instance)
 		{
 			var females = (List<ChaControl>) Traverse.Create(__instance).Field("lstFemale").GetValue();
-			var hSprites = __instance.sprites;
+
+			sprites.Clear();
+			foreach (HSprite sprite in __instance.sprites)
+			{
+				sprites.Add(sprite);
+				LockGaugesAction(sprite);
+			}			
+		
 			List<ChaControl> males = new List<ChaControl>
 			{
 				(ChaControl)Traverse.Create(__instance).Field("male").GetValue(),
@@ -28,8 +35,6 @@ namespace KK_HAutoSets
 			voice = __instance.voice;
 
 			EquipAllAccessories(females);
-			foreach (HSprite sprite in hSprites)
-				LockGaugesAction(sprite);
 
 			HideShadow(males, females);
 

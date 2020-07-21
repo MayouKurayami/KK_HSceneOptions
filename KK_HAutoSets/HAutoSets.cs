@@ -30,6 +30,7 @@ namespace KK_HAutoSets
 		internal static HFlag flags;
 		internal static List<HActionBase> lstProc;
 		internal static List<ChaControl> lstFemale;
+		internal static List<HSprite> sprites = new List<HSprite>();
 		internal static HVoiceCtrl voice;
 		internal static object[] hands = new object[2];
 		internal static AnimationToggle animationToggle;

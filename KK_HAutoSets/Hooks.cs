@@ -17,7 +17,8 @@ namespace KK_HAutoSets
 		public static void HSceneProcLoadPostfix(HSceneProc __instance)
 		{
 			var females = (List<ChaControl>)Traverse.Create(__instance).Field("lstFemale").GetValue();
-			var hSprite = __instance.sprite;
+			sprites.Clear();
+			sprites.Add(__instance.sprite);
 			List<ChaControl> males = new List<ChaControl>
 			{
 				(ChaControl)Traverse.Create(__instance).Field("male").GetValue(),
@@ -32,7 +33,9 @@ namespace KK_HAutoSets
 			hands[1] = __instance.hand1;
 
 			EquipAllAccessories(females);
-			LockGaugesAction(hSprite);
+			foreach (HSprite sprite in sprites)
+				LockGaugesAction(sprite);
+
 			HideShadow(males, females);
 
 			if (AutoVoice.Value == SpeechMode.Timer)
