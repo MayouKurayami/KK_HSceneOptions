@@ -183,7 +183,6 @@ namespace KK_HAutoSets
 			//Only allow forced entering of precum loop if currently in piston loop, to prevent issues with unintended orgasm caused by entering precum loop elsewhere
 			if (!forceOLoop && (flags.nowAnimStateName.Contains("SLoop") || flags.nowAnimStateName.Contains("WLoop") || flags.nowAnimStateName.Contains("MLoop")))
 			{
-				flags.speedCalc = 1f;
 				proc.SetPlay(flags.isAnalPlay ? "A_OLoop" : "OLoop", true);
 				forceOLoop = true;
 			}

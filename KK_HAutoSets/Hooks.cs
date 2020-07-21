@@ -110,7 +110,7 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HActionBase), "SetPlay")]
 		public static void SetPlayPost()
 		{
-			if (animationToggle)
+			if (animationToggle?.forceOLoop ?? false)			
 				animationToggle.forceOLoop = false;
 		}
 
@@ -227,6 +227,20 @@ namespace KK_HAutoSets
 				flags.click = HFlag.ClickKind.none;
 				animationToggle.ManualOLoop();
 			}
+			else if (animationToggle.forceOLoop && (flags.click == HFlag.ClickKind.modeChange || flags.click == HFlag.ClickKind.speedup))
+			{
+				flags.click = HFlag.ClickKind.none;
+			}
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HFlag), "SpeedUpClick")]
+		public static bool SpeedUpClickPre()
+		{
+			if (animationToggle.forceOLoop)
+				return false;
+			else
+				return true;
 		}
 
 		[HarmonyPrefix]
