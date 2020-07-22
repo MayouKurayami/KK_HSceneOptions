@@ -250,7 +250,10 @@ namespace KK_HAutoSets
 			harmony.PatchAll(typeof(Hooks));
 
 			if (isVR = Application.dataPath.EndsWith("KoikatuVR_Data"))
-				harmony.PatchAll(typeof(VRHooks));
+				harmony.PatchAll(typeof(Hooks_VR));
+
+			if (Type.GetType("H3PDarkSonyu, Assembly-CSharp") != null)
+				harmony.PatchAll(typeof(Hooks_Darkness));
 		}		
 
 		private void Update()

@@ -57,8 +57,10 @@
     <Compile Include="AnimationToggle.cs" />
     <Compile Include="HAutoSets.cs" />
     <Compile Include="Hooks.cs" />
+    <Compile Include="Hooks_Darkness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VRHooks.cs" />
+    <Compile Include="Hooks_VR.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

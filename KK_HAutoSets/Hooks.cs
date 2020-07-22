@@ -4,13 +4,14 @@ using UnityEngine;
 using Manager;
 using System;
 using static KK_HAutoSets.HAutoSets;
+using static KK_HAutoSets.Utility;
 
 namespace KK_HAutoSets
 {
 	public static class Hooks
 	{
-		private static float maleGaugeOld = -1;
-		private static bool houshiRestoreGauge;
+		internal static float maleGaugeOld = -1;
+		internal static bool houshiRestoreGauge;
 
 		//This should hook to a method that loads as late as possible in the loading phase
 		//Hooking method "MapSameObjectDisable" because: "Something that happens at the end of H scene loading, good enough place to hook" - DeathWeasel1337/Anon11
@@ -206,7 +207,6 @@ namespace KK_HAutoSets
 		////////////////////////////////////////////////////////////////////////////////
 		/// If precum countdown timer is set, manually proc orgasm when pressing the corresponding menu buttons to forcibly start orgasm immediately
 		/// to prevent issues with the timer
-
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnInsideClick")]
 		public static void OnInsideClickPost()
@@ -222,7 +222,6 @@ namespace KK_HAutoSets
 			if (PrecumTimer.Value > 0)
 				animationToggle.ManualOrgasm(inside: false);
 		}
-
 		////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////
 
@@ -262,7 +261,6 @@ namespace KK_HAutoSets
 		////////////////////////////////////////////////////////////////////////////////
 		/// Keep the in-game menu accessible in forced OLoop by skipping the sonyu methods that disable them if in OLoop
 		/// Then activate the orgasm buttons if male excitement gauge is above 70
-
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HSprite), "SonyuProc")]
 		public static bool HSpriteSonyuPre(HSprite __instance)
@@ -296,44 +294,13 @@ namespace KK_HAutoSets
 				return true;
 			}
 		}
-
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HSprite), "Sonyu3PDarkProc")]
-		public static bool HSpriteSonyu3PDarkProcPre(HSprite __instance)
-		{
-			if (animationToggle.forceOLoop)
-			{
-				HSceneSpriteCategorySetActive(__instance.sonyu3PDark.categoryActionButton.lstButton, __instance.sonyu3PDark.tglAutoFinish.isOn, 18);
-
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-
-		/// <summary>
-		/// Detect if male excitement gauge is above 70 and activate the specified buttons
-		/// </summary>
-		private static void HSceneSpriteCategorySetActive(List<UnityEngine.UI.Button> lstButton, bool autoFinish, int array)
-		{
-			bool active = flags.gaugeMale >= 70f && !autoFinish;
-			if (lstButton.Count > array && (lstButton[array].isActiveAndEnabled != active))
-				lstButton[array].gameObject.SetActive(active);
-
-			array++;
-			active = flags.gaugeMale >= 70f && autoFinish;
-			if (lstButton.Count > array && (lstButton[array].isActiveAndEnabled != active))
-				lstButton[array].gameObject.SetActive(active);
-		}
-
 		////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////
 
 
 
-
+		////////////////////////////////////////////////////////////////////////////////
+		///                    Disable AutoFinish in Service Modes
 		////////////////////////////////////////////////////////////////////////////////
 		/// To prevent the game from automatically going into precum animation in service modes, 
 		/// we need to prevent execution of a block of vanilla code (inside LoopProc() method of the current mode), by not satisfying its condition: 
@@ -347,7 +314,6 @@ namespace KK_HAutoSets
 		/// 
 		/// At the beginning of LoopProc, only make houshiRestoreGauge true if the funactionality is enabled in config.
 		/// This acts as a master switch since the proceeding patches all depend on houshiRestoreGauge to be true.
-
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HFlag), "MaleGaugeUp")]
 		public static void HoushiOLoopGaugePre()
@@ -408,31 +374,6 @@ namespace KK_HAutoSets
 				houshiRestoreGauge = false;
 			}
 		}
-
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(H3PDarkHoushi), "LoopProc")]
-		public static void Houshi3PDarkOLoopInit()
-		{
-			if (DisableAutoPrecum.Value)
-				houshiRestoreGauge = true;
-		}
-
-		[HarmonyPostfix]
-		[HarmonyPatch(typeof(H3PDarkHoushi), "LoopProc")]
-		public static void Houshi3PDarkOLoopGaugePost()
-		{
-			if (houshiRestoreGauge)
-			{
-				flags.gaugeMale = maleGaugeOld;
-				maleGaugeOld = -1;
-
-				foreach (HSprite sprite in sprites)
-					sprite.SetHoushi3PDarkAutoFinish(_force: true);
-
-				houshiRestoreGauge = false;
-			}
-		}
-
 		////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////
 	}
