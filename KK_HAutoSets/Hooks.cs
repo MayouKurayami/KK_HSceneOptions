@@ -114,7 +114,7 @@ namespace KK_HAutoSets
 				animationToggle.forceOLoop = false;
 		}
 
-		//In sex modes, force the game to play idle voice line while forceIdleVoice is true
+		//In intercourse modes, force the game to play idle voice line while forceIdleVoice is true
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsSonyuIdleTime")]
 		public static bool IsSonyuIdleTimePre(ref bool __result)
@@ -202,6 +202,11 @@ namespace KK_HAutoSets
 				SetVoiceTimer(2f);
 		}
 
+
+		////////////////////////////////////////////////////////////////////////////////
+		/// If precum countdown timer is set, manually proc orgasm when pressing the corresponding menu buttons to forcibly start orgasm immediately
+		/// to prevent issues with the timer
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnInsideClick")]
 		public static void OnInsideClickPost()
@@ -218,21 +223,31 @@ namespace KK_HAutoSets
 				animationToggle.ManualOrgasm(inside: false);
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnSpeedUpClick")]
 		public static void OnSpeedUpClickPost()
 		{
+			// If toggling through OLoop (PrecumToggle) is enabled, right clicking the control pad while in strong motion (SLoop) should transition to OLoop.
+			// This detects if the user clicked to change motion while in SLoop, cancel the change, and manually proc OLoop
 			if (flags.click == HFlag.ClickKind.motionchange && PrecumToggle.Value && flags.nowAnimStateName.Contains("SLoop"))
 			{
 				flags.click = HFlag.ClickKind.none;
 				animationToggle.ManualOLoop();
 			}
+			// Disable middle click and left click actions while in forced OLoop because they don't do anything while in OLoop
 			else if (animationToggle.forceOLoop && (flags.click == HFlag.ClickKind.modeChange || flags.click == HFlag.ClickKind.speedup))
 			{
 				flags.click = HFlag.ClickKind.none;
 			}
 		}
 
+		/// <summary>
+		/// Disable speeding up piston gauge by scrolling while in forced OLoop, as the speed is fixed.
+		/// </summary>
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HFlag), "SpeedUpClick")]
 		public static bool SpeedUpClickPre()
@@ -242,6 +257,11 @@ namespace KK_HAutoSets
 			else
 				return true;
 		}
+
+
+		////////////////////////////////////////////////////////////////////////////////
+		/// Keep the in-game menu accessible in forced OLoop by skipping the sonyu methods that disable them if in OLoop
+		/// Then activate the orgasm buttons if male excitement gauge is above 70
 
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HSprite), "SonyuProc")]
@@ -293,6 +313,9 @@ namespace KK_HAutoSets
 			}
 		}
 
+		/// <summary>
+		/// Detect if male excitement gauge is above 70 and activate the specified buttons
+		/// </summary>
 		private static void HSceneSpriteCategorySetActive(List<UnityEngine.UI.Button> lstButton, bool autoFinish, int array)
 		{
 			bool active = flags.gaugeMale >= 70f && !autoFinish;
@@ -305,6 +328,26 @@ namespace KK_HAutoSets
 				lstButton[array].gameObject.SetActive(active);
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+		////////////////////////////////////////////////////////////////////////////////
+		/// To prevent the game from automatically going into precum animation in service modes, 
+		/// we need to prevent execution of a block of vanilla code (inside LoopProc() method of the current mode), by not satisfying its condition: 
+		/// if (flags.click == HFlag.ClickKind.OLoop || flags.gaugeMale >= 70f)
+		/// The first condition will never be met under normal gameplay, so we only need to make sure the second condition is false during the execution of said method.
+		/// 
+		/// We begin by keeping track when LoopProc() has begun to run with a flag (houshiRestoreGauge). 
+		/// Then while houshiRestoreGauge is true, we modify gaugeMale to a value below 70f and store the vanilla value in a variable after it is updated by MaleGaugeUp().
+		/// This means gaugeMale would only be modified inside LoopProc(), so that other methods that depend on gaugeMale wouldn't be affected.
+		/// At the end of LoopProc() we then restore gaugeMale to the vanilla value and turn houshiRestoreGauge back to false to signal the end of LoopProc().
+		/// 
+		/// At the beginning of LoopProc, only make houshiRestoreGauge true if the funactionality is enabled in config.
+		/// This acts as a master switch since the proceeding patches all depend on houshiRestoreGauge to be true.
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HFlag), "MaleGaugeUp")]
 		public static void HoushiOLoopGaugePre()
@@ -312,7 +355,7 @@ namespace KK_HAutoSets
 			if (houshiRestoreGauge && flags.gaugeMale >= 70f)
 			{
 				maleGaugeOld = flags.gaugeMale;
-				flags.gaugeMale = 65f;
+				flags.gaugeMale = 65f; //This can be any number below 70
 			}
 			else
 				houshiRestoreGauge = false;
@@ -389,5 +432,8 @@ namespace KK_HAutoSets
 				houshiRestoreGauge = false;
 			}
 		}
+
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
 	}
 }

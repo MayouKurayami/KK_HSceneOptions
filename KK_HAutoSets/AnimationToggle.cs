@@ -262,8 +262,6 @@ namespace KK_HAutoSets
 				StartCoroutine(ToggleFlagSingleFrame(x => forceStopVoice = x));
 			else
 				flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside;
-		}
-
-		
+		}		
 	}
 }
