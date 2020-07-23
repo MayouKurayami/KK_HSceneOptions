@@ -64,7 +64,7 @@ namespace KK_HAutoSets
 			{
 				flags.speedCalc = 1f;
 
-				if (malePresent)
+				if (hCategory != HCategory.maleNotVisible)
 					loopProcDelegate?.Invoke(true);
 			}
 
@@ -103,24 +103,31 @@ namespace KK_HAutoSets
 			{
 				case (HFlag.EMode.sonyu):
 					proc = lstProc.OfType<HSonyu>().FirstOrDefault();
+					hCategory = HCategory.intercourse;
 					return typeof(HSonyu);
 				case (HFlag.EMode.houshi):
 					proc = lstProc.OfType<HHoushi>().FirstOrDefault();
+					hCategory = HCategory.service;
 					return typeof(HHoushi);
 				case (HFlag.EMode.houshi3P):
 					proc = lstProc.OfType<H3PHoushi>().FirstOrDefault();
+					hCategory = HCategory.service;
 					return typeof(H3PHoushi);
 				case (HFlag.EMode.aibu):
 					proc = lstProc.OfType<HAibu>().FirstOrDefault();
+					hCategory = HCategory.maleNotVisible;
 					return typeof(HAibu);
 				case (HFlag.EMode.lesbian):
 					proc = lstProc.OfType<HLesbian>().FirstOrDefault();
+					hCategory = HCategory.maleNotVisible;
 					return typeof(HLesbian);
 				case (HFlag.EMode.masturbation):
 					proc = lstProc.OfType<HMasturbation>().FirstOrDefault();
+					hCategory = HCategory.maleNotVisible;
 					return typeof(HMasturbation);
 				case (HFlag.EMode.sonyu3P):
 					proc = lstProc.OfType<H3PSonyu>().FirstOrDefault();
+					hCategory = HCategory.intercourse;
 					return typeof(H3PSonyu);
 				default:
 					return null;
@@ -133,9 +140,11 @@ namespace KK_HAutoSets
 			{
 				case (HFlag.EMode.houshi3PMMF):
 					proc = lstProc.OfType<H3PDarkHoushi>().FirstOrDefault();
+					hCategory = HCategory.service;
 					return typeof(H3PDarkHoushi);
 				case (HFlag.EMode.sonyu3PMMF):
 					proc = lstProc.OfType<H3PDarkSonyu>().FirstOrDefault();
+					hCategory = HCategory.intercourse;
 					return typeof(H3PDarkSonyu);
 				default:
 					return null;
@@ -148,7 +157,7 @@ namespace KK_HAutoSets
 		private void UpdateProc()
 		{
 			MethodInfo loopProcInfo;
-			Type procType = null;
+			Type procType;
 
 			procType = FindProc();
 
@@ -163,16 +172,10 @@ namespace KK_HAutoSets
 				return;
 			}
 
-			if (flags.mode != HFlag.EMode.aibu && flags.mode != HFlag.EMode.lesbian && flags.mode != HFlag.EMode.masturbation)
+			if (hCategory != HCategory.maleNotVisible)
 			{
 				loopProcInfo = AccessTools.Method(procType, "LoopProc", new Type[] { typeof(bool) });
 				loopProcDelegate = (LoopProc)Delegate.CreateDelegate(typeof(LoopProc), proc, loopProcInfo);
-
-				malePresent = true;
-			}
-			else
-			{
-				malePresent = false;
 			}
 
 			animationName = flags.nowAnimationInfo.nameAnimation;
@@ -192,7 +195,7 @@ namespace KK_HAutoSets
 			{
 				bool notOrgasm = true;
 
-				if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
+				if (hCategory == HCategory.intercourse)
 					notOrgasm = flags.finish == HFlag.FinishKind.none;
 				else if (flags.mode > HFlag.EMode.aibu)
 					notOrgasm = (Traverse.Create(proc).Field("rePlay")?.GetValue<int>() ?? 0) == 0;
@@ -216,7 +219,7 @@ namespace KK_HAutoSets
 			//then set the voice state of all females to breath to allow the game to interrupt currently playing speech
 			//Then run the LoopProc method twice. The first call allows the game to set the correct HFlag.finish value based on the click value we sent, 
 			//and the second call allows the game to enter OLoop and play back the corresponding speech based on the HFlag.finish value set in the previous call
-			if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
+			if (hCategory == HCategory.intercourse)
 			{
 				flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside;
 
@@ -242,7 +245,7 @@ namespace KK_HAutoSets
 
 			//Initiate timer if value is greater than 0 and male is present.
 			//No point in delaying orgasm when there is no male to sychronize to.
-			if (PrecumTimer.Value > 0 && malePresent)
+			if (PrecumTimer.Value > 0 && hCategory != HCategory.maleNotVisible)
 				orgasmTimer = Time.time;
 		}
 
@@ -258,10 +261,10 @@ namespace KK_HAutoSets
 			//* In modes where male is not present (masturbation and lesbian), the condition to trigger orgasm is for the current speech to finish.
 			//  Stop the voice immediately to trigger orgasm immediately as the timer wouldn't be initialized in those modes.
 			//* In other modes, simply set the cum click flag to trigger orgasm
-			if (!malePresent)
+			if (hCategory == HCategory.maleNotVisible)
 				StartCoroutine(ToggleFlagSingleFrame(x => forceStopVoice = x));
 			else
 				flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside;
-		}		
+		}	
 	}
 }

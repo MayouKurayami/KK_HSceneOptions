@@ -34,8 +34,8 @@ namespace KK_HAutoSets
 		internal static HVoiceCtrl voice;
 		internal static object[] hands = new object[2];
 		internal static AnimationToggle animationToggle;
+		internal static HCategory hCategory;
 
-		internal static bool malePresent;
 		internal static bool forceIdleVoice;
 		internal static float voiceTimer = voiceMinInterval;
 
@@ -515,7 +515,7 @@ namespace KK_HAutoSets
 			StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
 
 			//Take care of singular/edge cases
-			if (flags.mode == HFlag.EMode.sonyu || flags.mode == HFlag.EMode.sonyu3P || flags.mode == HFlag.EMode.sonyu3PMMF)
+			if (hCategory == HCategory.intercourse)
 			{
 				//Take care of edge cases where there would be no idle voice lines by satifying the conditions for them to be played,
 				//by flipping some flags for one frame and returning them to their original values afterward
@@ -566,7 +566,7 @@ namespace KK_HAutoSets
 					}
 				}		
 			}
-			else if (flags.mode == HFlag.EMode.houshi || flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.houshi3PMMF)
+			else if (hCategory == HCategory.service)
 			{
 				//Prepare variables to store the indexer values used to manually trigger voice with flags.voice.playVoices.
 				//houshi3P is the only mode with two females, and we see whether the flags.nowAnimationInfo.id is even or odd to determine which girl's voice should be triggered
@@ -712,6 +712,13 @@ namespace KK_HAutoSets
 			MuteIdle,
 			[Description("Mute All Spoken Lines")]
 			MuteAll
+		}
+
+		internal enum HCategory
+		{
+			service,
+			intercourse,
+			maleNotVisible
 		}
 	}
 }
