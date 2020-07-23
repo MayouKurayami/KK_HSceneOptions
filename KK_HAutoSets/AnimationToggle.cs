@@ -83,7 +83,7 @@ namespace KK_HAutoSets
 					}
 					//When set to extend precum time, the following statement makes sure the game does not enter actual orgasm prematurely during service modes
 					//by satisfying certain conditions. (Need to confirm whether this causes potential side effects in other modes)
-					else if (PrecumExtend.Value && voice.nowVoices[0].state == HVoiceCtrl.VoiceKind.breath)
+					else if (hCategory == HCategory.service && voice.nowVoices[0].state == HVoiceCtrl.VoiceKind.breath)
 					{
 						voice.nowVoices[0].state = HVoiceCtrl.VoiceKind.voice;
 					}		
