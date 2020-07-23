@@ -230,17 +230,31 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HSprite), "OnSpeedUpClick")]
 		public static void OnSpeedUpClickPost()
 		{
-			// If toggling through OLoop (PrecumToggle) is enabled, right clicking the control pad while in strong motion (SLoop) should transition to OLoop.
-			// This detects if the user clicked to change motion while in SLoop, cancel the change, and manually proc OLoop
-			if (flags.click == HFlag.ClickKind.motionchange && PrecumToggle.Value && flags.nowAnimStateName.Contains("SLoop"))
+			switch (flags.click)
 			{
-				flags.click = HFlag.ClickKind.none;
-				animationToggle.ManualOLoop();
-			}
-			// Disable middle click and left click actions while in forced OLoop because they don't do anything while in OLoop
-			else if (animationToggle.forceOLoop && (flags.click == HFlag.ClickKind.modeChange || flags.click == HFlag.ClickKind.speedup))
-			{
-				flags.click = HFlag.ClickKind.none;
+				// If toggling through OLoop (PrecumToggle) is enabled, right clicking the control pad while in strong motion (SLoop) should transition to OLoop.
+				// This detects if the user clicked to change motion while in SLoop, cancel the change, and manually proc OLoop
+				case HFlag.ClickKind.motionchange:
+					if (PrecumToggle.Value && flags.nowAnimStateName.Contains("SLoop"))
+					{
+						flags.click = HFlag.ClickKind.none;
+						animationToggle.ManualOLoop();
+					}
+					break;
+
+				// Disable middle click and left click actions while in forced OLoop because they don't do anything while in OLoop
+				case HFlag.ClickKind.modeChange:
+				case HFlag.ClickKind.speedup:
+					if (animationToggle.forceOLoop && flags.nowAnimStateName.Contains("OLoop"))
+						flags.click = HFlag.ClickKind.none;
+					break;
+
+				//If the user clicked the control pad yet flags.click is not assigned anything, then the click has to be from a VR controller.
+				//This makes sure clicking the controller while in forced OLoop will result in leaving OLoop
+				case HFlag.ClickKind.none:
+					if (animationToggle.forceOLoop && flags.nowAnimStateName.Contains("OLoop"))
+						flags.click = HFlag.ClickKind.motionchange;
+					break;
 			}
 		}
 
