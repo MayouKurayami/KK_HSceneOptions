@@ -76,8 +76,8 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HVoiceCtrl), "BreathProc")]
 		public static void BreathProcPre(ref AnimatorStateInfo _ai)
 		{
-			if (animationToggle.forceOLoop && flags.nowAnimStateName.Contains("OLoop"))
-				_ai = AnimationToggle.sLoopInfo;
+			if (hCategory != HCategory.service && (animationToggle.forceOLoop || animationToggle.orgasmTimer > 0) && flags.nowAnimStateName.Contains("OLoop"))
+				_ai = AnimationToggle.sLoopInfo;		
 		}
 
 		/// <summary>
