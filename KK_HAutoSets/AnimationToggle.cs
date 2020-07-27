@@ -80,13 +80,7 @@ namespace KK_HAutoSets
 						StartCoroutine(ToggleFlagSingleFrame(x => forceStopVoice = x));
 
 						orgasmTimer = 0;
-					}
-					//When set to extend precum time, the following statement makes sure the game does not enter actual orgasm prematurely during service modes
-					//by satisfying certain conditions. (Need to confirm whether this causes potential side effects in other modes)
-					else if (hCategory == HCategory.service && voice.nowVoices[0].state == HVoiceCtrl.VoiceKind.breath)
-					{
-						voice.nowVoices[0].state = HVoiceCtrl.VoiceKind.voice;
-					}		
+					}	
 				}
 				//Reset the timer back to 0 once time is reached regardless of current animation state
 				else if ((Time.time - orgasmTimer) > PrecumTimer.Value)

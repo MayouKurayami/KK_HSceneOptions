@@ -62,7 +62,6 @@ namespace KK_HAutoSets
 		public static ConfigEntry<bool> DisableAutoPrecum { get; private set; }
 		public static ConfigEntry<bool> PrecumToggle { get; private set; }
 		public static ConfigEntry<float> PrecumTimer { get; private set; }
-		public static ConfigEntry<bool> PrecumExtend { get; private set; }
 
 		public static ConfigEntry<KeyboardShortcut> InsertWaitKey { get; private set; }
 		public static ConfigEntry<KeyboardShortcut> InsertNowKey { get; private set; }
@@ -199,13 +198,6 @@ namespace KK_HAutoSets
 				new ConfigDescription("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. " +
 						"\n\nSet to 0 to disable this.",
 					new AcceptableValueRange<float>(0, 13f)));
-
-			PrecumExtend = Config.Bind(
-				section: "Force Precum",
-				key: "Precum Timer Extension",
-				defaultValue: false,
-				"Enable this to allow the precum timer to extend the precum animation even after female is done speaking. " +
-					"\n\nNote that the female will be completely silent after she is done speaking, so use this with discretion.");
 
 			PrecumToggle = Config.Bind(
 				section: "Force Precum",
