@@ -222,10 +222,9 @@ namespace KK_HAutoSets
 			if (hCategory == HCategory.intercourse)
 			{
 				flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside;
-
-				HVoiceCtrl voiceCtrl = Traverse.Create(proc).Field("voice").GetValue<HVoiceCtrl>();
-				foreach (HVoiceCtrl.Voice voice in voiceCtrl.nowVoices)
-					voice.state = HVoiceCtrl.VoiceKind.breath;
+			
+				foreach (HVoiceCtrl.Voice v in voice.nowVoices)
+					v.state = HVoiceCtrl.VoiceKind.breath;
 
 				for (int i = 0; i < 2; i++)
 					loopProcDelegate?.Invoke(true);
