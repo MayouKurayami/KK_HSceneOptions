@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using Harmony;
+using HarmonyLib;
 using static KK_HAutoSets.HAutoSets;
 
 namespace KK_HAutoSets
