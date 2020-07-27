@@ -197,7 +197,7 @@ namespace KK_HAutoSets
 
 				if (hCategory == HCategory.intercourse)
 					notOrgasm = flags.finish == HFlag.FinishKind.none;
-				else if (flags.mode > HFlag.EMode.aibu)
+				else if (hCategory == HCategory.service)
 					notOrgasm = (Traverse.Create(proc).Field("rePlay")?.GetValue<int>() ?? 0) == 0;
 
 				if (notOrgasm)
