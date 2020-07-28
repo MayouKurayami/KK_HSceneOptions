@@ -6,6 +6,7 @@ using UnityEngine;
 using Manager;
 using System;
 using static KK_HAutoSets.HAutoSets;
+using static KK_HAutoSets.SpeechControl;
 using static KK_HAutoSets.Utility;
 
 namespace KK_HAutoSets
@@ -60,6 +61,7 @@ namespace KK_HAutoSets
 				SetVoiceTimer(2f);
 
 			animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
+			speechControl = __instance.gameObject.AddComponent<SpeechControl>();
 		}
 
 		[HarmonyPostfix]

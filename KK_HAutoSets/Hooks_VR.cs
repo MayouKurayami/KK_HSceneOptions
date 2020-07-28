@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using static KK_HAutoSets.HAutoSets;
+using static KK_HAutoSets.SpeechControl;
 
 namespace KK_HAutoSets
 {
@@ -42,6 +43,7 @@ namespace KK_HAutoSets
 				SetVoiceTimer(2f);
 
 			animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
+			speechControl = __instance.gameObject.AddComponent<SpeechControl>();
 		}
 
 		[HarmonyPostfix]
