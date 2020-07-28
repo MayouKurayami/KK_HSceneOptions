@@ -47,7 +47,7 @@ namespace KK_HAutoSets
 		/// <summary>
 		/// Trigger a voice line based on the current context
 		/// </summary>
-		private void PlayVoice()
+		public void PlayVoice()
 		{
 			//Set the flag used by hooks to force idle voice line playback
 			StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));

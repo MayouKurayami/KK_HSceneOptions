@@ -223,12 +223,17 @@ namespace KK_HAutoSets
 				for (int i = 0; i < 2; i++)
 					loopProcDelegate?.Invoke(true);
 			}
-			//Outside of intercourse, if in service or female only modes, manually enter precum loop (OLoop) to allow the game to start looking at parameters related to entering orgasm.
-			//Then use a coroutine to set the cum click value after animation crossfade into OLoop is over, since during which the click value would be ignored and lost.
+			//Outside of intercourse, if the mode is not aibu then it must be either service or female only (masturbation and lesbian) modes,
+			//For those modes we manually enter precum (OLoop) to allow the game to start looking at parameters related to entering orgasm, then use a coroutine to wait for the transition to OLoop.
+			//After that, either play a voice line in females only modes, or set the cum click flag to trigger orgasm in service modes
 			else if (flags.mode > HFlag.EMode.aibu)
 			{
 				proc.SetPlay("OLoop", false);
-				StartCoroutine(DelayOrgasmClick(inside));
+
+				if (hCategory == HCategory.maleNotVisible && AutoVoice.Value != SpeechMode.MuteAll)
+					StartCoroutine(RunAfterTransition(() => speechControl.PlayVoice()));
+				else
+					StartCoroutine(RunAfterTransition(() => flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside));
 			}
 			//In aibu mode, simply set the cum click value to enter orgasm immediately.
 			else
@@ -236,28 +241,8 @@ namespace KK_HAutoSets
 				flags.click = HFlag.ClickKind.orgW;
 			}
 
-			//Initiate timer if value is greater than 0 and male is present.
-			//No point in delaying orgasm when there is no male to sychronize to.
-			if (PrecumTimer.Value > 0 && hCategory != HCategory.maleNotVisible)
+			if (PrecumTimer.Value > 0)
 				orgasmTimer = Time.time;
-		}
-
-		/// <summary>
-		/// Wait for current animation transition to finish, then trigger orgasm according to the current condition
-		/// </summary>
-		/// <param name="inside">Whether to cum inside or not</param>
-		/// <returns></returns>
-		private IEnumerator DelayOrgasmClick(bool inside)
-		{
-			yield return new WaitUntil(() => lstFemale?.FirstOrDefault()?.animBody.GetCurrentAnimatorStateInfo(0).IsName(flags.nowAnimStateName) ?? true);
-
-			//* In modes where male is not present (masturbation and lesbian), the condition to trigger orgasm is for the current speech to finish.
-			//  Stop the voice immediately to trigger orgasm immediately as the timer wouldn't be initialized in those modes.
-			//* In other modes, simply set the cum click flag to trigger orgasm
-			if (hCategory == HCategory.maleNotVisible)
-				StartCoroutine(ToggleFlagSingleFrame(x => forceStopVoice = x));
-			else
-				flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside;
 		}	
 	}
 }

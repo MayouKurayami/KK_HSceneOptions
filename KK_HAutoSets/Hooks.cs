@@ -388,6 +388,7 @@ namespace KK_HAutoSets
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(HSonyu), nameof(HSonyu.Proc))]
 		[HarmonyPatch(typeof(HMasturbation), nameof(HMasturbation.Proc))]
+		[HarmonyPatch(typeof(HLesbian), nameof(HLesbian.Proc))]
 		public static IEnumerable<CodeInstruction> OLoopExtendTpl(IEnumerable<CodeInstruction> instructions)
 		{
 			var voiceCheck = AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }) 

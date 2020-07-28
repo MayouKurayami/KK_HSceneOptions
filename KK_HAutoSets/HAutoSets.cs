@@ -424,6 +424,16 @@ namespace KK_HAutoSets
 		}
 
 		/// <summary>
+		/// Wait for current animation transition to finish, then run the given delegate
+		/// </summary>
+		internal static IEnumerator RunAfterTransition(Action action)
+		{
+			yield return new WaitUntil(() => lstFemale?.FirstOrDefault()?.animBody.GetCurrentAnimatorStateInfo(0).IsName(flags.nowAnimStateName) ?? true);
+
+			action();
+		}
+
+		/// <summary>
 		/// Function to limit excitement gauges based on configured values
 		/// </summary>
 		internal static void GaugeLimiter()
