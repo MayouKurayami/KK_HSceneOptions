@@ -32,6 +32,17 @@ namespace KK_HAutoSets
 			}
 		}
 
+		//When changing between service modes, if the male gauge is above the orgasm threshold then after the transition the animation will be forced to OLoop with the menu disabled.
+		//These hooks bypass that behavior when DisableAutoPrecum is set to true.
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(H3PDarkHoushi), nameof(H3PDarkHoushi.MotionChange))]
+		public static void HoushiDarkMotionChangePre(ref int _motion)
+		{
+			//Change parameter from 2 (OLoop) to 1 (WLoop)
+			if (_motion == 2 && DisableAutoPrecum.Value)
+				_motion = 1;
+		}
+
 
 		////////////////////////////////////////////////////////////////////////////////
 		/// See section "Disable AutoFinish in Service Modes" under KKHautoSets.Hooks
