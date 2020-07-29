@@ -262,43 +262,6 @@ namespace KK_HAutoSets
 		}
 
 
-		////////////////////////////////////////////////////////////////////////////////
-		/// Keep the in-game menu accessible in forced OLoop by skipping the sonyu methods that disable them if in OLoop
-		/// Then activate the orgasm buttons if male excitement gauge is above 70
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HSprite), "SonyuProc")]
-		public static bool HSpriteSonyuPre(HSprite __instance)
-		{
-			if (animationToggle.forceOLoop)
-			{
-				int index = ((flags.selectAnimationListInfo != null) ? (flags.selectAnimationListInfo.isFemaleInitiative ? 1 : 0) : (flags.nowAnimationInfo.isFemaleInitiative ? 1 : 0)) * 7;
-				HSceneSpriteCategorySetActive(__instance.sonyu.categoryActionButton.lstButton, __instance.sonyu.tglAutoFinish.isOn, 4 + index);
-
-				return false;
-			}	
-			else
-			{
-				return true;
-			}				
-		}
-
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HSprite), "Sonyu3PProc")]
-		public static bool HSpriteSonyu3PProcPre(HSprite __instance)
-		{
-			if (animationToggle.forceOLoop)
-			{
-				int index = ((flags.selectAnimationListInfo != null) ? (flags.selectAnimationListInfo.isFemaleInitiative ? 1 : 0) : (flags.nowAnimationInfo.isFemaleInitiative ? 1 : 0)) * 7;
-				HSceneSpriteCategorySetActive(__instance.sonyu3P.categoryActionButton.lstButton, __instance.sonyu3P.tglAutoFinish.isOn, 4 + index);
-
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-
 		//When changing between service modes, if the male gauge is above the orgasm threshold then after the transition the animation will be forced to OLoop with the menu disabled.
 		//These hooks bypass that behavior when DisableAutoPrecum is set to true.
 		[HarmonyPrefix]
@@ -324,24 +287,59 @@ namespace KK_HAutoSets
 		/// <param name="targetNextOpCode">If specified, the OpCode of the instruction immediately after the targetOperand instruction must be targetOpCode before injection can proceed</param>
 		/// <param name="insertAfter">Inject after this many elements in the instruction list</param>
 		/// <returns></returns>
-		internal static List<CodeInstruction> InjectInstruction(List<CodeInstruction> instructions, object targetOperand, CodeInstruction[] injection, object targetNextOpCode = null, int rangeStart = 0, int rangeEnd = -1, int insertAfter = 1)
+		internal static List<CodeInstruction> InjectInstruction(
+			List<CodeInstruction> instructions, 
+			object targetOperand, CodeInstruction[] injection, 
+			object targetNextOpCode = null, 
+			object targetNextOperand = null, 
+			int rangeStart = 0, 
+			int rangeEnd = -1, 
+			int insertAfter = 1)
 		{
 			if (rangeEnd == -1)
 				rangeEnd = instructions.Count;
 
 			for (var i = rangeStart; i < rangeEnd; i++)
 			{
-				if (instructions[i].operand == targetOperand && (targetNextOpCode != null ? (instructions[i + 1].opcode == (OpCode)targetNextOpCode) : true))
-				{
-					instructions.InsertRange(i + insertAfter, injection);
+				if (instructions[i].operand != targetOperand)
+					continue;
+				else if (targetNextOpCode != null && instructions[i + 1].opcode != (OpCode)targetNextOpCode)
+					continue;
+				else if (targetNextOperand != null && instructions[i + 1].operand != targetNextOperand)
+					continue;
+				
+				instructions.InsertRange(i + insertAfter, injection);
 #if DEBUG
-					UnityEngine.Debug.LogWarning(new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name + " injected instructions after " + targetOperand.ToString() + " at index " + i);
-#endif
-				}
+				UnityEngine.Debug.LogWarning(new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name + " injected instructions after " + targetOperand.ToString() + " at index " + i);
+#endif				
 			}
 
 			return instructions;
 		}
+
+
+		#region Keep in-game menu accessible when in forced OLoop
+
+		/// <summary>
+		/// Make the game treats forced OLoop the same as SLoop, thus preventing the game menu from deactivating during forced OLoop
+		/// </summary>
+		[HarmonyTranspiler]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SonyuProc))]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.Sonyu3PProc))]
+		public static IEnumerable<CodeInstruction> HSpriteSonyuProcTpl(IEnumerable<CodeInstruction> instructions)
+		{
+			var animatorStateInfoMethod = AccessTools.Method(typeof(AnimatorStateInfo), nameof(AnimatorStateInfo.IsName))
+				?? throw new ArgumentNullException("UnityEngine.AnimatorStateInfo.IsName not found");
+			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(HSpriteProcStackOverride)) ?? throw new ArgumentNullException("Hooks.HSpriteProcStackOverride not found");
+
+			//Look for the check for SLoop then make it into a check for (SLoop || forceOLoop)
+			return InjectInstruction(new List<CodeInstruction>(instructions), "SLoop", new CodeInstruction[] { new CodeInstruction(OpCodes.Call, injectMethod) }, 
+				targetNextOperand: animatorStateInfoMethod, insertAfter: 2);
+		}
+
+		internal static bool HSpriteProcStackOverride(bool valueOnStack) => animationToggle.forceOLoop ? true : valueOnStack;		
+
+		#endregion
 
 
 		#region Disable AutoFinish in Service Modes
@@ -360,7 +358,7 @@ namespace KK_HAutoSets
 			//Push the specified service mode as int onto the stack, then use it as a parameter to call HoushiMaleGaugeOverride
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4, (int)mode), new CodeInstruction(OpCodes.Call, injectMethod) };
 
-			return InjectInstruction(new List<CodeInstruction>(instructions), gaugeCheck, injection, OpCodes.Ldc_R4, insertAfter: 2);
+			return InjectInstruction(new List<CodeInstruction>(instructions), gaugeCheck, injection, targetNextOpCode: OpCodes.Ldc_R4, insertAfter: 2);
 		}
 
 		[HarmonyTranspiler]
@@ -429,7 +427,7 @@ namespace KK_HAutoSets
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4_1), new CodeInstruction(OpCodes.Call, injectMethod) };
 			
 			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
-			return InjectInstruction(instructionList, voiceCheck, injection, OpCodes.Brtrue, rangeStart, rangeEnd);
+			return InjectInstruction(instructionList, voiceCheck, injection, targetNextOpCode: OpCodes.Brtrue, rangeStart: rangeStart, rangeEnd: rangeEnd);
 		}
 
 		[HarmonyTranspiler]
@@ -447,12 +445,12 @@ namespace KK_HAutoSets
 			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
 			//In Houshi mode's vanilla code there are two conditions that both have to be met for OLoop to be continued.
 			//This injects an override for the first condition
-			InjectInstruction(instructionList, voiceCheck, injection, OpCodes.Brfalse, rangeStart, rangeEnd);
+			InjectInstruction(instructionList, voiceCheck, injection, targetNextOpCode: OpCodes.Brfalse, rangeStart: rangeStart, rangeEnd: rangeEnd);
 
 			//Overrides the second condition and return the modified instructions
 			var voiceCheck2 = AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }) 
 				?? throw new ArgumentNullException("Voice.IsVoiceCheck not found");	
-			return InjectInstruction(instructionList, voiceCheck2, injection, OpCodes.Brtrue, rangeStart, rangeEnd);
+			return InjectInstruction(instructionList, voiceCheck2, injection, targetNextOpCode: OpCodes.Brtrue, rangeStart: rangeStart, rangeEnd: rangeEnd);
 		}
 
 		[HarmonyTranspiler]
@@ -469,7 +467,7 @@ namespace KK_HAutoSets
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4_0), new CodeInstruction(OpCodes.Call, injectMethod) };
 
 			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
-			return InjectInstruction(new List<CodeInstruction>(instructions), voiceCheck, injection, OpCodes.Brfalse, rangeStart, rangeEnd);
+			return InjectInstruction(new List<CodeInstruction>(instructions), voiceCheck, injection, targetNextOpCode: OpCodes.Brfalse, rangeStart: rangeStart, rangeEnd: rangeEnd);
 		}
 
 		/// <summary>

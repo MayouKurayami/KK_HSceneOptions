@@ -12,26 +12,6 @@ namespace KK_HAutoSets
 {
 	public static class Hooks_Darkness
 	{
-		////////////////////////////////////////////////////////////////////////////////
-		/// Keep the in-game menu accessible in forced OLoop by skipping the sonyu methods that disable them if in OLoop
-		/// Then activate the orgasm buttons if male excitement gauge is above 70
-		
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HSprite), "Sonyu3PDarkProc")]
-		public static bool HSpriteSonyu3PDarkProcPre(HSprite __instance)
-		{
-			if (animationToggle.forceOLoop)
-			{
-				HSceneSpriteCategorySetActive(__instance.sonyu3PDark.categoryActionButton.lstButton, __instance.sonyu3PDark.tglAutoFinish.isOn, 18);
-
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-
 		//When changing between service modes, if the male gauge is above the orgasm threshold then after the transition the animation will be forced to OLoop with the menu disabled.
 		//These hooks bypass that behavior when DisableAutoPrecum is set to true.
 		[HarmonyPrefix]
@@ -42,6 +22,12 @@ namespace KK_HAutoSets
 			if (_motion == 2 && DisableAutoPrecum.Value)
 				_motion = 1;
 		}
+
+		////////////////////////////////////////////////////////////////////////////////
+		/// Keep the in-game menu accessible in forced OLoop
+		[HarmonyTranspiler]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.Sonyu3PDarkProc))]
+		public static IEnumerable<CodeInstruction> HSpriteDarkSonyuProcTpl(IEnumerable<CodeInstruction> instructions) => HSpriteSonyuProcTpl(instructions);
 
 
 		////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +54,7 @@ namespace KK_HAutoSets
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4_1), new CodeInstruction(OpCodes.Call, injectMethod) };
 
 			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
-			return InjectInstruction(instructionList, voiceCheck, injection, OpCodes.Brtrue, rangeStart, rangeEnd);
+			return InjectInstruction(instructionList, voiceCheck, injection, targetNextOpCode: OpCodes.Brtrue, rangeStart: rangeStart, rangeEnd: rangeEnd);
 		}
 
 		[HarmonyTranspiler]
@@ -84,7 +70,7 @@ namespace KK_HAutoSets
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4_0), new CodeInstruction(OpCodes.Call, injectMethod) };
 
 			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
-			return InjectInstruction(new List<CodeInstruction>(instructions), voiceCheck, injection, OpCodes.Brfalse, rangeStart, rangeEnd);
+			return InjectInstruction(new List<CodeInstruction>(instructions), voiceCheck, injection, targetNextOpCode: OpCodes.Brfalse, rangeStart: rangeStart, rangeEnd: rangeEnd);
 		}
 
 		#endregion
