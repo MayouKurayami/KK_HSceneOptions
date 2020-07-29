@@ -236,6 +236,19 @@ namespace KK_HAutoSets
 		}
 
 
+		//If service mode is prevented from automatically entering OLoop due to DisableAutoPrecum, the speed gauge would not be reset after orgasm.
+		//As a result, if service is restarted afterward it may start at a really high speed which is a bit unnatural.
+		//This resets the speed guage when cumming in service modes.
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HFlag), nameof(HFlag.AddHoushiInside))]
+		[HarmonyPatch(typeof(HFlag), nameof(HFlag.AddHoushiOutside))]
+		public static void HoushiSpeedReset()
+		{
+			if (DisableAutoPrecum.Value && flags)
+				flags.speedCalc = 0f;
+		}
+
+
 		////////////////////////////////////////////////////////////////////////////////
 		///Harmony Transpilers
 		////////////////////////////////////////////////////////////////////////////////
