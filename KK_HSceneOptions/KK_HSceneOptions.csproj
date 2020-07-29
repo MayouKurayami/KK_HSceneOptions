@@ -7,8 +7,8 @@
     <ProjectGuid>{7EC94974-E0DB-4EAA-A911-54433295B5EF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KK_HAutoSets</RootNamespace>
-    <AssemblyName>KK_HAutoSets</AssemblyName>
+    <RootNamespace>KK_HSceneOptions</RootNamespace>
+    <AssemblyName>KK_HSceneOptions</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -64,7 +64,7 @@
   <ItemGroup>
     <Compile Include="AnimationToggle.cs" />
     <Compile Include="ConfigurationManagerAttributes.cs" />
-    <Compile Include="HAutoSets.cs" />
+    <Compile Include="HSceneOptions.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="Hooks_Darkness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

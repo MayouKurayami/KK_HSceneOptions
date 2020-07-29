@@ -5,10 +5,10 @@ using HarmonyLib;
 using UnityEngine;
 using Manager;
 using System;
-using static KK_HAutoSets.HAutoSets;
-using static KK_HAutoSets.SpeechControl;
+using static KK_HSceneOptions.HSceneOptions;
+using static KK_HSceneOptions.SpeechControl;
 
-namespace KK_HAutoSets
+namespace KK_HSceneOptions
 {
 	public class InstructionNotFoundException : Exception
 	{

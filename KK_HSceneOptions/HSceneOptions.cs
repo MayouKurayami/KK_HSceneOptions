@@ -9,20 +9,20 @@ using System.ComponentModel;
 using UnityEngine;
 using static ChaFileDefine;
 using Manager;
-using static KK_HAutoSets.SpeechControl;
+using static KK_HSceneOptions.SpeechControl;
 
-namespace KK_HAutoSets
+namespace KK_HSceneOptions
 {
 	[BepInPlugin(GUID, PluginName, Version)]
 	[BepInProcess("Koikatu")]
 	[BepInProcess("KoikatuVR")]
 	[BepInProcess("Koikatsu Party")]
 	[BepInProcess("Koikatsu Party VR")]
-	public class HAutoSets : BaseUnityPlugin
+	public class HSceneOptions : BaseUnityPlugin
 	{
-		public const string GUID = "MK.KK_HAutoSets";
-		public const string PluginName = "HAutoSets";
-		public const string AssembName = "KK_HAutoSets";
+		public const string GUID = "MK.KK_HSceneOptions";
+		public const string PluginName = "HSceneOptions";
+		public const string AssembName = "KK_HSceneOptions";
 		public const string Version = "2.0.5";
 
 		internal static bool isVR;

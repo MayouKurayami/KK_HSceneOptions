@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using HarmonyLib;
-using static KK_HAutoSets.HAutoSets;
+using static KK_HSceneOptions.HSceneOptions;
 
-namespace KK_HAutoSets
+namespace KK_HSceneOptions
 {
 	internal class AnimationToggle : MonoBehaviour
 	{

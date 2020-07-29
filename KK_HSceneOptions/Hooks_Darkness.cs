@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
-using static KK_HAutoSets.HAutoSets;
-using static KK_HAutoSets.Hooks;
+using static KK_HSceneOptions.HSceneOptions;
+using static KK_HSceneOptions.Hooks;
 
-namespace KK_HAutoSets
+namespace KK_HSceneOptions
 {
 	public static class Hooks_Darkness
 	{
