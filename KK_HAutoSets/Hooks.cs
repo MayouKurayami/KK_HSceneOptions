@@ -8,7 +8,6 @@ using Manager;
 using System;
 using static KK_HAutoSets.HAutoSets;
 using static KK_HAutoSets.SpeechControl;
-using static KK_HAutoSets.Utility;
 
 namespace KK_HAutoSets
 {
@@ -344,6 +343,14 @@ namespace KK_HAutoSets
 
 		#region Disable AutoFinish in Service Modes
 
+		[HarmonyTranspiler]
+		[HarmonyPatch(typeof(HHoushi), "LoopProc")]
+		public static IEnumerable<CodeInstruction> HoushiDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(instructions, HFlag.EMode.houshi);
+
+		[HarmonyTranspiler]
+		[HarmonyPatch(typeof(H3PHoushi), "LoopProc")]
+		public static IEnumerable<CodeInstruction> Houshi3PDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(instructions, HFlag.EMode.houshi3P);
+
 		/// <summary>
 		/// Injects HoushiMaleGaugeOverride to where the vanilla code checks for the male gauge, allowing the check to be bypassed based on config.
 		/// </summary>
@@ -354,20 +361,12 @@ namespace KK_HAutoSets
 		{
 			var gaugeCheck = AccessTools.Field(typeof(HFlag), nameof(HFlag.gaugeMale)) ?? throw new ArgumentNullException("HFlag.gaugeMale not found");
 			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(Hooks.HoushiMaleGaugeOverride)) ?? throw new ArgumentNullException("Hooks.HoushiMaleGaugeOverride not found");
-			
+
 			//Push the specified service mode as int onto the stack, then use it as a parameter to call HoushiMaleGaugeOverride
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4, (int)mode), new CodeInstruction(OpCodes.Call, injectMethod) };
 
 			return InjectInstruction(new List<CodeInstruction>(instructions), gaugeCheck, injection, targetNextOpCode: OpCodes.Ldc_R4, insertAfter: 2);
 		}
-
-		[HarmonyTranspiler]
-		[HarmonyPatch(typeof(HHoushi), "LoopProc")]
-		public static IEnumerable<CodeInstruction> HoushiDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(instructions, HFlag.EMode.houshi);
-
-		[HarmonyTranspiler]
-		[HarmonyPatch(typeof(H3PHoushi), "LoopProc")]
-		public static IEnumerable<CodeInstruction> Houshi3PDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(instructions, HFlag.EMode.houshi3P);
 
 		/// <summary>
 		/// Designed to modify the stack and override the orgasm threshold from 70 to 110 if DisableAutoPrecum is enabled, effectively making it impossible to pass the threshold.
@@ -415,59 +414,59 @@ namespace KK_HAutoSets
 		[HarmonyPatch(typeof(HSonyu), nameof(HSonyu.Proc))]
 		[HarmonyPatch(typeof(HMasturbation), nameof(HMasturbation.Proc))]
 		[HarmonyPatch(typeof(HLesbian), nameof(HLesbian.Proc))]
-		public static IEnumerable<CodeInstruction> OLoopExtendTpl(IEnumerable<CodeInstruction> instructions)
-		{
-			var instructionList = new List<CodeInstruction>(instructions);
+		public static IEnumerable<CodeInstruction> OLoopExtendTpl(IEnumerable<CodeInstruction> instructions) 
+			=> OLoopExtendInstructions(instructions,
+				AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }), 
+				overrideValue: 1);
 
-			var voiceCheck = AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }) 
-				?? throw new ArgumentNullException("Voice.IsVoiceCheck not found");
-			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(OLoopStackOverride)) ?? throw new ArgumentNullException("Hooks.OLoopExtendOverride not found");
-
-			// Instructions that inject OLoopStackOverride and pass it the value of 1, which is the value required to be on the stack to satisfy the condition to let OLoop continue
-			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4_1), new CodeInstruction(OpCodes.Call, injectMethod) };
-			
-			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
-			return InjectInstruction(instructionList, voiceCheck, injection, targetNextOpCode: OpCodes.Brtrue, rangeStart: rangeStart, rangeEnd: rangeEnd);
-		}
+		[HarmonyTranspiler]
+		[HarmonyPatch(typeof(H3PHoushi), nameof(H3PHoushi.Proc))]
+		[HarmonyPatch(typeof(H3PSonyu), nameof(H3PSonyu.Proc))]
+		public static IEnumerable<CodeInstruction> H3POLoopExtendTpl(IEnumerable<CodeInstruction> instructions) 
+			=> OLoopExtendInstructions(instructions,
+				AccessTools.Method(typeof(HActionBase), "IsCheckVoicePlay"), 
+				overrideValue: 0,
+				targetNextOpCode: OpCodes.Brfalse);
 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(HHoushi), nameof(HHoushi.Proc))]
 		public static IEnumerable<CodeInstruction> HoushiOLoopExtendTpl(IEnumerable<CodeInstruction> instructions)
 		{
-			var instructionList = new List<CodeInstruction>(instructions);
-
-			var voiceCheck = AccessTools.Field(typeof(HVoiceCtrl.Voice), nameof(HVoiceCtrl.Voice.state)) ?? throw new ArgumentNullException("HVoiceCtrl.Voice.state not found");
-			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(OLoopStackOverride)) ?? throw new ArgumentNullException("Hooks.OLoopExtendOverride not found");
-			
-			// Instructions that inject OLoopStackOverride and pass it the value of 1, which is the value required to be on the stack to satisfy the condition to let OLoop continue
-			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4_1), new CodeInstruction(OpCodes.Call, injectMethod) };
-
-			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
 			//In Houshi mode's vanilla code there are two conditions that both have to be met for OLoop to be continued.
 			//This injects an override for the first condition
-			InjectInstruction(instructionList, voiceCheck, injection, targetNextOpCode: OpCodes.Brfalse, rangeStart: rangeStart, rangeEnd: rangeEnd);
+			List<CodeInstruction> instructionList = (List<CodeInstruction>)OLoopExtendTpl(instructions);
 
 			//Overrides the second condition and return the modified instructions
-			var voiceCheck2 = AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }) 
-				?? throw new ArgumentNullException("Voice.IsVoiceCheck not found");	
-			return InjectInstruction(instructionList, voiceCheck2, injection, targetNextOpCode: OpCodes.Brtrue, rangeStart: rangeStart, rangeEnd: rangeEnd);
+			var secondVoiceCheck = AccessTools.Field(typeof(HVoiceCtrl.Voice), nameof(HVoiceCtrl.Voice.state));		
+			return OLoopExtendInstructions(instructionList, secondVoiceCheck, overrideValue: 1, targetNextOpCode: OpCodes.Brfalse);
 		}
 
-		[HarmonyTranspiler]
-		[HarmonyPatch(typeof(H3PHoushi), nameof(H3PHoushi.Proc))]
-		[HarmonyPatch(typeof(H3PSonyu), nameof(H3PSonyu.Proc))]
-		public static IEnumerable<CodeInstruction> H3POLoopExtendTpl(IEnumerable<CodeInstruction> instructions)
+
+		/// <summary>
+		/// Within the given set of instructions, find the instruction that matches the specified operand/opcode and insert a method there
+		/// that allows extending/exiting OLoop based on the status of the plugin
+		/// </summary>
+		/// <param name="instructions">Instructions to be processed</param>
+		/// <param name="voiceCheckInfo">Reflection info of the operand of the instruction after which new instructions will be injected</param>
+		/// <param name="overrideValue">Argument for OLoopStackOverride to push onto the stack</param>
+		/// <param name="targetNextOpCode">If specified, OpCode of the instruction after the target instruction must match this for injection to proceed</param>
+		public static IEnumerable<CodeInstruction> OLoopExtendInstructions(IEnumerable<CodeInstruction> instructions, object voiceCheckInfo, int overrideValue, object targetNextOpCode = null)
 		{
+			if (voiceCheckInfo == null)
+				throw new ArgumentNullException("Operand of target instruction not found");
+
+			if (targetNextOpCode == null)
+				targetNextOpCode = OpCodes.Brtrue;
+
 			var instructionList = new List<CodeInstruction>(instructions);
 
-			var voiceCheck = AccessTools.Method(typeof(HActionBase), "IsCheckVoicePlay") ?? throw new ArgumentNullException("HActionBase.IsCheckVoicePlay not found");
 			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(OLoopStackOverride)) ?? throw new ArgumentNullException("Hooks.OLoopExtendOverride not found");
 
-			// Instructions that inject OLoopStackOverride and pass it the value of 0, which is the value required to be on the stack to satisfy the condition to let OLoop continue
-			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4_0), new CodeInstruction(OpCodes.Call, injectMethod) };
-
+			// Instructions that inject OLoopStackOverride and pass it the value of 1, which is the value required to be on the stack to satisfy the condition to let OLoop continue
+			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4, overrideValue), new CodeInstruction(OpCodes.Call, injectMethod) };
+			
 			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
-			return InjectInstruction(new List<CodeInstruction>(instructions), voiceCheck, injection, targetNextOpCode: OpCodes.Brfalse, rangeStart: rangeStart, rangeEnd: rangeEnd);
+			return InjectInstruction(instructionList, voiceCheckInfo, injection, targetNextOpCode, rangeStart: rangeStart, rangeEnd: rangeEnd);
 		}
 
 		/// <summary>
