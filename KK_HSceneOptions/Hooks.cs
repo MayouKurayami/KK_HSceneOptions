@@ -67,18 +67,6 @@ namespace KK_HSceneOptions
 			GaugeLimiter();
 		}
 
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HActionBase), "IsBodyTouch")]
-		public static bool IsBodyTouchPre(bool __result)
-		{
-			if (DisableHideBody.Value)
-			{
-				__result = false;
-				return false;
-			}
-			return true;
-		}
-
 		/// <summary>
 		/// The vanilla game does not have any moan or breath sounds available for the precum (OLoop) animation.
 		/// This patch makes the game play sound effects as if it's in strong loop when the game is in fact playing OLoop without entering cum,

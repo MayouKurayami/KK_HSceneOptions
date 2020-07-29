@@ -43,7 +43,6 @@ namespace KK_HSceneOptions
 		public static ConfigEntry<bool> SubAccessories { get; private set; }
 		public static ConfigEntry<bool> HideMaleShadow { get; private set; }
 		public static ConfigEntry<bool> HideFemaleShadow { get; private set; }
-		public static ConfigEntry<bool> DisableHideBody { get; private set; }
 
 		public static ConfigEntry<bool> LockFemaleGauge { get; private set; }
 		public static ConfigEntry<bool> LockMaleGauge { get; private set; }
@@ -86,12 +85,6 @@ namespace KK_HSceneOptions
 				key: "Auto Equip Sub-Accessories", 
 				defaultValue: false,
 				"Auto equip sub-accessories at H start");
-
-			DisableHideBody = Config.Bind(
-				section: "",
-				key: "Disable Hiding of Male Body When Groping",
-				defaultValue: false,
-				"If enabled, the male body will not be hidden when touching the girl during sex or service");
 			
 			HideFemaleShadow = Config.Bind(
 				section: "",
