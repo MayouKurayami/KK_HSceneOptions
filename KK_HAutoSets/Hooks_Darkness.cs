@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Reflection.Emit;
 using HarmonyLib;
-using UnityEngine;
-using Manager;
-using System;
 using static KK_HAutoSets.HAutoSets;
 using static KK_HAutoSets.Hooks;
 

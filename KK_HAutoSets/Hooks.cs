@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Linq;
 using HarmonyLib;
@@ -104,63 +103,22 @@ namespace KK_HAutoSets
 				animationToggle.forceOLoop = false;
 		}
 
-		//In intercourse modes, force the game to play idle voice line while forceIdleVoice is true
+		
 		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsSonyuIdleTime")]
-		public static bool IsSonyuIdleTimePre(ref bool __result)
+		[HarmonyPatch(typeof(HFlag.VoiceFlag), nameof(HFlag.VoiceFlag.IsSonyuIdleTime))]
+		[HarmonyPatch(typeof(HFlag.VoiceFlag), nameof(HFlag.VoiceFlag.IsHoushiIdleTime))]
+		[HarmonyPatch(typeof(HFlag.VoiceFlag), nameof(HFlag.VoiceFlag.IsAibuIdleTime))]
+		public static bool IsIdleTimePre(ref bool __result)
 		{
+			//Force the game to play idle voice line while forceIdleVoice is true
 			if (forceIdleVoice)
 			{
 				__result = true;
 				return false;
 			}
-			//If speech control is not disabled and timer has a positive value, 
-			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
-			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
-			else if (voiceTimer > 0 && AutoVoice.Value != SpeechMode.Disabled)
-			{
-				__result = false;
-				return false;
-			}
-
-			return true;
-		}
-
-		//In service modes, force the game to play idle voice line while forceIdleVoice is true
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsHoushiIdleTime")]
-		public static bool IsHoushiIdleTimePre(ref bool __result)
-		{
-			if (forceIdleVoice)
-			{
-				__result = true;
-				return false;
-			}
-			//If speech control is not disabled and timer has a positive value, 
-			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
-			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
-			else if (voiceTimer > 0 && AutoVoice.Value != SpeechMode.Disabled)
-			{
-				__result = false;
-				return false;
-			}
-
-			return true;
-		}
-
-		//In caress modes, force the game to play idle voice line while forceIdleVoice is true
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HFlag.VoiceFlag), "IsAibuIdleTime")]
-		public static bool IsAibuIdleTimePre(ref bool __result)
-		{
-			if (forceIdleVoice)
-			{
-				__result = true;
-				return false;
-			}
-			//If speech control is not disabled and timer has a positive value, 
-			//make this method return false so that default idle speech will not trigger during countdown or mute idle mode.
-			//The timer would have a positive value if it's currently counting down in timer mode, or at its default positive value if in mute idle mode.
+			//If speech control is not disabled and the speech timer has a positive value, 
+			//make this method return false so that idle speech will not trigger while timer is still counting down, or when plugin is in mute modes.
+			//(the timer would have a positive value if it's currently counting down in timer mode, or at its default positive value in other modes)
 			else if (voiceTimer > 0 && AutoVoice.Value != SpeechMode.Disabled)
 			{
 				__result = false;
@@ -193,9 +151,9 @@ namespace KK_HAutoSets
 		}
 
 
-		////////////////////////////////////////////////////////////////////////////////
-		/// If precum countdown timer is set, manually proc orgasm when pressing the corresponding menu buttons to forcibly start orgasm immediately
-		/// to prevent issues with the timer
+		#region Force start orgasm when pressing menu buttons
+		/// If precum countdown timer is set, forcibly start orgasm immediately when pressing the corresponding menu buttons to prevent issues with the timer
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnInsideClick")]
 		public static void OnInsideClickPost()
@@ -211,9 +169,11 @@ namespace KK_HAutoSets
 			if (PrecumTimer.Value > 0)
 				animationToggle.ManualOrgasm(inside: false);
 		}
-		////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////
 
+		#endregion
+
+
+		#region Disable non-functional controlpad input during forced OLoop
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnSpeedUpClick")]
@@ -260,6 +220,8 @@ namespace KK_HAutoSets
 				return true;
 		}
 
+		#endregion
+
 
 		//When changing between service modes, if the male gauge is above the orgasm threshold then after the transition the animation will be forced to OLoop with the menu disabled.
 		//These hooks bypass that behavior when DisableAutoPrecum is set to true.
@@ -273,9 +235,10 @@ namespace KK_HAutoSets
 				_motion = 1;
 		}
 
-		////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////
 
+		////////////////////////////////////////////////////////////////////////////////
+		///Harmony Transpilers
+		////////////////////////////////////////////////////////////////////////////////
 
 		/// <summary>
 		/// Injects code instructions into block(s) of codes that begins with a check for OLoop
