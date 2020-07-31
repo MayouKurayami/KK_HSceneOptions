@@ -154,7 +154,7 @@ namespace KK_HSceneOptions
 
 						if (useItem != null)
 						{
-							var idObj = Traverse.Create(useItem).Field("idObj").GetValue<int>();
+							var idObj = Traverse.Create(useItem).Property("idObj").GetValue<int>();
 							var kindTouch = Traverse.Create(useItem).Field("kindTouch").GetValue<int>();
 							int[,] voicePattern = new int[6, 5]
 							{
