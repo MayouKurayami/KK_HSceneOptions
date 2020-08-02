@@ -54,7 +54,7 @@ namespace KK_HSceneOptions
 			HideShadow(males, females);
 
 			if (AutoVoice.Value == SpeechMode.Timer)
-				SetVoiceTimer(2f);
+				SetVoiceTimer();
 
 			animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
 			speechControl = __instance.gameObject.AddComponent<SpeechControl>();
@@ -129,13 +129,19 @@ namespace KK_HSceneOptions
 				return true;
 		}
 
-
+		//After SpeechControl.PlayVoice() is called, VoiceProc isn't called immediately or sometimes at all. 
+		//This causes SpeechControl to reset the timer and set voicePlaying to false before the voice is done playing (if it has been queued to play).
+		//Therefore, we re-initialize the timer and the voicePlaying flag again here in case the voice was indeed played as indicated by __result being true,
+		//allowing SpeechControl to set the timer again at the end of voice playback.
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
 		public static void VoiceProcPost(bool __result)
 		{
-			if (__result && AutoVoice.Value == SpeechMode.Timer)
-				SetVoiceTimer(2f);
+			if (__result)
+			{
+				voiceTimer = Time.time;
+				voicePlaying = true;
+			}			
 		}
 
 

@@ -40,7 +40,7 @@ namespace KK_HSceneOptions
 			HideShadow(males, females);
 
 			if (AutoVoice.Value == SpeechMode.Timer)
-				SetVoiceTimer(2f);
+				SetVoiceTimer();
 
 			animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
 			speechControl = __instance.gameObject.AddComponent<SpeechControl>();

@@ -8,11 +8,15 @@ namespace KK_HSceneOptions
 {
 	internal class SpeechControl : MonoBehaviour
 	{
-		internal const float voiceMinInterval = 3f;
+		internal const float voiceMinInterval = 0.1f;
 		internal const float voiceMaxInterval = 60f;
 
 		internal static bool forceIdleVoice;
-		internal static float voiceTimer = voiceMinInterval;
+		internal static float voiceTimer = Time.time;
+		/// <summary>
+		/// Whether a voice line is currently being played. This should only be used when speech control is set to timer mode.
+		/// </summary>
+		internal static bool voicePlaying;
 
 
 		private void Update()
@@ -20,16 +24,29 @@ namespace KK_HSceneOptions
 			if (Input.GetKeyDown(TriggerVoiceKey.Value.MainKey) && TriggerVoiceKey.Value.Modifiers.All(x => Input.GetKey(x)))
 			{
 				PlayVoice();
-			}	
+			}
 			else if (AutoVoice.Value == SpeechMode.Timer)
 			{
-				voiceTimer -= Time.deltaTime;
-
-				if (voiceTimer <= 0 && voice.nowVoices[0].state < HVoiceCtrl.VoiceKind.startvoice && voice.nowVoices[1]?.state < HVoiceCtrl.VoiceKind.startvoice)
+				if (voiceTimer < Time.time)
 				{
-					PlayVoice();
-					SetVoiceTimer(2f);
+					//When timer is up and no voice is currently playing as indicated by the voicePlaying flag, manually play a voice.
+					//We don't set the timer yet because we want it to starting counting only after the voice is done playing.
+					//But we set voicePlaying to true so that the plugin will not keep trying to call PlayVoice() before the timer is re-initialized.				
+					if (!voicePlaying)
+					{
+						PlayVoice();
+						voicePlaying = true;
+					}
+					//If voicePlaying is already true when the timer is up, then we wait for the voice to finish playing before resetting the timer and the voicePlaying flag.
+					//This effectively makes the timer interval set by the user to start at the end of a voice line, 
+					//while also having the effect of resetting the timer and voicePlaying flag in case the voice was never played.
+					else if (voice.nowVoices[0].state == HVoiceCtrl.VoiceKind.breath && voice.nowVoices[1].state == HVoiceCtrl.VoiceKind.breath)
+					{
+						SetVoiceTimer();
+						voicePlaying = false;
+					}
 				}
+
 
 				//In masturbation and lesbian modes, post orgasm cooldown only starts counting if no girl is speaking.
 				//When timer is set to low values, this behavior causes it to take forever for action to restart after orgasm.
@@ -42,6 +59,10 @@ namespace KK_HSceneOptions
 						flags.timeLesbian.timeIdleCalc += Time.deltaTime;
 				}
 			}
+			else if (voicePlaying)
+			{
+				voicePlaying = false;
+			}				
 		}
 
 		/// <summary>
@@ -202,9 +223,9 @@ namespace KK_HSceneOptions
 			}
 		}
 
-		internal static void SetVoiceTimer(float deviation)
+		internal static void SetVoiceTimer(float deviation = 1.5f)
 		{
-			voiceTimer = Math.Max(voiceMinInterval, UnityEngine.Random.Range(AutoVoiceTime.Value - deviation, AutoVoiceTime.Value + deviation));
+			voiceTimer = Time.time + Math.Max(voiceMinInterval, UnityEngine.Random.Range(AutoVoiceTime.Value - deviation, AutoVoiceTime.Value + deviation));
 		}
 	}
 }
