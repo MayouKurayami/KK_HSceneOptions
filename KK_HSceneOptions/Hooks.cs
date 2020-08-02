@@ -104,10 +104,10 @@ namespace KK_HSceneOptions
 				__result = true;
 				return false;
 			}
-			//If speech control is not disabled and the speech timer has a positive value, 
-			//make this method return false so that idle speech will not trigger while timer is still counting down, or when plugin is in mute modes.
-			//(the timer would have a positive value if it's currently counting down in timer mode, or at its default positive value in other modes)
-			else if (voiceTimer > 0 && AutoVoice.Value != SpeechMode.Disabled)
+			//If speech control is not disabled then idle voice is either muted or triggered manually according to the timer.
+			//In those situations we don't want the game to trigger idle voice lines anyway, 
+			//so we make this method return false to prevent idle speech from triggering.
+			else if (AutoVoice.Value != SpeechMode.Disabled)
 			{
 				__result = false;
 				return false;
