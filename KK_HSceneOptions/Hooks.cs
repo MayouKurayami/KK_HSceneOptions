@@ -262,11 +262,15 @@ namespace KK_HSceneOptions
 			object targetNextOpCode = null, 
 			object targetNextOperand = null, 
 			int rangeStart = 0, 
-			int rangeEnd = -1, 
+			int rangeEnd = 0, 
 			int insertAfter = 1)
 		{
-			if (rangeEnd == -1)
+			var inserted = false;
+
+			if (rangeEnd == 0)
 				rangeEnd = instructions.Count;
+			else if (rangeEnd < 0)
+				throw new IndexOutOfRangeException("Search range end is out of bounds");
 
 			for (var i = rangeStart; i < rangeEnd; i++)
 			{
@@ -278,10 +282,14 @@ namespace KK_HSceneOptions
 					continue;
 				
 				instructions.InsertRange(i + insertAfter, injection);
+				inserted = true;
 #if DEBUG
 				UnityEngine.Debug.LogWarning(new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name + " injected instructions after " + targetOperand.ToString() + " at index " + i);
 #endif				
 			}
+
+			if (!inserted)
+				throw new InstructionNotFoundException("Target instruction not found. Nothing Injected");
 
 			return instructions;
 		}
