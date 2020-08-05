@@ -356,14 +356,11 @@ namespace KK_HSceneOptions
 			{
 				foreach (ChaControl male in males)
 				{
-					if (male)
+					foreach (Renderer mesh in male.objRoot.GetComponentsInChildren<Renderer>(true))
 					{
-						foreach (Renderer mesh in male.objRoot.GetComponentsInChildren<Renderer>(true))
-						{
-							if (mesh.name != "o_shadowcaster_cm")
-								mesh.shadowCastingMode = 0;
-						}		
-					}				
+						if (mesh.name != "o_shadowcaster_cm")
+							mesh.shadowCastingMode = 0;
+					}										
 				}	
 				
 				if(females != null && HideFemaleShadow.Value)

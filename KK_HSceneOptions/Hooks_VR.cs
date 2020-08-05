@@ -22,13 +22,12 @@ namespace KK_HSceneOptions
 			{
 				sprites.Add(sprite);
 				LockGaugesAction(sprite);
-			}			
-		
-			List<ChaControl> males = new List<ChaControl>
+			}					
+			var males = new List<ChaControl>
 			{
 				(ChaControl)Traverse.Create(__instance).Field("male").GetValue(),
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
-			};
+			}.FindAll(male => male != null);
 
 			lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
 			flags = __instance.flags;

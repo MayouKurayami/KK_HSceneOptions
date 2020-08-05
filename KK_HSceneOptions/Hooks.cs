@@ -34,11 +34,12 @@ namespace KK_HSceneOptions
 			var females = (List<ChaControl>)Traverse.Create(__instance).Field("lstFemale").GetValue();
 			sprites.Clear();
 			sprites.Add(__instance.sprite);
-			List<ChaControl> males = new List<ChaControl>
+			var males = new List<ChaControl>
 			{
 				(ChaControl)Traverse.Create(__instance).Field("male").GetValue(),
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
-			};
+			}.FindAll(male => male != null);
+			
 
 			lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
 			flags = __instance.flags;
