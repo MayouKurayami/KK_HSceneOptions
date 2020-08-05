@@ -243,22 +243,25 @@ namespace KK_HSceneOptions
 		}
 
 
-		////////////////////////////////////////////////////////////////////////////////
-		///Harmony Transpilers
-		////////////////////////////////////////////////////////////////////////////////
 
 		/// <summary>
 		/// Injects code instructions into block(s) of codes that begins with a check for OLoop
 		/// </summary>
-		/// <param name="instructions">The list of instructions to work with</param>
+		/// <param name="instructions">The list of instructions to modify. This list will be directly modified.</param>
 		/// <param name="targetOperand">Inject after the instruction that contains this operand</param>
 		/// <param name="injection">The code instructions to inject</param>
 		/// <param name="targetNextOpCode">If specified, the OpCode of the instruction immediately after the targetOperand instruction must be targetOpCode before injection can proceed</param>
+		/// <param name="targetNextOperand">If specified, the operand of the instruction immediately after the targetOperand instruction must be targetNextOperand before injection can proceed</param>
+		/// <param name="rangeStart">The index of the list of instructions where the start of the search space for targetOperand is. By default the search begins at the beginning of the list</param>
+		/// <param name="rangeEnd">The index of the list of instructions where the end of the search space for targetOperand is. Default value of 0 results in searching til the end of the list.</param>
 		/// <param name="insertAfter">Inject after this many elements in the instruction list</param>
-		/// <returns></returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if rangeStart or rangeEnd are negative or out of bounds</exception>
+		/// <exception cref="InstructionNotFoundException">Thrown if injection target is not found</exception>
+		/// <returns>Returns the modified list of instructions.</returns>
 		internal static List<CodeInstruction> InjectInstruction(
 			List<CodeInstruction> instructions, 
-			object targetOperand, CodeInstruction[] injection, 
+			object targetOperand, 
+			CodeInstruction[] injection, 
 			object targetNextOpCode = null, 
 			object targetNextOperand = null, 
 			int rangeStart = 0, 
@@ -309,11 +312,19 @@ namespace KK_HSceneOptions
 				?? throw new ArgumentNullException("UnityEngine.AnimatorStateInfo.IsName not found");
 			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(HSpriteProcStackOverride)) ?? throw new ArgumentNullException("Hooks.HSpriteProcStackOverride not found");
 
-			//Look for the check for SLoop then make it into a check for (SLoop || forceOLoop)
-			return InjectInstruction(new List<CodeInstruction>(instructions), "SLoop", new CodeInstruction[] { new CodeInstruction(OpCodes.Call, injectMethod) }, 
-				targetNextOperand: animatorStateInfoMethod, insertAfter: 2);
+			//Look for the check for SLoop then replace it with a check for (SLoop || forceOLoop)
+			return InjectInstruction(
+				instructions: new List<CodeInstruction>(instructions), 
+				targetOperand: "SLoop",
+				targetNextOperand: animatorStateInfoMethod,
+				injection: new CodeInstruction[] { new CodeInstruction(OpCodes.Call, injectMethod) }, 			
+				insertAfter: 2);
 		}
 
+		/// <summary>
+		/// Replace a boolean value on the stack to true if OLoop is being enforced by this plugin. Otherwise, return the original value on the stack.
+		/// </summary>
+		/// <returns>The value to be pushed back onto the stack to replace what was on it.</returns>
 		internal static bool HSpriteProcStackOverride(bool valueOnStack) => animationToggle.forceOLoop ? true : valueOnStack;		
 
 		#endregion
@@ -343,7 +354,12 @@ namespace KK_HSceneOptions
 			//Push the specified service mode as int onto the stack, then use it as a parameter to call HoushiMaleGaugeOverride
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4, (int)mode), new CodeInstruction(OpCodes.Call, injectMethod) };
 
-			return InjectInstruction(new List<CodeInstruction>(instructions), gaugeCheck, injection, targetNextOpCode: OpCodes.Ldc_R4, insertAfter: 2);
+			return InjectInstruction(
+				instructions: new List<CodeInstruction>(instructions),
+				targetOperand: gaugeCheck,
+				targetNextOpCode: OpCodes.Ldc_R4,
+				injection: injection, 			
+				insertAfter: 2);
 		}
 
 		/// <summary>
@@ -351,6 +367,7 @@ namespace KK_HSceneOptions
 		/// Also, manually activate the orgasm menu buttons if male gauge is past 70. 
 		/// </summary>
 		/// <param name="mode">Used to specify the kind of service mode and to determine which orgasm menu buttons should be activated</param>
+		/// <returns>The value to replace the vanilla threshold value</returns>
 		internal static float HoushiMaleGaugeOverride(float vanillaThreshold, HFlag.EMode mode)
 		{
 			if (DisableAutoPrecum.Value && flags.gaugeMale >= vanillaThreshold)
@@ -375,7 +392,7 @@ namespace KK_HSceneOptions
 					default:
 						return vanillaThreshold;
 				}				
-				return 110;  //this can be any number greater than 100
+				return 110;  //this can be any number greater than 100, the maximum possible gauge value.
 			}
 			else
 			{
@@ -387,24 +404,28 @@ namespace KK_HSceneOptions
 
 
 		#region Override game behavior to extend or exit OLoop based on plugin status
+		//In the game code for the various sex modes, the logic for when the precum animation (OLoop) should end involves checking whether the girl is done speaking.
+		//Therefore, to extend OLoop we'd need to find the check for speech then override its returned value.
 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(HSonyu), nameof(HSonyu.Proc))]
 		[HarmonyPatch(typeof(HMasturbation), nameof(HMasturbation.Proc))]
 		[HarmonyPatch(typeof(HLesbian), nameof(HLesbian.Proc))]
 		public static IEnumerable<CodeInstruction> OLoopExtendTpl(IEnumerable<CodeInstruction> instructions) 
-			=> OLoopExtendInstructions(instructions,
-				AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }), 
+			=> OLoopExtendInstructions(
+				instructions,
+				targetOperand: AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }), 
 				overrideValue: 1);
 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(H3PHoushi), nameof(H3PHoushi.Proc))]
 		[HarmonyPatch(typeof(H3PSonyu), nameof(H3PSonyu.Proc))]
 		public static IEnumerable<CodeInstruction> H3POLoopExtendTpl(IEnumerable<CodeInstruction> instructions) 
-			=> OLoopExtendInstructions(instructions,
-				AccessTools.Method(typeof(HActionBase), "IsCheckVoicePlay"), 
-				overrideValue: 0,
-				targetNextOpCode: OpCodes.Brfalse);
+			=> OLoopExtendInstructions(
+				instructions,
+				targetOperand: AccessTools.Method(typeof(HActionBase), "IsCheckVoicePlay"),
+				targetNextOpCode: OpCodes.Brfalse,
+				overrideValue: 0);
 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(HHoushi), nameof(HHoushi.Proc))]
@@ -421,16 +442,15 @@ namespace KK_HSceneOptions
 
 
 		/// <summary>
-		/// Within the given set of instructions, find the instruction that matches the specified operand/opcode and insert a method there
-		/// that allows extending/exiting OLoop based on the status of the plugin
+		/// Within the given set of instructions, find the instruction that matches the specified operand/opcode and insert a call to OLoopStackOverride that allows extending/exiting OLoop based on the status of the plugin
 		/// </summary>
 		/// <param name="instructions">Instructions to be processed</param>
-		/// <param name="voiceCheckInfo">Reflection info of the operand of the instruction after which new instructions will be injected</param>
-		/// <param name="overrideValue">Argument for OLoopStackOverride to push onto the stack</param>
+		/// <param name="targetOperand">Reflection info of the operand of the instruction after which new instructions will be injected</param>
+		/// <param name="overrideValue">Passed as targetValue for OLoopStackOverride to push onto the stack</param>
 		/// <param name="targetNextOpCode">If specified, OpCode of the instruction after the target instruction must match this for injection to proceed</param>
-		public static IEnumerable<CodeInstruction> OLoopExtendInstructions(IEnumerable<CodeInstruction> instructions, object voiceCheckInfo, int overrideValue, object targetNextOpCode = null)
+		public static IEnumerable<CodeInstruction> OLoopExtendInstructions(IEnumerable<CodeInstruction> instructions, object targetOperand, int overrideValue, object targetNextOpCode = null)
 		{
-			if (voiceCheckInfo == null)
+			if (targetOperand == null)
 				throw new ArgumentNullException("Operand of target instruction not found");
 
 			if (targetNextOpCode == null)
@@ -440,23 +460,24 @@ namespace KK_HSceneOptions
 
 			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(OLoopStackOverride)) ?? throw new ArgumentNullException("Hooks.OLoopExtendOverride not found");
 
-			// Instructions that inject OLoopStackOverride and pass it the value of 1, which is the value required to be on the stack to satisfy the condition to let OLoop continue
+			// Instructions that inject OLoopStackOverride and pass it the value of overrideValue, which is the value required to be on the stack to satisfy the condition to let OLoop continue
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4, overrideValue), new CodeInstruction(OpCodes.Call, injectMethod) };
 			
 			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
-			return InjectInstruction(instructionList, voiceCheckInfo, injection, targetNextOpCode, rangeStart: rangeStart, rangeEnd: rangeEnd);
+			return InjectInstruction(instructionList, targetOperand, injection, targetNextOpCode, rangeStart: rangeStart, rangeEnd: rangeEnd);
 		}
 
 		/// <summary>
-		/// Determines if OLoop should be forced to continue, forced to stop, or left alone.
-		/// Designed to be injected to override an existing value on the stack after a second value is pushed onto the stack to be loaded as the second parameter.
+		/// Determines if OLoop should be forced to continue, forced to stop, or left alone. Designed to be injected in IL instructions.
+		/// This method expects two values on the stack. The second-from-the-top value will become vanillaValue and be replaced by the returned value, while the top value on the stack becomes targetValue and gets consumed.
 		/// </summary>
 		/// <param name="vanillaValue">The existing value that was pushed to the stack</param>
-		/// <param name="targetValue">Designed as a boolean where positive numbers are true and everything else is false. Return this value if OLoop should be forced to continue, or return the logical NOT if OLoop should be forced to stop </param>
+		/// <param name="targetValue">Treated as a boolean where positive numbers are true and everything else is false. Return this value if OLoop should be forced to continue, or return the logical NOT if OLoop should be forced to stop </param>
+		/// <returns>The value to be pushed onto the stack to replace vanillaValue</returns>
 		public static int OLoopStackOverride(int vanillaValue, int targetValue)
 		{
-			//forceStopVoice is set to true when forcing to enter orgasm, thus OLoop should be forcibly stopped. So we would return the inverse of the targetValue
-			//Otherwise if orgasmTimer is greater 0, that means currently the orgasm timer is still counting down and OLoop should be continued, so we pass the targetValue
+			//If forceStopVoice is set to true when forcing to enter orgasm, OLoop should be forcibly stopped. In that case we would return the inverse of the targetValue.
+			//Otherwise, if orgasmTimer is greater 0, that means currently the orgasm timer is still counting down and OLoop should be continued, so we return the targetValue.
 			//If neither of those two conditions are met, return the original value that was on the stack
 			if (animationToggle.forceStopVoice)
 				return targetValue > 0 ? 0 : 1;
@@ -467,12 +488,13 @@ namespace KK_HSceneOptions
 		}
 
 		/// <summary>
-		/// Find a range in the given instructions that begins with a call of UnityEngine.AnimatorStateInfo.IsName on either "OLoop" or "A_OLoop",
-		/// and ends with another call of UnityEngine.AnimatorStateInfo.IsName on some other states of animation.
+		/// Find a range in the given instructions that begins with a call of UnityEngine.AnimatorStateInfo.IsName with the parameter being either "OLoop" or "A_OLoop",
+		/// and ends with another call of UnityEngine.AnimatorStateInfo.IsName with the parameter being some other states of animation.
 		/// </summary>
 		/// <param name="instructions">The list of instructions to search through</param>
 		/// <param name="oLoopStart">Outputs the start index of the range of OLoop</param>
 		/// <param name="oLoopEnd">Outputs the end index of the range of OLoop</param>
+		/// <exception cref="InstructionNotFoundException">Thrown if UnityEngine.AnimatorStateInfo.IsName with the parameter "OLoop" or "A_OLoop" is not found</exception>
 		internal static void FindOLoopInstructionRange(List<CodeInstruction> instructions, out int oLoopStart, out int oLoopEnd)
 		{
 			oLoopStart = -1;
