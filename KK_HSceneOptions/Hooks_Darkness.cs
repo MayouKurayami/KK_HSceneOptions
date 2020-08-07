@@ -30,9 +30,26 @@ namespace KK_HSceneOptions
 		/// 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(H3PDarkHoushi), "LoopProc")]
-		public static IEnumerable<CodeInstruction> Houshi3PDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(instructions, HFlag.EMode.houshi3PMMF);
+		public static IEnumerable<CodeInstruction> Houshi3PDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(
+			instructions, AccessTools.Method(typeof(Hooks_Darkness), nameof(Houshi3PDarkMaleGaugeOverride)));
 
+		/// <summary>
+		/// Designed to modify the stack and override the orgasm threshold from 70 to 110 if DisableAutoPrecum is enabled, effectively making it impossible to pass the threshold.
+		/// Also, manually activate the orgasm menu buttons if male gauge is past 70. 
+		/// </summary>
+		/// <returns>The value to replace the vanilla threshold value</returns>
+		private static float Houshi3PDarkMaleGaugeOverride(float vanillaThreshold)
+		{
+			if (DisableAutoPrecum.Value && flags.gaugeMale >= vanillaThreshold)
+			{
+				foreach (HSprite sprite in sprites)
+					sprite.SetHoushi3PDarkAutoFinish(_force: true);
 
+				return 110;  //this can be any number greater than 100, the maximum possible gauge value.
+			}
+			else
+				return vanillaThreshold;
+		}
 
 		#region Override game behavior to extend or exit OLoop based on plugin status
 

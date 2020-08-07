@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Linq;
 using HarmonyLib;
@@ -335,25 +336,26 @@ namespace KK_HSceneOptions
 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(HHoushi), "LoopProc")]
-		public static IEnumerable<CodeInstruction> HoushiDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(instructions, HFlag.EMode.houshi);
+		public static IEnumerable<CodeInstruction> HoushiDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(
+			instructions, AccessTools.Method(typeof(Hooks), nameof(HoushiMaleGaugeOverride)));
 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(H3PHoushi), "LoopProc")]
-		public static IEnumerable<CodeInstruction> Houshi3PDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(instructions, HFlag.EMode.houshi3P);
+		public static IEnumerable<CodeInstruction> Houshi3PDisableAutoFinishTpl(IEnumerable<CodeInstruction> instructions) => HoushiDisableAutoFinish(
+			instructions, AccessTools.Method(typeof(Hooks), nameof(Houshi3PMaleGaugeOverride)));
 
 		/// <summary>
 		/// Injects HoushiMaleGaugeOverride to where the vanilla code checks for the male gauge, allowing the check to be bypassed based on config.
 		/// </summary>
 		/// <param name="instructions">The instructions to be processed</param>
-		/// <param name="mode">The service mode to be passed onto HoushiMaleGaugeOverride as parameter</param>
+		/// <param name="menuMethod">The reflection info for the HSprite method used to activate the orgasm menu buttons</param>
 		/// <returns>Returns the processed instructions</returns>
-		public static IEnumerable<CodeInstruction> HoushiDisableAutoFinish(IEnumerable<CodeInstruction> instructions, HFlag.EMode mode)
+		public static IEnumerable<CodeInstruction> HoushiDisableAutoFinish(IEnumerable<CodeInstruction> instructions, MethodInfo menuMethod)
 		{
 			var gaugeCheck = AccessTools.Field(typeof(HFlag), nameof(HFlag.gaugeMale)) ?? throw new ArgumentNullException("HFlag.gaugeMale not found");
-			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(Hooks.HoushiMaleGaugeOverride)) ?? throw new ArgumentNullException("Hooks.HoushiMaleGaugeOverride not found");
 
 			//Push the specified service mode as int onto the stack, then use it as a parameter to call HoushiMaleGaugeOverride
-			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4, (int)mode), new CodeInstruction(OpCodes.Call, injectMethod) };
+			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Call, menuMethod) };
 
 			return InjectInstruction(
 				instructions: new List<CodeInstruction>(instructions),
@@ -367,38 +369,36 @@ namespace KK_HSceneOptions
 		/// Designed to modify the stack and override the orgasm threshold from 70 to 110 if DisableAutoPrecum is enabled, effectively making it impossible to pass the threshold.
 		/// Also, manually activate the orgasm menu buttons if male gauge is past 70. 
 		/// </summary>
-		/// <param name="mode">Used to specify the kind of service mode and to determine which orgasm menu buttons should be activated</param>
 		/// <returns>The value to replace the vanilla threshold value</returns>
-		internal static float HoushiMaleGaugeOverride(float vanillaThreshold, HFlag.EMode mode)
+		private static float HoushiMaleGaugeOverride(float vanillaThreshold)
 		{
 			if (DisableAutoPrecum.Value && flags.gaugeMale >= vanillaThreshold)
 			{
-				switch (mode)
-				{
-					case HFlag.EMode.houshi:
-						foreach (HSprite sprite in sprites)
-							sprite.SetHoushiAutoFinish(_force: true);
-						break;
-
-					case HFlag.EMode.houshi3P:
-						foreach (HSprite sprite in sprites)
-							sprite.SetHoushi3PAutoFinish(_force: true);
-						break;
-
-					case HFlag.EMode.houshi3PMMF:
-						foreach (HSprite sprite in sprites)
-							sprite.SetHoushi3PDarkAutoFinish(_force: true);
-						break;
-
-					default:
-						return vanillaThreshold;
-				}				
+				foreach (HSprite sprite in sprites)
+					sprite.SetHoushiAutoFinish(_force: true);
+				
 				return 110;  //this can be any number greater than 100, the maximum possible gauge value.
 			}
 			else
+				return vanillaThreshold;		
+		}
+
+		/// <summary>
+		/// Designed to modify the stack and override the orgasm threshold from 70 to 110 if DisableAutoPrecum is enabled, effectively making it impossible to pass the threshold.
+		/// Also, manually activate the orgasm menu buttons if male gauge is past 70. 
+		/// </summary>
+		/// <returns>The value to replace the vanilla threshold value</returns>
+		private static float Houshi3PMaleGaugeOverride(float vanillaThreshold)
+		{
+			if (DisableAutoPrecum.Value && flags.gaugeMale >= vanillaThreshold)
 			{
+				foreach (HSprite sprite in sprites)
+					sprite.SetHoushi3PAutoFinish(_force: true);
+
+				return 110;  //this can be any number greater than 100, the maximum possible gauge value.
+			}
+			else
 				return vanillaThreshold;
-			}			
 		}
 
 		#endregion

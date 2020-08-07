@@ -85,7 +85,13 @@ namespace KK_HSceneOptions
 				key: "Auto Equip Sub-Accessories", 
 				defaultValue: false,
 				"Auto equip sub-accessories at H start");
-			
+
+			DisableAutoPrecum = Config.Bind(
+				section: "",
+				key: "Disable Auto Finish in Service Mode",
+				defaultValue: false,
+				"If enabled, animation in service modes will not automatically enter the fast precum animation when male's excitement gauge is past the 70% threshold");
+
 			HideFemaleShadow = Config.Bind(
 				section: "",
 				key: "Hide Shadow Casted by Female Limbs and Accessories",
@@ -174,13 +180,7 @@ namespace KK_HSceneOptions
 
 			/// 
 			/////////////////// Precum Related //////////////////////////
-			/// 
-
-			DisableAutoPrecum = Config.Bind(
-				section: "Force Precum",
-				key: "Disable Auto Finish in Service Mode",
-				defaultValue: false,
-				"If enabled, animation will not automatically enter the fast precum animation when male's excitement gauge is past the 70% threshold");
+			/// 	
 
 			PrecumTimer = Config.Bind(
 				section: "Force Precum",
