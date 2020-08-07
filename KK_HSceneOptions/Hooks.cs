@@ -55,7 +55,7 @@ namespace KK_HSceneOptions
 
 			HideShadow(males, females);
 
-			if (AutoVoice.Value == SpeechMode.Timer)
+			if (SpeechControlMode.Value == SpeechMode.Timer)
 				SetVoiceTimer();
 
 			animationToggle = __instance.gameObject.AddComponent<AnimationToggle>();
@@ -109,7 +109,7 @@ namespace KK_HSceneOptions
 			//If speech control is not disabled then idle voice is either muted or triggered manually according to the timer.
 			//In those situations we don't want the game to trigger idle voice lines anyway, 
 			//so we make this method return false to prevent idle speech from triggering.
-			else if (AutoVoice.Value != SpeechMode.Disabled)
+			else if (SpeechControlMode.Value != SpeechMode.Disabled)
 			{
 				__result = false;
 				return false;
@@ -122,7 +122,7 @@ namespace KK_HSceneOptions
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
 		public static bool VoiceProcPre(ref bool __result)
 		{
-			if (AutoVoice.Value == SpeechMode.MuteAll && !forceIdleVoice)
+			if (SpeechControlMode.Value == SpeechMode.MuteAll && !forceIdleVoice)
 			{
 				__result = false;
 				return false;

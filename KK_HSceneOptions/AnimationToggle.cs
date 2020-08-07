@@ -230,7 +230,7 @@ namespace KK_HSceneOptions
 			{
 				proc.SetPlay("OLoop", false);
 
-				if (hCategory == HCategory.maleNotVisible && AutoVoice.Value != SpeechMode.MuteAll)
+				if (hCategory == HCategory.maleNotVisible && SpeechControlMode.Value != SpeechMode.MuteAll)
 					StartCoroutine(RunAfterTransition(() => speechControl.PlayVoice()));
 				else
 					StartCoroutine(RunAfterTransition(() => flags.click = inside ? HFlag.ClickKind.inside : HFlag.ClickKind.outside));

@@ -40,7 +40,7 @@ namespace KK_HSceneOptions
 		internal static SpeechControl speechControl;	
 
 
-		public static ConfigEntry<bool> SubAccessories { get; private set; }
+		public static ConfigEntry<bool> AutoSubAccessories { get; private set; }
 		public static ConfigEntry<bool> HideMaleShadow { get; private set; }
 		public static ConfigEntry<bool> HideFemaleShadow { get; private set; }
 
@@ -51,8 +51,8 @@ namespace KK_HSceneOptions
 		public static ConfigEntry<int> MaleGaugeMin { get; private set; }
 		public static ConfigEntry<int> MaleGaugeMax { get; private set; }
 
-		public static ConfigEntry<SpeechMode> AutoVoice { get; private set; }
-		public static ConfigEntry<float> AutoVoiceTime { get; private set; }
+		public static ConfigEntry<SpeechMode> SpeechControlMode { get; private set; }
+		public static ConfigEntry<float> SpeechTimer { get; private set; }
 
 		public static ConfigEntry<bool> VRResetCamera { get; private set; }
 
@@ -80,7 +80,7 @@ namespace KK_HSceneOptions
 			/////////////////// Miscellaneous //////////////////////////
 			/// 
 
-			SubAccessories = Config.Bind(
+			AutoSubAccessories = Config.Bind(
 				section: "", 
 				key: "Auto Equip Sub-Accessories", 
 				defaultValue: false,
@@ -150,7 +150,7 @@ namespace KK_HSceneOptions
 			/////////////////// Female Speech //////////////////////////
 			/// 
 
-			AutoVoice = Config.Bind(
+			SpeechControlMode = Config.Bind(
 				section: "Female Speech",
 				key: "Speech Control",
 				defaultValue: SpeechMode.Disabled,
@@ -159,14 +159,14 @@ namespace KK_HSceneOptions
 					"\n\nMute Idle Speech: Prevent the girl from speaking at all during idle (she would still speak during events such as insertion)" +
 					"\n\nMute All Spoken Lines: Mute all speech other than moans"); 
 
-			AutoVoiceTime = Config.Bind(
+			SpeechTimer = Config.Bind(
 				section: "Female Speech",
 				key: "Speech Timer  (Effective only if Speech Control is set to Based on Timer)",
 				defaultValue: 20f,
 				new ConfigDescription("Sets the time interval at which the girl will randomly speak. In seconds.",
 					new AcceptableValueRange<float>(voiceMinInterval, voiceMaxInterval)));
 
-			AutoVoiceTime.SettingChanged += (sender, args) => { SetVoiceTimer(2f); };
+			SpeechTimer.SettingChanged += (sender, args) => { SetVoiceTimer(2f); };
 
 			/// 
 			/////////////////// VR //////////////////////////
@@ -322,7 +322,7 @@ namespace KK_HSceneOptions
 		/// </summary>
 		internal static void EquipAllAccessories(List<ChaControl> females)
 		{
-			if (SubAccessories.Value)
+			if (AutoSubAccessories.Value)
 			{
 				foreach (ChaControl chaCtrl in females)
 					chaCtrl.SetAccessoryStateAll(true);

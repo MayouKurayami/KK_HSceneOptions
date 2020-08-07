@@ -25,7 +25,7 @@ namespace KK_HSceneOptions
 			{
 				PlayVoice();
 			}
-			else if (AutoVoice.Value == SpeechMode.Timer)
+			else if (SpeechControlMode.Value == SpeechMode.Timer)
 			{
 				if (voiceTimer < Time.time)
 				{
@@ -225,7 +225,7 @@ namespace KK_HSceneOptions
 
 		internal static void SetVoiceTimer(float deviation = 1.5f)
 		{
-			voiceTimer = Time.time + Math.Max(voiceMinInterval, UnityEngine.Random.Range(AutoVoiceTime.Value - deviation, AutoVoiceTime.Value + deviation));
+			voiceTimer = Time.time + Math.Max(voiceMinInterval, UnityEngine.Random.Range(SpeechTimer.Value - deviation, SpeechTimer.Value + deviation));
 		}
 	}
 }
