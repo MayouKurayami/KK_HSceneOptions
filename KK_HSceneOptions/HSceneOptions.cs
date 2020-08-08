@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static ChaFileDefine;
 using Manager;
 using static KK_HSceneOptions.SpeechControl;
@@ -30,6 +31,7 @@ namespace KK_HSceneOptions
 		internal static HFlag flags;
 		internal static List<HActionBase> lstProc;
 		internal static List<ChaControl> lstFemale;
+		internal static List<ChaControl> lstmMale;
 		internal static List<HSprite> sprites = new List<HSprite>();
 		internal static HVoiceCtrl voice;
 		internal static object[] hands = new object[2];
@@ -97,11 +99,13 @@ namespace KK_HSceneOptions
 				key: "Hide Shadow Casted by Female Limbs and Accessories",
 				defaultValue: false,
 				"Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair");
+			HideFemaleShadow.SettingChanged += (sender, args) => { FemaleShadow(); };
 
 			HideMaleShadow = Config.Bind(
 				section: "",
 				key: "Hide Shadow Casted by Male Body",
-				defaultValue: false);		
+				defaultValue: false);
+			HideMaleShadow.SettingChanged += (sender, args) => { MaleShadow(); };
 
 			/// 
 			/////////////////// Excitement Gauge //////////////////////////
@@ -166,7 +170,7 @@ namespace KK_HSceneOptions
 				new ConfigDescription("Sets the time interval at which the girl will randomly speak. In seconds.",
 					new AcceptableValueRange<float>(voiceMinInterval, voiceMaxInterval)));
 
-			SpeechTimer.SettingChanged += (sender, args) => { SetVoiceTimer(2f); };
+			SpeechTimer.SettingChanged += (sender, args) => { SetVoiceTimer(); };
 
 			/// 
 			/////////////////// VR //////////////////////////
@@ -348,45 +352,54 @@ namespace KK_HSceneOptions
 		}
 
 		/// <summary>
-		///Function to disable shadow from male body
+		///Function to enable/disable shadow from male body
 		/// </summary>
-		internal static void HideShadow(List<ChaControl> males, List<ChaControl> females = null)
+		internal static void MaleShadow()
 		{
-			if (HideMaleShadow.Value)
+			if (!flags)
+				return;		
+
+			ShadowCastingMode maleShadowMode = HideMaleShadow.Value ? ShadowCastingMode.Off : ShadowCastingMode.On;
+
+			foreach (ChaControl male in lstmMale)
 			{
-				foreach (ChaControl male in males)
+				foreach (Renderer mesh in male.objRoot.GetComponentsInChildren<Renderer>(true))
 				{
-					foreach (Renderer mesh in male.objRoot.GetComponentsInChildren<Renderer>(true))
-					{
-						if (mesh.name != "o_shadowcaster_cm")
-							mesh.shadowCastingMode = 0;
-					}										
-				}	
-				
-				if(females != null && HideFemaleShadow.Value)
+					if (mesh.name != "o_shadowcaster_cm")
+						mesh.shadowCastingMode = maleShadowMode;
+				}
+			}										
+		}
+
+		/// <summary>
+		/// Function to enable/disable shadow from female limbs and accessories
+		/// </summary>
+		internal static void FemaleShadow()
+		{
+			if (!flags)
+				return;
+
+			ShadowCastingMode femaleShadowMode = HideFemaleShadow.Value ? ShadowCastingMode.Off : ShadowCastingMode.On;
+
+			foreach (ChaControl female in lstFemale)
+			{
+				foreach (Transform child in female.objTop.transform)
 				{
-					foreach (ChaControl female in females)
+					if (child.name == "p_cf_body_bone")
 					{
-						foreach (Transform child in female.objTop.transform)
+						foreach (MeshRenderer mesh in child.GetComponentsInChildren<MeshRenderer>(true))
+							mesh.shadowCastingMode = femaleShadowMode;
+					}
+					else
+					{
+						foreach (SkinnedMeshRenderer mesh in child.GetComponentsInChildren<SkinnedMeshRenderer>(true))
 						{
-							if (child.name == "p_cf_body_bone")
-							{
-								foreach (MeshRenderer mesh in child.GetComponentsInChildren<MeshRenderer>(true))
-										mesh.shadowCastingMode = 0;
-							}
-							else
-							{
-								foreach (SkinnedMeshRenderer mesh in child.GetComponentsInChildren<SkinnedMeshRenderer>(true))
-								{
-									if (mesh.name != "o_shadowcaster")
-										mesh.shadowCastingMode = 0;
-								}
-							}
+							if (mesh.name != "o_shadowcaster")
+								mesh.shadowCastingMode = femaleShadowMode;
 						}
 					}
 				}
 			}
-
 		}
 
 		/// <summary>

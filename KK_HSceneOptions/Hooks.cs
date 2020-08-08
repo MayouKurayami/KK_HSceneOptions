@@ -35,16 +35,16 @@ namespace KK_HSceneOptions
 			var females = (List<ChaControl>)Traverse.Create(__instance).Field("lstFemale").GetValue();
 			sprites.Clear();
 			sprites.Add(__instance.sprite);
-			var males = new List<ChaControl>
+
+			lstmMale = new List<ChaControl>
 			{
 				(ChaControl)Traverse.Create(__instance).Field("male").GetValue(),
 				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
 			}.FindAll(male => male != null);
-			
 
-			lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
-			flags = __instance.flags;
 			lstFemale = females;
+			lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();
+			flags = __instance.flags;		
 			voice = __instance.voice;
 			hands[0] = __instance.hand;
 			hands[1] = __instance.hand1;
@@ -53,7 +53,11 @@ namespace KK_HSceneOptions
 			foreach (HSprite sprite in sprites)
 				LockGaugesAction(sprite);
 
-			HideShadow(males, females);
+			if (HideMaleShadow.Value)
+				MaleShadow();
+
+			if (HideFemaleShadow.Value)
+				FemaleShadow();
 
 			if (SpeechControlMode.Value == SpeechMode.Timer)
 				SetVoiceTimer();
