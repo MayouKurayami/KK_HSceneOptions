@@ -97,7 +97,9 @@ Press *F1* to access the plugin settings at the upper right of the screen.**
 ## Notes and Limitations  
 - Fully supports the official VR
 
-- Unknown compatibility with kPlug
+- Unknown compatibility with kPlug  
+
+- The various keyboard shortcuts from this plugin can be used with a voice to keystroke software to allow hands free operation, which is especially useful in VR.
 
 
 ## Legal  
