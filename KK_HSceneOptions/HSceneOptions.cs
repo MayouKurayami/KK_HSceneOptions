@@ -24,7 +24,7 @@ namespace KK_HSceneOptions
 		public const string GUID = "MK.KK_HSceneOptions";
 		public const string PluginName = "HSceneOptions";
 		public const string AssembName = "KK_HSceneOptions";
-		public const string Version = "2.0.5";
+		public const string Version = "3.0.0";
 
 		internal static bool isVR;
 
@@ -92,7 +92,7 @@ namespace KK_HSceneOptions
 				section: "",
 				key: "Disable Auto Finish in Service Mode",
 				defaultValue: false,
-				"If enabled, animation in service modes will not automatically enter the fast precum animation when male's excitement gauge is past the 70% threshold");
+				"If enabled, animation in service modes will not be stuck in the fast precum animation when male's excitement gauge is past the 70% threshold");
 
 			HideFemaleShadow = Config.Bind(
 				section: "",
