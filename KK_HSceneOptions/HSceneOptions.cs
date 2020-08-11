@@ -444,7 +444,7 @@ namespace KK_HSceneOptions
 			if (FemaleGaugeMax.Value >= FemaleGaugeMin.Value)
 				flags.gaugeFemale = Mathf.Clamp(flags.gaugeFemale, FemaleGaugeMin.Value, FemaleGaugeMax.Value);
 			if (MaleGaugeMax.Value >= MaleGaugeMin.Value)
-				flags.gaugeMale = Mathf.Clamp(flags.gaugeMale, FemaleGaugeMin.Value, MaleGaugeMax.Value);
+				flags.gaugeMale = Mathf.Clamp(flags.gaugeMale, MaleGaugeMin.Value, MaleGaugeMax.Value);
 		}
 
 		private void OnInsertNoVoiceClick()
