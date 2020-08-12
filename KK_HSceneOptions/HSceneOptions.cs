@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Harmony;
+using HarmonyLib;
 using System;
 using System.Linq;
 using System.Collections;
@@ -521,22 +522,58 @@ namespace KK_HSceneOptions
 			}
 		}
 
+		/// <summary>
+		/// Display or hide all accessories within the specified category. Display them if more than half of the accessories in that category are currently hidden, otherwise hide them.
+		/// </summary>
+		/// <param name="category">The category of accessories to affect. 0 = main, 1 = sub</param>
 		private void ToggleMainGirlAccessories(int category)
 		{
 			//In modes with two females, use flags.nowAnimationInfo.id to determine which girl's accessories should be affected.
 			ChaControl mainFemale = lstFemale[(flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.sonyu3P) ? flags.nowAnimationInfo.id % 2 : 0];
-			bool currentStatus = false;
 
+			float categoryCount = 0;
+			float categoryShown = 0;
+			//Iterate through the vanilla accessories list and update the total count of the accessories in the specified category, as well as the count of accessories in that category that are currently hidden
 			for (int i = 0; i < mainFemale.nowCoordinate.accessory.parts.Length; i++)
 			{
 				if (mainFemale.nowCoordinate.accessory.parts[i].hideCategory == category)
 				{
-					currentStatus = mainFemale.fileStatus.showAccessory[i];
-					break;
+					categoryCount++;
+					if (mainFemale.fileStatus.showAccessory[i])
+						categoryShown++;
 				}		
 			}
 
-			mainFemale.SetAccessoryStateCategory(category, !currentStatus);
+			//Determine if MoreAccessories is present. If yes, iterate through its list of accessories.
+			var moreAccsObj = Traverse.Create(Type.GetType("MoreAccessoriesKOI.MoreAccessories, MoreAccessories")).Field("_self").GetValue();
+			var accessoriesByCharCast = Traverse.Create(moreAccsObj).Field("_accessoriesByChar").GetValue<IDictionary>();
+			if (accessoriesByCharCast != null)
+			{
+				//Converting IDictionary to IEnumerable<DictionaryEntry> using IEnumerable.Cast<DictionaryEntry> causes exception at runtime. 
+				//Use the following method as workaround.
+				IEnumerable<DictionaryEntry> CastDict(IDictionary dictionary)
+				{
+					foreach (DictionaryEntry entry in dictionary)
+						yield return entry;				
+				}			
+				Dictionary<ChaFile, object> accessoriesByChar = CastDict(accessoriesByCharCast).ToDictionary(entry => (ChaFile)entry.Key, entry => entry.Value);
+
+				if (accessoriesByChar.TryGetValue(mainFemale.chaFile, out object charAdditionalData))
+				{
+					var nowAccessories = Traverse.Create(charAdditionalData).Field("nowAccessories").GetValue<List<ChaFileAccessory.PartsInfo>>();
+					var showAccessories = Traverse.Create(charAdditionalData).Field("showAccessories").GetValue<List<bool>>();
+					for (int i = 0; i < nowAccessories.Count; i++)
+					{
+						if (nowAccessories[i].hideCategory == category)
+						{
+							categoryCount++;
+							if (showAccessories[i])
+								categoryShown++;
+						}
+					}
+				}
+			}
+			mainFemale.SetAccessoryStateCategory(category, categoryShown < (categoryCount / 2));
 		}
 
 
