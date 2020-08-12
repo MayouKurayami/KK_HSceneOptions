@@ -24,11 +24,10 @@ namespace KK_HSceneOptions
 				LockGaugesAction(sprite);
 			}
 
-			lstmMale = new List<ChaControl>
-			{
-				(ChaControl)Traverse.Create(__instance).Field("male").GetValue(),
-				(ChaControl)Traverse.Create(__instance).Field("male1").GetValue()
-			}.FindAll(male => male != null);
+			lstmMale = new List<ChaControl> { Traverse.Create(__instance).Field("male").GetValue<ChaControl>() };
+			if (isDarkness)
+				lstmMale.Add(Traverse.Create(__instance).Field("male1").GetValue<ChaControl>());
+			lstmMale = lstmMale.FindAll(male => male != null);
 
 			lstFemale = females;
 			lstProc = (List<HActionBase>)Traverse.Create(__instance).Field("lstProc").GetValue();

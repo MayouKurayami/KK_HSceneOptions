@@ -155,7 +155,7 @@ namespace KK_HSceneOptions
 
 			procType = FindProc();
 
-			if (procType == null && Type.GetType("H3PDarkSonyu, Assembly-CSharp") != null)
+			if (procType == null && isDarkness)
 			{
 				procType = FindProcDarkness();
 			}

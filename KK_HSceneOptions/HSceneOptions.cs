@@ -28,6 +28,7 @@ namespace KK_HSceneOptions
 		public const string Version = "3.0.0";
 
 		internal static bool isVR;
+		internal static bool isDarkness;
 
 		internal static HFlag flags;
 		internal static List<HActionBase> lstProc;
@@ -293,7 +294,7 @@ namespace KK_HSceneOptions
 			if (isVR = Application.dataPath.EndsWith("KoikatuVR_Data"))
 				HarmonyWrapper.PatchAll(typeof(Hooks_VR));
 
-			if (Type.GetType("H3PDarkSonyu, Assembly-CSharp") != null)
+			if (isDarkness = Type.GetType("H3PDarkSonyu, Assembly-CSharp") != null)
 				HarmonyWrapper.PatchAll(typeof(Hooks_Darkness));
 		}		
 
