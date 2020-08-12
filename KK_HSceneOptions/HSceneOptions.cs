@@ -523,7 +523,7 @@ namespace KK_HSceneOptions
 		}
 
 		/// <summary>
-		/// Display or hide all accessories within the specified category. Display them if more than half of the accessories in that category are currently hidden, otherwise hide them.
+		/// Display or hide all accessories within the specified category of the dominant female. Display them if more than half of the accessories in that category are currently hidden, otherwise hide them.
 		/// </summary>
 		/// <param name="category">The category of accessories to affect. 0 = main, 1 = sub</param>
 		private void ToggleMainGirlAccessories(int category)
@@ -545,34 +545,38 @@ namespace KK_HSceneOptions
 			}
 
 			//Determine if MoreAccessories is present. If yes, iterate through its list of accessories.
-			var moreAccsObj = Traverse.Create(Type.GetType("MoreAccessoriesKOI.MoreAccessories, MoreAccessories")).Field("_self").GetValue();
-			var accessoriesByCharCast = Traverse.Create(moreAccsObj).Field("_accessoriesByChar").GetValue<IDictionary>();
-			if (accessoriesByCharCast != null)
+			var moreAccsType = Type.GetType("MoreAccessoriesKOI.MoreAccessories, MoreAccessories");
+			if (moreAccsType != null)
 			{
-				//Converting IDictionary to IEnumerable<DictionaryEntry> using IEnumerable.Cast<DictionaryEntry> causes exception at runtime. 
-				//Use the following method as workaround.
-				IEnumerable<DictionaryEntry> CastDict(IDictionary dictionary)
+				try 
 				{
-					foreach (DictionaryEntry entry in dictionary)
-						yield return entry;				
-				}			
-				Dictionary<ChaFile, object> accessoriesByChar = CastDict(accessoriesByCharCast).ToDictionary(entry => (ChaFile)entry.Key, entry => entry.Value);
-
-				if (accessoriesByChar.TryGetValue(mainFemale.chaFile, out object charAdditionalData))
-				{
-					var nowAccessories = Traverse.Create(charAdditionalData).Field("nowAccessories").GetValue<List<ChaFileAccessory.PartsInfo>>();
-					var showAccessories = Traverse.Create(charAdditionalData).Field("showAccessories").GetValue<List<bool>>();
-					for (int i = 0; i < nowAccessories.Count; i++)
+					var moreAccsObj = Traverse.Create(moreAccsType).Field("_self").GetValue();
+					var accessoriesByCharCast = Traverse.Create(moreAccsObj).Field("_accessoriesByChar").GetValue<IDictionary>();
+	
+					if (accessoriesByCharCast.Contains(mainFemale.chaFile))
 					{
-						if (nowAccessories[i].hideCategory == category)
+						var charAddDataTraverse = Traverse.Create(accessoriesByCharCast[mainFemale.chaFile]);
+						var nowAccessories = charAddDataTraverse.Field("nowAccessories").GetValue<List<ChaFileAccessory.PartsInfo>>();
+						var showAccessories = charAddDataTraverse.Field("showAccessories").GetValue<List<bool>>();
+
+						for (int i = 0; i < nowAccessories.Count; i++)
 						{
-							categoryCount++;
-							if (showAccessories[i])
-								categoryShown++;
+							if (nowAccessories[i].hideCategory == category)
+							{
+								if (showAccessories[i])
+									categoryShown++;
+
+								categoryCount++;								
+							}
 						}
-					}
+					}				
 				}
-			}
+				catch (Exception ex)
+				{
+					Logger.LogError(ex);
+				}											
+			}	
+			
 			mainFemale.SetAccessoryStateCategory(category, categoryShown < (categoryCount / 2));
 		}
 
