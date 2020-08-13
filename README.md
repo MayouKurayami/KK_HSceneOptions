@@ -99,7 +99,9 @@ Press *F1* to access the plugin settings at the upper right of the screen.**
 
 - Unknown compatibility with kPlug  
 
-- The various keyboard shortcuts from this plugin can be used with a voice to keystroke software to allow hands free operation, which is especially useful in VR.
+- The various keyboard shortcuts from this plugin can be used with a voice to keystroke software to allow hands free operation, which is especially useful in VR.  
+
+- When manually forcing precum animation, piston speed will be fixed at max value and cannot be adjusted.
 
 
 ## Legal  
