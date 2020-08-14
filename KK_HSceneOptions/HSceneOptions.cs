@@ -9,9 +9,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static ChaFileDefine;
 using Manager;
+using static ChaFileDefine;
 using static KK_HSceneOptions.SpeechControl;
+using static KK_HSceneOptions.Utilities;
 
 namespace KK_HSceneOptions
 {
@@ -552,11 +553,12 @@ namespace KK_HSceneOptions
 				try 
 				{
 					var moreAccsObj = Traverse.Create(moreAccsType).Field("_self").GetValue();
-					var accessoriesByCharCast = Traverse.Create(moreAccsObj).Field("_accessoriesByChar").GetValue<IDictionary>();
-	
-					if (accessoriesByCharCast.Contains(mainFemale.chaFile))
+					var dic = Traverse.Create(moreAccsObj).Field("_accessoriesByChar").GetValue();
+					var accessoriesByChar = GetValueWeakDictionary(dic, mainFemale.chaFile);
+
+					if (accessoriesByChar != null)
 					{
-						var charAddDataTraverse = Traverse.Create(accessoriesByCharCast[mainFemale.chaFile]);
+						var charAddDataTraverse = Traverse.Create(accessoriesByChar);
 						var nowAccessories = charAddDataTraverse.Field("nowAccessories").GetValue<List<ChaFileAccessory.PartsInfo>>();
 						var showAccessories = charAddDataTraverse.Field("showAccessories").GetValue<List<bool>>();
 
