@@ -15,36 +15,40 @@ Download [**KK_HSceneOptions.zip** from the latest release](https://github.com/M
 
 ## Configurations  
 
-**It is recommended to adjust the configs via the in-game plugin settings page instead of directly editing the config file.  
-Press *F1* to access the plugin settings at the upper right of the screen.**  
-![](https://github.com/MayouKurayami/KK_HSceneOptions/blob/master/images/HautoSets_settings.png)  
+It is recommended to adjust the configs via the in-game plugin settings page instead of directly editing the config file.  
+**Press *F1* to access the plugin settings at the upper right of the screen.**  
 
+![](https://github.com/MayouKurayami/KK_HSceneOptions/blob/master/images/HautoSets_settings.png)
 
-- **Auto equip sub-accessories (AutoSubAccessories)** - Auto equip sub-accessories at the start of H **(Default: Disabled)**  
+#### **MOST OF THE FEATURES ARE *OFF* BY DEFAULT**
+**If you want to enable a feature please do so first in config.**  
+<br>
 
-- **Disable Auto Finish in Service Mode (DisableAutoPrecum)** - If enabled, animation in service modes will not be stuck in the fast precum animation when male's excitement gauge is past the 70% threshold. **(Default: Disabled)**
+- **Auto equip sub-accessories** - Auto equip sub-accessories at the start of H **(Default: Disabled)**  
 
-- **Hide shadow casted by female limbs and accessories (HideFemaleShadow)** - Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair. **(Default: Disabled)**  
+- **Disable Auto Finish in Service Mode** - If enabled, animation in service modes will not be stuck in the fast precum animation when male's excitement gauge is past the 70% threshold. **(Default: Disabled)**
 
-- **Hide shadow casted by male body (HideMaleShadow)** - Hide shadow casted by male body. Very useful for POV view or VR. **(Default: Disabled)**  
+- **Hide shadow casted by female limbs and accessories** - Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair. **(Default: Disabled)**  
+
+- **Hide shadow casted by male body** - Hide shadow casted by male body. Very useful for POV view or VR. **(Default: Disabled)**  
 
 ### Excitement Gauge  
 
-- **Auto lock female gauge (LockFemaleGauge)** - Automatically lock the female excitement gauge at the start of H **(Default: Disabled)**  
+- **Auto lock female gauge** - Automatically lock the female excitement gauge at the start of H **(Default: Disabled)**  
 
-- **Auto lock male gauge (LockMaleGauge)** - Automatically lock the male excitement gauge at the start of H **(Default: Disabled)**  
+- **Auto lock male gauge** - Automatically lock the male excitement gauge at the start of H **(Default: Disabled)**  
 
-- **Female Excitement Gauge Maximum Value (FemaleGaugeMax)** - Female excitement gauge will not go above this value when not locked. Value ranges from 0% to 100%. **(Default: 100%)**  
+- **Female Excitement Gauge Maximum Value** - Female excitement gauge will not go above this value when not locked. Value ranges from 0% to 100%. **(Default: 100%)**  
 
-- **Female Excitement Gauge Minimum Value (FemaleGaugeMin)** - Female exceitement gauge will not fall below this value when not locked. Value ranges from 0% to 100%. **(Default: 0%)**  
+- **Female Excitement Gauge Minimum Value** - Female exceitement gauge will not fall below this value when not locked. Value ranges from 0% to 100%. **(Default: 0%)**  
 
-- **Male Excitement Gauge Maximum Value (MaleGaugeMax)** - Male excitement gauge will not go above this value when not locked. Value ranges from 0% to 100%. **(Default: 100%)**  
+- **Male Excitement Gauge Maximum Value** - Male excitement gauge will not go above this value when not locked. Value ranges from 0% to 100%. **(Default: 100%)**  
 
-- **Male Excitement Gauge Minimum Value (MaleGaugeMin)** - Male excitement gauge will not fall below this value when not locked. Value ranges from 0% to 100%. **(Default: 0%)**  
+- **Male Excitement Gauge Minimum Value** - Male excitement gauge will not fall below this value when not locked. Value ranges from 0% to 100%. **(Default: 0%)**  
 
 ### Female Speech  
 
-- **Speech Control (SpeechControlMode)** - Configures how the plugin controls the female's speech.
+- **Speech Control** - Configures how the plugin controls the female's speech.
   - *Default Behavior* - Disable this feature and return to vanilla behavior. **(Default)**
   - *Based on Timer* - Automatically trigger speech at set interval.
   - *Mute Idle Speech* - Prevent the girl from speaking at all at idle (she would still speak during events such as insertion).
@@ -63,34 +67,34 @@ Press *F1* to access the plugin settings at the upper right of the screen.**
 
 
 ### Keyboard Shortcuts  
-- **Insert After Asking Female (InsertWaitKey)** - Press this key to insert male genital after female speech **(Default: None)**  
+- **Insert After Asking Female** - Press this key to insert male genital after female speech **(Default: None)**  
 
-- **Insert Without Asking (InsertWaitKey)** - Press this key to insert male genital without asking for permission **(Default: None)**  
+- **Insert Without Asking** - Press this key to insert male genital without asking for permission **(Default: None)**  
 
-- **Orgasm Inside (OrgasmInsideKey)** - Press this key to manually cum inside with the specified amount of time in precum **(Default: None)**  
+- **Orgasm Inside** - Press this key to manually cum inside with the specified amount of time in precum **(Default: None)**  
 
-- **Orgasm Outside (OrgasmOutsideKey)** - Press this key to manually cum outside with the specified amount of time in precum **(Default: None)**  
+- **Orgasm Outside** - Press this key to manually cum outside with the specified amount of time in precum **(Default: None)**  
 
-- **Precum Loop Toggle (OLoopKey)** - Press this key to enter/exit precum animation **(Default: None)**  
+- **Precum Loop Toggle** - Press this key to enter/exit precum animation **(Default: None)**  
 
-- **Spit Out (SpitKey)** - Press this key to make female spit out after blowjob **(Default: None)**  
+- **Spit Out** - Press this key to make female spit out after blowjob **(Default: None)**  
 
-- **Swallow (SwallowKey)** - Press this key to make female swallow after blowjob **(Default: None)**  
+- **Swallow** - Press this key to make female swallow after blowjob **(Default: None)**  
 
-- **Toggle Bottom Clothes (BottomClothesToggleKey)** - Toggle through states of the bottom cloth (skirt, pants...etc) of the main female. **(Default: None)**  
+- **Toggle Bottom Clothes** - Toggle through states of the bottom cloth (skirt, pants...etc) of the main female. **(Default: None)**  
 
-- **Toggle Pantsu Stipped/Half Stripped (PantsuStripKey)** - Toggle between a fully stripped and a partially stripped pantsu. You would not be able to fully dress the pantsu with this shortcut **(Default: None)**  
+- **Toggle Pantsu Stipped/Half Stripped** - Toggle between a fully stripped and a partially stripped pantsu. You would not be able to fully dress the pantsu with this shortcut **(Default: None)**  
 
-- **Toggle Sub-Accessories (SubAccToggleKey)** - Toggle the display of sub-accessories **(Default: None)**  
+- **Toggle Sub-Accessories** - Toggle the display of sub-accessories **(Default: None)**  
 
-- **Toggle Top Clothes (TopClothesToggleKey)** - Toggle through states of the top clothes of the main female, including top and bra. **(Default: None)**  
+- **Toggle Top Clothes** - Toggle through states of the top clothes of the main female, including top and bra. **(Default: None)**  
 
-- **Trigger Speech (TriggerVoiceKey)** - Trigger a random voice line depending on the current context **(Default: None)**  
+- **Trigger Speech** - Trigger a random voice line depending on the current context **(Default: None)**  
 
 
 ### Official VR  
 
-- **Reset Camera At Position Change (VRResetCamera)** - Resets the camera back to the male's head when switching to a different position in official VR. **(Default: Enabled)**  
+- **Reset Camera At Position Change** - Resets the camera back to the male's head when switching to a different position in official VR. **(Default: Enabled)**  
 
 <br>
 
