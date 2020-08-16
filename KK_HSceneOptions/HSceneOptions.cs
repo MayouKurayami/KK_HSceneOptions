@@ -554,25 +554,25 @@ namespace KK_HSceneOptions
 				{
 					var moreAccsObj = Traverse.Create(moreAccsType).Field("_self").GetValue();
 					var dic = Traverse.Create(moreAccsObj).Field("_accessoriesByChar").GetValue();
-					var accessoriesByChar = GetValueWeakDictionary(dic, mainFemale.chaFile);
+					var accessoriesByChar = GetValueWeakDict(dic, mainFemale.chaFile);
 
-					if (accessoriesByChar != null)
+					if (accessoriesByChar == null)
+						throw new NullReferenceException("Failed to acquire reference to MoreAccessories._accessoriesByChar");
+
+					var charAddDataTraverse = Traverse.Create(accessoriesByChar);
+					var nowAccessories = charAddDataTraverse.Field("nowAccessories").GetValue<List<ChaFileAccessory.PartsInfo>>();
+					var showAccessories = charAddDataTraverse.Field("showAccessories").GetValue<List<bool>>();
+
+					for (int i = 0; i < nowAccessories.Count; i++)
 					{
-						var charAddDataTraverse = Traverse.Create(accessoriesByChar);
-						var nowAccessories = charAddDataTraverse.Field("nowAccessories").GetValue<List<ChaFileAccessory.PartsInfo>>();
-						var showAccessories = charAddDataTraverse.Field("showAccessories").GetValue<List<bool>>();
-
-						for (int i = 0; i < nowAccessories.Count; i++)
+						if (nowAccessories[i].hideCategory == category)
 						{
-							if (nowAccessories[i].hideCategory == category)
-							{
-								if (showAccessories[i])
-									categoryShown++;
+							if (showAccessories[i])
+								categoryShown++;
 
-								categoryCount++;								
-							}
+							categoryCount++;
 						}
-					}				
+					}
 				}
 				catch (Exception ex)
 				{

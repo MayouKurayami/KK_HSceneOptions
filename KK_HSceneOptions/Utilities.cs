@@ -74,7 +74,7 @@ namespace KK_HSceneOptions
 		}
 
 
-		internal static object GetValueWeakDictionary(object dic, object key)
+		internal static object GetValueWeakDict(object dic, object key)
 		{
 			var tryMethod = AccessTools.Method(dic.GetType(), "TryGetValue");
 			if (tryMethod == null)
