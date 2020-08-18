@@ -140,13 +140,14 @@ namespace KK_HSceneOptions
 
 
 		#region Force start orgasm when pressing menu buttons
-		/// If precum countdown timer is set, forcibly start orgasm immediately when pressing the corresponding menu buttons to prevent issues with the timer
+		/// If precum countdown timer is set, forcibly start orgasm immediately when pressing the corresponding menu buttons so that the start of orgasm is synchronized with the start of the countdown.
+		/// Also forcibly start orgasm during service modes if auto finish is disabled, as the buttons wouldn't do anything when the animation is not in OLoop
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), "OnInsideClick")]
 		public static void OnInsideClickPost()
 		{
-			if (PrecumTimer.Value > 0)
+			if (PrecumTimer.Value > 0 || (DisableAutoPrecum.Value && hCategory == HCategory.service))
 				animationToggle.ManualOrgasm(inside: true);
 		}
 
@@ -154,7 +155,7 @@ namespace KK_HSceneOptions
 		[HarmonyPatch(typeof(HSprite), "OnOutsideClick")]
 		public static void OnOutsideClickPost()
 		{
-			if (PrecumTimer.Value > 0)
+			if (PrecumTimer.Value > 0 || (DisableAutoPrecum.Value && hCategory == HCategory.service))
 				animationToggle.ManualOrgasm(inside: false);
 		}
 
