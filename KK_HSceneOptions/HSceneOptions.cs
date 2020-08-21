@@ -434,7 +434,7 @@ namespace KK_HSceneOptions
 		/// </summary>
 		internal static IEnumerator RunAfterTransition(Action action)
 		{
-			yield return new WaitUntil(() => lstFemale?.FirstOrDefault()?.animBody.GetCurrentAnimatorStateInfo(0).IsName(flags.nowAnimStateName) ?? true);
+			yield return new WaitUntil(() => lstFemale[0]?.animBody.GetCurrentAnimatorStateInfo(0).IsName(flags.nowAnimStateName) ?? true);
 
 			action();
 		}
