@@ -63,5 +63,28 @@ namespace KK_HSceneOptions
 		public static IEnumerable<CodeInstruction> DarkHoushiOLoopExtendTpl(IEnumerable<CodeInstruction> instructions) => H3POLoopExtendTpl(instructions);
 
 		#endregion
+
+		#region Quick Position Change
+
+		/// <summary>
+		/// If maintaining motion when changing positions, prevent the game from resetting H related parameters (e.g., speed gauge) after the new position is loaded. 
+		/// Additionally, set the animation of the new position to the animation before the position change instead of idle.
+		/// </summary>
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(H3PDarkSonyu), nameof(H3PDarkSonyu.MotionChange))]
+		[HarmonyPatch(typeof(H3PDarkHoushi), nameof(H3PDarkHoushi.MotionChange))]
+		public static bool MotionChangeOverrideDark(HActionBase __instance, ref bool __result)
+			=> MotionChangeOverride(__instance, ref __result);
+
+		/// <summary>
+		/// If maintaining motion when changing positions, make sure the game does not redraw the buttons for insertion
+		/// </summary>
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetHoushi3PDarkStart))]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetSonyu3PDarkStart))]
+		public static bool HSpriteInitOverrideDark(ref bool __result)
+			=> HSpriteInitOverride(ref __result);
+
+		#endregion
 	}
 }

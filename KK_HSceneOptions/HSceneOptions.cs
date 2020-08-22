@@ -46,8 +46,10 @@ namespace KK_HSceneOptions
 
 
 		public static ConfigEntry<bool> AutoSubAccessories { get; private set; }
+		public static ConfigEntry<bool> DisableAutoPrecum { get; private set; }
 		public static ConfigEntry<bool> HideMaleShadow { get; private set; }
 		public static ConfigEntry<bool> HideFemaleShadow { get; private set; }
+		public static ConfigEntry<PositionSkipMode> QuickPositionChange { get; private set; }
 
 		public static ConfigEntry<bool> LockFemaleGauge { get; private set; }
 		public static ConfigEntry<bool> LockMaleGauge { get; private set; }
@@ -61,7 +63,6 @@ namespace KK_HSceneOptions
 
 		public static ConfigEntry<bool> VRResetCamera { get; private set; }
 
-		public static ConfigEntry<bool> DisableAutoPrecum { get; private set; }
 		public static ConfigEntry<bool> PrecumToggle { get; private set; }
 		public static ConfigEntry<float> PrecumTimer { get; private set; }
 
@@ -110,6 +111,13 @@ namespace KK_HSceneOptions
 				defaultValue: false);
 			HideMaleShadow.SettingChanged += (sender, args) => { MaleShadow(); };
 
+			QuickPositionChange = Config.Bind(
+				section: "",
+				key: "Quick Position Change",
+				defaultValue: PositionSkipMode.Auto,
+				"Quickly switch between positions, skipping speech and maintaining motion if not changing sex mode." +
+				"\n\nAuto: Activates quick switching only when switching between positions within the same mode, and only during active sex when the characters are moving");
+
 			/// 
 			/////////////////// Excitement Gauge //////////////////////////
 			/// 
@@ -156,7 +164,6 @@ namespace KK_HSceneOptions
 			/// 
 			/////////////////// Female Speech //////////////////////////
 			/// 
-
 			SpeechControlMode = Config.Bind(
 				section: "Female Speech",
 				key: "Speech Control",
@@ -627,6 +634,13 @@ namespace KK_HSceneOptions
 			MuteIdle,
 			[Description("Mute All Spoken Lines")]
 			MuteAll
+		}
+
+		public enum PositionSkipMode
+		{
+			Disabled,
+			Auto,
+			Always
 		}
 
 		internal enum HCategory

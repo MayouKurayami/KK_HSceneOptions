@@ -466,5 +466,89 @@ namespace KK_HSceneOptions
 		}
 
 		#endregion
+
+
+		#region Quick Position Change
+
+
+		internal static string motionChangeOld;
+		
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.OnChangePlaySelect))]
+		public static void OnChangePositionButtonPost()
+		{
+			if (flags.selectAnimationListInfo == null)
+				return;
+
+			string[] loopAnims = new string[] { "WLoop", "SLoop", "OLoop" };
+			bool inPistonSameMode = flags.selectAnimationListInfo.mode == flags.mode && loopAnims.Any(str => flags.nowAnimStateName.Contains(str));
+
+			if (QuickPositionChange.Value == PositionSkipMode.Always || (QuickPositionChange.Value == PositionSkipMode.Auto && inPistonSameMode))
+			{
+				//Reset voiceWait to false so that HSceneProc.ChangeAnimator will run immediately
+				flags.voiceWait = false;
+
+				for (int i = 0; i < 2; i++)
+				{
+					flags.voice.playVoices[i] = -1;
+
+					if (voice.nowVoices[i].state == HVoiceCtrl.VoiceKind.voice)
+						Singleton<Voice>.Instance.Stop(flags.transVoiceMouth[i]);
+				}
+				//Reset flags.click to bypass the vanilla behavior of switching back to idle animation before changing position
+				flags.click = HFlag.ClickKind.none;
+
+				if (inPistonSameMode)
+					motionChangeOld = flags.nowAnimStateName;
+			}			
+		}
+
+		/// <summary>
+		/// If maintaining motion when changing positions, prevent the game from resetting H related parameters (e.g., speed gauge) after the new position is loaded. 
+		/// Additionally, set the animation of the new position to the animation before the position change instead of idle.
+		/// </summary>
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HSonyu), nameof(HSonyu.MotionChange))]
+		[HarmonyPatch(typeof(H3PSonyu), nameof(H3PSonyu.MotionChange))]
+		[HarmonyPatch(typeof(HHoushi), nameof(HHoushi.MotionChange))]
+		[HarmonyPatch(typeof(H3PHoushi), nameof(H3PHoushi.MotionChange))]
+
+		public static bool MotionChangeOverride(HActionBase __instance, ref bool __result)
+		{
+			if (motionChangeOld != null)
+			{
+				//If the animation was OLoop before the position change, set the current animation to SLoop, since beginning a new position in OLoop seems unnatural and requires a lot more work.
+				__instance.SetPlay(motionChangeOld.Contains("OLoop") ? "SLoop" : motionChangeOld);
+
+				__result = false;
+				return false;
+			}
+			return true;
+		}
+
+		/// <summary>
+		/// If maintaining motion when changing positions, make sure the game does not redraw the buttons for insertion
+		/// </summary>
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetHoushiStart))]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetHoushi3PStart))]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetSonyuStart))]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetSonyu3PStart))]
+		public static bool HSpriteInitOverride(ref bool __result)
+		{
+			if (motionChangeOld != null)
+			{
+				__result = false;
+				return false;
+			}
+			return true;
+		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HSceneProc), "ChangeAnimator")]
+		public static void ChangeAnimatorPost() => motionChangeOld = null;
+
+
+		#endregion
 	}
 }

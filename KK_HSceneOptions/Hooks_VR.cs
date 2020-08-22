@@ -63,5 +63,9 @@ namespace KK_HSceneOptions
 			if (VRResetCamera.Value)
 				_isForceCameraReset = true;
 		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(VRHScene), "ChangeAnimator")]
+		public static void ChangeAnimatorPostVR() => Hooks.motionChangeOld = null;
 	}
 }
