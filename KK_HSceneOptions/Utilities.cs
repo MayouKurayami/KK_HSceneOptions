@@ -21,7 +21,7 @@ namespace KK_HSceneOptions
 
 
 		/// <summary>
-		/// Injects code instructions into block(s) of codes that begins with a check for OLoop
+		/// Injects code instruction(s) after the code instruction that meets the specified criteria
 		/// </summary>
 		/// <param name="instructions">The list of instructions to modify. This list will be directly modified.</param>
 		/// <param name="targetOperand">Inject after the instruction that contains this operand</param>
@@ -29,8 +29,8 @@ namespace KK_HSceneOptions
 		/// <param name="targetNextOpCode">If specified, the OpCode of the instruction immediately after the targetOperand instruction must be targetOpCode before injection can proceed</param>
 		/// <param name="targetNextOperand">If specified, the operand of the instruction immediately after the targetOperand instruction must be targetNextOperand before injection can proceed</param>
 		/// <param name="rangeStart">The index of the list of instructions where the start of the search space for targetOperand is. By default the search begins at the beginning of the list</param>
-		/// <param name="rangeEnd">The index of the list of instructions where the end of the search space for targetOperand is. Default value of 0 results in searching til the end of the list.</param>
-		/// <param name="insertAfter">Inject after this many elements in the instruction list</param>
+		/// <param name="rangeEnd">The index  where the end of the search space for targetOperand is. Default value of 0 results in searching til the end of the list.</param>
+		/// <param name="insertAt">Index position within the instructions list to inject, relative to the instruction containing targetOperand. A value of 0 means to inject at where the targetOperand instruction is at, while shifting the targetOperand instruction and its subsequent instructions towards the end of the list.</param>
 		/// <exception cref="IndexOutOfRangeException">Thrown if rangeStart or rangeEnd are negative or out of bounds</exception>
 		/// <exception cref="InstructionNotFoundException">Thrown if injection target is not found</exception>
 		/// <returns>Returns the modified list of instructions.</returns>
@@ -42,7 +42,7 @@ namespace KK_HSceneOptions
 			object targetNextOperand = null,
 			int rangeStart = 0,
 			int rangeEnd = 0,
-			int insertAfter = 1)
+			int insertAt = 1)
 		{
 			var inserted = false;
 
@@ -60,7 +60,7 @@ namespace KK_HSceneOptions
 				else if (targetNextOperand != null && instructions[i + 1].operand != targetNextOperand)
 					continue;
 
-				instructions.InsertRange(i + insertAfter, injection);
+				instructions.InsertRange(i + insertAt, injection);
 				inserted = true;
 #if DEBUG
 				UnityEngine.Debug.LogWarning(new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name + " injected instructions after " + targetOperand.ToString() + " at index " + i);

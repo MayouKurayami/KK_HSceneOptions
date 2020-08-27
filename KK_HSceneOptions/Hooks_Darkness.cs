@@ -11,12 +11,8 @@ namespace KK_HSceneOptions
 		//These hooks bypass that behavior when DisableAutoPrecum is set to true.
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(H3PDarkHoushi), nameof(H3PDarkHoushi.MotionChange))]
-		public static void HoushiDarkMotionChangePre(ref int _motion)
-		{
-			//Change parameter from 2 (OLoop) to 1 (WLoop)
-			if (_motion == 2 && DisableAutoPrecum.Value)
-				_motion = 1;
-		}
+		public static void HoushiDarkMotionChangePre(ref int _motion) => HoushiMotionChangePre(ref _motion);
+
 
 		////////////////////////////////////////////////////////////////////////////////
 		/// Keep the in-game menu accessible in forced OLoop

@@ -56,10 +56,8 @@ namespace KK_HSceneOptions
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSceneProc), "LateUpdate")]
-		public static void HSceneLateUpdatePostfix()
-		{
-			GaugeLimiter();
-		}
+		public static void HSceneLateUpdatePostfix() => GaugeLimiter();
+		
 
 		/// <summary>
 		/// The vanilla game does not have any moan or breath sounds available for the precum (OLoop) animation.
@@ -258,7 +256,7 @@ namespace KK_HSceneOptions
 				targetOperand: "SLoop",
 				targetNextOperand: animatorStateInfoMethod,
 				injection: new CodeInstruction[] { new CodeInstruction(OpCodes.Call, injectMethod) }, 			
-				insertAfter: 2);
+				insertAt: 2);
 		}
 
 		/// <summary>
@@ -300,7 +298,7 @@ namespace KK_HSceneOptions
 				targetOperand: gaugeCheck,
 				targetNextOpCode: OpCodes.Ldc_R4,
 				injection: injection, 			
-				insertAfter: 2);
+				insertAt: 2);
 		}
 
 		/// <summary>

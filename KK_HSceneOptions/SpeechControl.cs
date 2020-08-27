@@ -71,7 +71,7 @@ namespace KK_HSceneOptions
 		public void PlayVoice()
 		{
 			//Set the flag used by hooks to force idle voice line playback
-			StartCoroutine(ToggleFlagSingleFrame(x => forceIdleVoice = x));
+			StartCoroutine(ToggleFlagSingleFrame(targetValue => forceIdleVoice = targetValue));
 
 			//Take care of singular/edge cases
 			if (hCategory == HCategory.intercourse)
@@ -81,11 +81,13 @@ namespace KK_HSceneOptions
 				string[] afterOrg = new string[] { "IN_A", "A_IN_A", "OUT_A", "A_OUT_A" };
 				if (afterOrg.Any(x => flags.nowAnimStateName == x))
 				{
-					StartCoroutine(ToggleFlagSingleFrame(targetValue => {
+					Func<bool, bool> toggleFlagDelegate = targetValue =>
+					{
 						bool oldValue = flags.voice.isAfterVoicePlay;
 						flags.voice.isAfterVoicePlay = targetValue;
 						return oldValue;
-					}, false));
+					};
+					StartCoroutine(ToggleFlagSingleFrame(toggleFlagDelegate, targetValue: false));
 
 					//Takes care of situations when guy pulls out after ejaculating inside
 					if (flags.finish != HFlag.FinishKind.outside && flags.nowAnimStateName.Contains("OUT"))

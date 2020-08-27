@@ -51,10 +51,8 @@ namespace KK_HSceneOptions
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(VRHScene), "LateUpdate")]
-		public static void VRHsceneLateUpdatePostfix()
-		{
-			GaugeLimiter();
-		}
+		public static void VRHsceneLateUpdatePostfix() => GaugeLimiter();
+		
 
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(VRHScene), "ChangeAnimator")]
