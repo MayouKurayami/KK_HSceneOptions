@@ -49,6 +49,7 @@ namespace KK_HSceneOptions
 		public static ConfigEntry<bool> DisableAutoPrecum { get; private set; }
 		public static ConfigEntry<bool> HideMaleShadow { get; private set; }
 		public static ConfigEntry<bool> HideFemaleShadow { get; private set; }
+		public static ConfigEntry<bool> ForceInsertInterrupt { get; private set; }
 		public static ConfigEntry<PositionSkipMode> QuickPositionChange { get; private set; }
 
 		public static ConfigEntry<bool> LockFemaleGauge { get; private set; }
@@ -110,6 +111,12 @@ namespace KK_HSceneOptions
 				key: "Hide Shadow Casted by Male Body",
 				defaultValue: false);
 			HideMaleShadow.SettingChanged += (sender, args) => { MaleShadow(); };
+
+			ForceInsertInterrupt = Config.Bind(
+				section: "",
+				key: "Interrupt Speech When Force Insert",
+				defaultValue: true,
+				"Interrupt female speech when inserting without asking, thus allowing immediate insertion.");
 
 			QuickPositionChange = Config.Bind(
 				section: "",
@@ -468,7 +475,7 @@ namespace KK_HSceneOptions
 				flags.gaugeMale = Mathf.Clamp(flags.gaugeMale, MaleGaugeMin.Value, MaleGaugeMax.Value);
 		}
 
-		private void OnInsertNoVoiceClick()
+		internal void OnInsertNoVoiceClick()
 		{
 			int num = (flags.mode == HFlag.EMode.houshi3P || flags.mode == HFlag.EMode.sonyu3P) ? (flags.nowAnimationInfo.id % 2) : 0;
 			if (flags.mode != HFlag.EMode.sonyu3PMMF)

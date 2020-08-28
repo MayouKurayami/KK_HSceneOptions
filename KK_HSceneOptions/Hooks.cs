@@ -548,5 +548,21 @@ namespace KK_HSceneOptions
 
 
 		#endregion
+
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.OnInsertNoVoiceClick))]
+		[HarmonyPatch(typeof(HSceneOptions), nameof(HSceneOptions.OnInsertNoVoiceClick))]
+		public static void ForceInsertStopVoice()
+		{
+			if (ForceInsertInterrupt.Value && flags.click == HFlag.ClickKind.insert_voice)
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					if (voice.nowVoices[i].state == HVoiceCtrl.VoiceKind.voice)
+						Singleton<Voice>.Instance.Stop(flags.transVoiceMouth[i]);
+				}
+			}	
+		}
 	}
 }
