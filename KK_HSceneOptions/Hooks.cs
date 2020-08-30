@@ -72,15 +72,21 @@ namespace KK_HSceneOptions
 				_ai = AnimationToggle.sLoopInfo;		
 		}
 
-		/// <summary>
-		/// Resets OLoop flag when switching animation, to account for leaving OLoop.
-		/// </summary>
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HActionBase), "SetPlay")]
-		public static void SetPlayPost()
+		public static void SetPlayPost(string _nextAnimation)
 		{
-			if (animationToggle?.forceOLoop ?? false)			
-				animationToggle.forceOLoop = false;
+			if (!animationToggle)
+				return;
+
+			// Resets OLoop flag when switching animation, to account for leaving OLoop.
+			animationToggle.forceOLoop = false;
+
+			//Once orgasm has started playing, reset the forceStopVoice flag to false since its sole purpose is to trigger orgasm 
+			string[] orgasmAnims = new string[] { "Start", "Orgasm" };
+			if (orgasmAnims.Any(str => _nextAnimation.Contains(str)))
+				animationToggle.forceStopVoice = false;
 		}
 
 		

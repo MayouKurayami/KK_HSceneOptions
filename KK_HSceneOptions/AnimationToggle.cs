@@ -78,8 +78,6 @@ namespace KK_HSceneOptions
 					{
 						forceStopVoice = true;
 						orgasmTimer = 0;
-						//Toggle the forceStopVoice flag back to false after at least one frame and after crossfading transition is over
-						StartCoroutine(RunAfterTransition(() => forceStopVoice = false));
 					}	
 				}
 				//Reset the timer back to 0 once time is reached regardless of current animation state
