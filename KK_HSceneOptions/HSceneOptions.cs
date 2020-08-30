@@ -420,41 +420,6 @@ namespace KK_HSceneOptions
 		}
 
 		/// <summary>
-		/// Run <c>toggleDelegate</c> with <c>targetValue</c> as the parameter. In the next frame run <c>toggleDelegate</c> again with the logical NOT of <c>targetValue</c> as the parameter.
-		/// 
-		/// Intended to be used to set a boolean variable to a value then set to the logical NOT of said value after one frame.
-		/// </summary>
-		/// <param name="toggleDelegate">Delegate used to assign <c>targetValue</c> to a variable</param>
-		internal static IEnumerator ToggleFlagSingleFrame(Action<bool> toggleDelegate, bool targetValue = true)
-		{
-			toggleDelegate(targetValue);
-			yield return null;
-			toggleDelegate(!targetValue);
-		}
-
-		/// <summary>
-		/// Run <c>toggleDelegate</c> with <c>targetValue</c> as parameter, then store the returned value. Wait for one frame then call the same delegate again using the stored value as parameter. Can only be used with value types.
-		/// 
-		/// Intended to be used to set a variable to a value then set it back to its original value after one frame.
-		/// </summary>
-		/// <param name="toggleDelegate">Delegate used to assign a value to a variable, and return the original value of said variable.</param>
-		/// <param name="targetValue">The value that will be used as the parameter for <c>toggleDelegate</c> in the initial call</param>
-		/// <example>
-		/// In this example, flag has an intial value of 0. flag is set to 3 when the coroutine starts, then set back to 0 in the next frame.
-		/// <code> 
-		/// int flag = 0;
-		/// Func＜int, int＞ toggleFlagDelegate = targetValue => { int oldValue = flag; flag = targetValue; return oldValue; };
-		/// StartCoroutine(ToggleFlagSingleFrame(toggleFlagDelegate, targetValue: 3));
-		/// </code>
-		/// </example>
-		internal static IEnumerator ToggleFlagSingleFrame<T>(Func<T, T> toggleDelegate, T targetValue) where T : struct
-		{
-			T originalValue = toggleDelegate(targetValue);
-			yield return null;
-			toggleDelegate(originalValue);
-		}
-
-		/// <summary>
 		/// Wait for current animation transition to finish, then run the given delegate
 		/// </summary>
 		internal static IEnumerator RunAfterTransition(Action action)

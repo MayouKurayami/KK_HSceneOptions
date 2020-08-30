@@ -127,18 +127,21 @@ namespace KK_HSceneOptions
 				return true;
 		}
 
-		//After SpeechControl.PlayVoice() is called, VoiceProc isn't called immediately or sometimes at all. 
-		//This causes SpeechControl to reset the timer and set voicePlaying to false before the voice is done playing (if it has been queued to play).
-		//Therefore, we re-initialize the timer and the voicePlaying flag again here in case the voice was indeed played as indicated by __result being true,
-		//allowing SpeechControl to set the timer again at the end of voice playback.
+		
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
 		public static void VoiceProcPost(bool __result)
 		{
 			if (__result)
 			{
+				//After SpeechControl.PlayVoice() is called, VoiceProc isn't called immediately or sometimes at all. 
+				//This causes SpeechControl to reset the timer and set voicePlaying to false before the voice is done playing (if it has been queued to play).
+				//Therefore, we re-initialize the timer and the voicePlaying flag again here in case the voice was indeed played as indicated by __result being true, allowing SpeechControl to set the timer again at the end of voice playback.
 				voiceTimer = Time.time;
 				voicePlaying = true;
+
+				//Reset the forceIdleVoice flag to voice now that a voice has been played.
+				forceIdleVoice = false;
 			}			
 		}
 
