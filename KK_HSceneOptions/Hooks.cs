@@ -154,7 +154,7 @@ namespace KK_HSceneOptions
 		[HarmonyPatch(typeof(HSprite), "OnInsideClick")]
 		public static void OnInsideClickPost()
 		{
-			if (PrecumTimer.Value > 0 || (DisableAutoPrecum.Value && hCategory == HCategory.service))
+			if (PrecumTimer.Value > 0 || (DisableAutoFinish.Value && hCategory == HCategory.service))
 				animationToggle.ManualOrgasm(inside: true);
 		}
 
@@ -162,7 +162,7 @@ namespace KK_HSceneOptions
 		[HarmonyPatch(typeof(HSprite), "OnOutsideClick")]
 		public static void OnOutsideClickPost()
 		{
-			if (PrecumTimer.Value > 0 || (DisableAutoPrecum.Value && hCategory == HCategory.service))
+			if (PrecumTimer.Value > 0 || (DisableAutoFinish.Value && hCategory == HCategory.service))
 				animationToggle.ManualOrgasm(inside: false);
 		}
 
@@ -227,7 +227,7 @@ namespace KK_HSceneOptions
 		public static void HoushiMotionChangePre(ref int _motion)
 		{
 			//Change parameter from 2 (OLoop) to 1 (WLoop)
-			if (_motion == 2 && DisableAutoPrecum.Value)
+			if (_motion == 2 && DisableAutoFinish.Value)
 				_motion = 1;
 		}
 
@@ -240,7 +240,7 @@ namespace KK_HSceneOptions
 		[HarmonyPatch(typeof(HFlag), nameof(HFlag.AddHoushiOutside))]
 		public static void HoushiSpeedReset()
 		{
-			if (DisableAutoPrecum.Value && flags)
+			if (DisableAutoFinish.Value && flags)
 				flags.speedCalc = 0f;
 		}
 
@@ -317,7 +317,7 @@ namespace KK_HSceneOptions
 		/// <returns>The value to replace the vanilla threshold value</returns>
 		private static float HoushiMaleGaugeOverride(float vanillaThreshold)
 		{
-			if (DisableAutoPrecum.Value && flags.gaugeMale >= vanillaThreshold)
+			if (DisableAutoFinish.Value && flags.gaugeMale >= vanillaThreshold)
 			{
 				foreach (HSprite sprite in sprites)
 					sprite.SetHoushiAutoFinish(_force: true);
@@ -335,7 +335,7 @@ namespace KK_HSceneOptions
 		/// <returns>The value to replace the vanilla threshold value</returns>
 		private static float Houshi3PMaleGaugeOverride(float vanillaThreshold)
 		{
-			if (DisableAutoPrecum.Value && flags.gaugeMale >= vanillaThreshold)
+			if (DisableAutoFinish.Value && flags.gaugeMale >= vanillaThreshold)
 			{
 				foreach (HSprite sprite in sprites)
 					sprite.SetHoushi3PAutoFinish(_force: true);

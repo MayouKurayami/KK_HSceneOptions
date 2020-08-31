@@ -46,7 +46,7 @@ namespace KK_HSceneOptions
 
 
 		public static ConfigEntry<bool> AutoSubAccessories { get; private set; }
-		public static ConfigEntry<bool> DisableAutoPrecum { get; private set; }
+		public static ConfigEntry<bool> DisableAutoFinish { get; private set; }
 		public static ConfigEntry<bool> HideMaleShadow { get; private set; }
 		public static ConfigEntry<bool> HideFemaleShadow { get; private set; }
 		public static ConfigEntry<bool> ForceInsertInterrupt { get; private set; }
@@ -93,12 +93,6 @@ namespace KK_HSceneOptions
 				defaultValue: false,
 				"Auto equip sub-accessories at H start");
 
-			DisableAutoPrecum = Config.Bind(
-				section: "",
-				key: "Disable Auto Finish in Service Mode",
-				defaultValue: false,
-				"If enabled, animation in service modes will not be stuck in the fast precum animation when male's excitement gauge is past the 70% threshold");
-
 			HideFemaleShadow = Config.Bind(
 				section: "",
 				key: "Hide Shadow Casted by Female Limbs and Accessories",
@@ -116,14 +110,15 @@ namespace KK_HSceneOptions
 				section: "",
 				key: "Interrupt Speech When Force Insert",
 				defaultValue: true,
-				"Interrupt female speech when inserting without asking, thus allowing immediate insertion.");
+				"Interrupt female speech when inserting without asking (blue button), allowing immediate insertion.");
 
 			QuickPositionChange = Config.Bind(
 				section: "",
 				key: "Quick Position Change",
 				defaultValue: PositionSkipMode.Auto,
 				"Quickly switch between positions, skipping speech and maintaining motion if not changing sex mode." +
-				"\n\nAuto: Activates quick switching only when switching between positions within the same mode, and only during active sex when the characters are moving");
+				"\n\nAuto:  Activates quick switching only when switching between positions within the same mode, and only during active sex when the characters are moving" +
+				"\n\nAlways:  Always activates quick switching (motion is only maintained within the same sex mode)");
 
 			/// 
 			/////////////////// Excitement Gauge //////////////////////////
@@ -203,8 +198,14 @@ namespace KK_HSceneOptions
 			/////////////////// Precum Related //////////////////////////
 			/// 	
 
+			DisableAutoFinish = Config.Bind(
+				section: "Finish & Orgasm",
+				key: "Disable Auto Finish in Service Modes",
+				defaultValue: true,
+				"If enabled, animation in service modes will not be stuck in the fast precum animation when male's excitement gauge is past the 70% threshold");
+
 			PrecumTimer = Config.Bind(
-				section: "Force Precum",
+				section: "Finish & Orgasm",
 				key: "Precum Timer",
 				defaultValue: 0f,
 				new ConfigDescription("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. " +
@@ -212,18 +213,19 @@ namespace KK_HSceneOptions
 					new AcceptableValueRange<float>(0, 13f)));
 
 			PrecumToggle = Config.Bind(
-				section: "Force Precum",
+				section: "Finish & Orgasm",
 				key: "Precum Toggle",
-				defaultValue: false,
-				"Allow toggling throhgh precum loop when right clicking the speed control pad." +
+				defaultValue: true,
+				"Allow toggling through precum animation when right clicking the speed control pad." +
 					"\n\nToggle order: weak motion > strong motion > precum > back to weak motion");
 
 			/// 
 			/////////////////// Keyboard Shortcuts //////////////////////////
 			/// 
+			const string sectionKeys = "Ξ  Keyboard Shortcuts";
 
 			TopClothesToggleKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Toggle Top Clothes",
 				defaultValue: KeyboardShortcut.Empty,
 				new ConfigDescription("Toggle through states of the top clothes of the main female, including top cloth and bra at the same time.",
@@ -231,7 +233,7 @@ namespace KK_HSceneOptions
 					new ConfigurationManagerAttributes { Order = 3 }));
 
 			BottomClothesToggleKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Toggle Bottom Clothes",
 				defaultValue: KeyboardShortcut.Empty,
 				new ConfigDescription("Toggle through states of the bottom cloth (skirt, pants...etc) of the main female.",
@@ -239,7 +241,7 @@ namespace KK_HSceneOptions
 					new ConfigurationManagerAttributes { Order = 2 }));
 
 			PantsuStripKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Toggle Pantsu Stripped/Half Stripped",
 				defaultValue: KeyboardShortcut.Empty,
 				new ConfigDescription("Toggle between a fully stripped and a partially stripped pantsu." +
@@ -248,55 +250,55 @@ namespace KK_HSceneOptions
 					new ConfigurationManagerAttributes { Order = 1 }));
 
 			InsertWaitKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Insert After Asking Female",
 				defaultValue: KeyboardShortcut.Empty,
 				"Insert male genital after female speech");
 
 			InsertNowKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Insert Without Asking",
 				defaultValue: KeyboardShortcut.Empty,
 				"Insert male genital without asking for permission");
 
 			OrgasmInsideKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Orgasm Inside",
 				defaultValue: KeyboardShortcut.Empty,
 				"Press this key to manually cum inside mouth or vagina");
 
 			OrgasmOutsideKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Orgasm Outside",
 				defaultValue: KeyboardShortcut.Empty,
 				"Press this key to manually cum outside of mouth or vagina");
 
 			OLoopKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Precum Loop Toggle",
 				defaultValue: KeyboardShortcut.Empty,
 				"Press this key to enter/exit precum animation");
 
 			SpitKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Spit Out",
 				defaultValue: KeyboardShortcut.Empty,
 				"Press this key to make female spit out after blowjob");
 
 			SwallowKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Swallow",
 				defaultValue: KeyboardShortcut.Empty,
 				"Press this key to make female swallow after blowjob");
 
 			SubAccToggleKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Toggle Sub-Accessories",
 				defaultValue: KeyboardShortcut.Empty,
 				"Toggle the display of sub-accessories");
 
 			TriggerVoiceKey = Config.Bind(
-				section: "Keyboard Shortcut",
+				section: sectionKeys,
 				key: "Trigger Speech",
 				defaultValue: KeyboardShortcut.Empty,
 				"Trigger a voice line based on the current context");

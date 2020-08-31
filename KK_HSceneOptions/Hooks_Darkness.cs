@@ -36,7 +36,7 @@ namespace KK_HSceneOptions
 		/// <returns>The value to replace the vanilla threshold value</returns>
 		private static float Houshi3PDarkMaleGaugeOverride(float vanillaThreshold)
 		{
-			if (DisableAutoPrecum.Value && flags.gaugeMale >= vanillaThreshold)
+			if (DisableAutoFinish.Value && flags.gaugeMale >= vanillaThreshold)
 			{
 				foreach (HSprite sprite in sprites)
 					sprite.SetHoushi3PDarkAutoFinish(_force: true);
