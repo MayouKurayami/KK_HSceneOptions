@@ -26,11 +26,16 @@ It is recommended to adjust the configs via the in-game plugin settings page ins
 
 - **Auto equip sub-accessories** - Auto equip sub-accessories at the start of H **(Default: Disabled)**  
 
-- **Disable Auto Finish in Service Mode** - If enabled, animation in service modes will not be stuck in the fast precum animation when male's excitement gauge is past the 70% threshold. **(Default: Disabled)**
-
 - **Hide shadow casted by female limbs and accessories** - Hide shadow casted by female limbs and accessories. This does not affect shadows casted by the head or hair. **(Default: Disabled)**  
 
 - **Hide shadow casted by male body** - Hide shadow casted by male body. Very useful for POV view or VR. **(Default: Disabled)**  
+
+- **Interrupt Speech When Force Insert** - Interrupt female speech when inserting without asking (blue button), allowing immediate insertion. **(Default: Enabled)**
+
+- **Quick Position Change** - Quickly switch between positions, skipping speech and maintaining motion if not changing sex mode.
+  - *Disabled* - Disable this feature completely
+  - *Auto* - Activates quick switching only when switching between positions within the same mode, and only during active sex when the characters are moving  **(Default)**
+  - *Always* - Always activates quick switching (motion is only maintained within the same sex mode)
 
 ### Excitement Gauge  
 
@@ -40,7 +45,7 @@ It is recommended to adjust the configs via the in-game plugin settings page ins
 
 - **Female Excitement Gauge Maximum Value** - Female excitement gauge will not go above this value when not locked. Value ranges from 0% to 100%. **(Default: 100%)**  
 
-- **Female Excitement Gauge Minimum Value** - Female exceitement gauge will not fall below this value when not locked. Value ranges from 0% to 100%. **(Default: 0%)**  
+- **Female Excitement Gauge Minimum Value** - Female excitement gauge will not fall below this value when not locked. Value ranges from 0% to 100%. **(Default: 0%)**  
 
 - **Male Excitement Gauge Maximum Value** - Male excitement gauge will not go above this value when not locked. Value ranges from 0% to 100%. **(Default: 100%)**  
 
@@ -58,13 +63,21 @@ It is recommended to adjust the configs via the in-game plugin settings page ins
 - **Speech Timer** - Sets the time interval at which the girl will randomly speak, from roughly 0.1 to 60 seconds. **(Default: 20)**  
  ***This option is effective only if Speech Control is set to Based on Timer***
 
-### Force Precum  
+### Finish & Orgasm  
+
+- **Disable Auto Finish in Service Mode** - If enabled, animation in service modes will not be stuck in the fast precum animation when male's excitement gauge is past the 70% threshold. **(Default: Enabled)**  
+
 
 - **Precum Timer** - When orgasm is initiated via the keyboard shortcut or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. Set to 0 to disable this feature. **(Default: 0)**  
 
-- **Precum Toggle** - Allow toggling throhgh precum loop when right clicking the speed control pad.  **(Default: Disabled)**  
+- **Precum Toggle** - Allow toggling through precum loop when right clicking the speed control pad.  **(Default: Enabled)**  
  Toggle order: weak motion > strong motion > precum > back to weak motion
 
+### Official VR  
+
+ - **Reset Camera At Position Change** - Resets the camera back to the male's head when switching to a different position in official VR. **(Default: Enabled)**  
+
+<br>   
 
 ### Keyboard Shortcuts  
 - **Insert After Asking Female** - Press this key to insert male genital after female speech **(Default: None)**  
@@ -91,19 +104,15 @@ It is recommended to adjust the configs via the in-game plugin settings page ins
 
 - **Trigger Speech** - Trigger a random voice line depending on the current context **(Default: None)**  
 
-
-### Official VR  
-
-- **Reset Camera At Position Change** - Resets the camera back to the male's head when switching to a different position in official VR. **(Default: Enabled)**  
-
 <br>
 
 ## Notes and Limitations  
-- Fully supports the official VR
+- Supports JP official VR (untested with steam version VR)
 
 - Unknown compatibility with kPlug  
 
 - The various keyboard shortcuts from this plugin can be used with a voice to keystroke software to allow hands free operation, which is especially useful in VR.  
+For the keyboard shortcuts to work in VR, the game's window must have focus.  
 
 - When manually forcing precum animation, piston speed will be fixed at max value and cannot be adjusted.
 
