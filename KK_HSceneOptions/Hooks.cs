@@ -537,18 +537,13 @@ namespace KK_HSceneOptions
 		/// If maintaining motion when changing positions, make sure the game does not redraw the buttons for insertion
 		/// </summary>
 		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetHoushiStart))]
-		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetHoushi3PStart))]
-		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetSonyuStart))]
-		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetSonyu3PStart))]
-		public static bool HSpriteInitOverride(ref bool __result)
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.MainSpriteChange))]
+		public static bool MainSpriteChangePrefix()
 		{
 			if (motionChangeOld != null)
-			{
-				__result = false;
 				return false;
-			}
-			return true;
+			else
+				return true;
 		}
 
 		[HarmonyPostfix]

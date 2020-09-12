@@ -72,15 +72,6 @@ namespace KK_HSceneOptions
 		public static bool MotionChangeOverrideDark(HActionBase __instance, ref bool __result)
 			=> MotionChangeOverride(__instance, ref __result);
 
-		/// <summary>
-		/// If maintaining motion when changing positions, make sure the game does not redraw the buttons for insertion
-		/// </summary>
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetHoushi3PDarkStart))]
-		[HarmonyPatch(typeof(HSprite), nameof(HSprite.SetSonyu3PDarkStart))]
-		public static bool HSpriteInitOverrideDark(ref bool __result)
-			=> HSpriteInitOverride(ref __result);
-
 		#endregion
 	}
 }
