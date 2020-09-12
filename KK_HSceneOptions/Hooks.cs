@@ -556,12 +556,16 @@ namespace KK_HSceneOptions
 		#endregion
 
 
+		/// <summary>
+		/// Skip voice when force inserting
+		/// </summary>
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), nameof(HSprite.OnInsertNoVoiceClick))]
 		[HarmonyPatch(typeof(HSceneOptions), nameof(HSceneOptions.OnInsertNoVoiceClick))]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.OnInsertAnalNoVoiceClick))]
 		public static void ForceInsertStopVoice()
 		{
-			if (ForceInsertInterrupt.Value && flags.click == HFlag.ClickKind.insert_voice)
+			if (ForceInsertInterrupt.Value && (flags.click == HFlag.ClickKind.insert_voice || flags.click == HFlag.ClickKind.insert_anal_voice))
 			{
 				for (int i = 0; i < 2; i++)
 				{
