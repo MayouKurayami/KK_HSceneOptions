@@ -488,7 +488,9 @@ namespace KK_HSceneOptions
 				return;
 
 			string[] loopAnims = new string[] { "WLoop", "SLoop", "OLoop" };
-			bool inPistonSameMode = flags.selectAnimationListInfo.mode == flags.mode && loopAnims.Any(str => flags.nowAnimStateName.Contains(str));
+			bool inPistonSameMode = flags.selectAnimationListInfo.mode == flags.mode 
+				&& loopAnims.Any(str => flags.nowAnimStateName.Contains(str)) 
+				&& (flags.isAnalPlay ? flags.selectAnimationListInfo.paramFemale.isAnal : true);
 
 			if (QuickPositionChange.Value == PositionSkipMode.Always || (QuickPositionChange.Value == PositionSkipMode.Auto && inPistonSameMode))
 			{
