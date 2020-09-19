@@ -32,6 +32,8 @@ It is recommended to adjust the configs via the in-game plugin settings page ins
 
 - **Interrupt Speech When Force Insert** - Interrupt female speech when inserting without asking (blue button), allowing immediate insertion. **(Default: Enabled)**
 
+- **Interrupt Speech With Control Pad** - Allow skipping voice lines by left clicking the control pad. **(Default: Enabled)**
+
 - **Quick Position Change** - Quickly switch between positions, skipping speech and maintaining motion if not changing sex mode.
   - *Disabled* - Disable this feature completely
   - *Auto* - Activates quick switching only when switching between positions within the same mode, and only during active sex when the characters are moving  **(Default)**
