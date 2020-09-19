@@ -556,23 +556,39 @@ namespace KK_HSceneOptions
 		#endregion
 
 
-		/// <summary>
-		/// Skip voice when force inserting
-		/// </summary>
+		#region Start action immediately by interrupting voice
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), nameof(HSprite.OnInsertNoVoiceClick))]
 		[HarmonyPatch(typeof(HSceneOptions), nameof(HSceneOptions.OnInsertNoVoiceClick))]
+		public static void InsertStopVoice() => ForceStopVoice(ForceInsertInterrupt.Value && flags.click == HFlag.ClickKind.insert_voice);
+
+		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HSprite), nameof(HSprite.OnInsertAnalNoVoiceClick))]
-		public static void ForceInsertStopVoice()
+		public static void InsertAnalStopVoice() => ForceStopVoice(ForceInsertInterrupt.Value && flags.click == HFlag.ClickKind.insert_anal_voice);
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(HSprite), nameof(HSprite.OnSpeedUpClick))]
+		public static void PadCLickStopVoice(HSprite __instance)
 		{
-			if (ForceInsertInterrupt.Value && (flags.click == HFlag.ClickKind.insert_voice || flags.click == HFlag.ClickKind.insert_anal_voice))
+			var interruptibleAnims = new string[] { "Idle", "_A", "_Loop" };
+			ForceStopVoice(ControlPadInterrupt.Value
+				&& __instance.IsSpriteAciotn() && (isVR || Input.GetMouseButtonDown(0))
+				&& interruptibleAnims.Any(str => flags.nowAnimStateName.EndsWith(str)) && !flags.nowAnimStateName.Contains("Insert"));
+		}		
+
+		internal static void ForceStopVoice(bool condition = true)
+		{
+			if (condition)
 			{
 				for (int i = 0; i < 2; i++)
 				{
 					if (voice.nowVoices[i].state == HVoiceCtrl.VoiceKind.voice)
 						Singleton<Voice>.Instance.Stop(flags.transVoiceMouth[i]);
 				}
-			}	
+			}
 		}
+
+		#endregion
 	}
 }

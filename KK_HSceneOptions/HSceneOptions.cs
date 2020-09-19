@@ -50,6 +50,7 @@ namespace KK_HSceneOptions
 		public static ConfigEntry<bool> HideMaleShadow { get; private set; }
 		public static ConfigEntry<bool> HideFemaleShadow { get; private set; }
 		public static ConfigEntry<bool> ForceInsertInterrupt { get; private set; }
+		public static ConfigEntry<bool> ControlPadInterrupt { get; private set; }
 		public static ConfigEntry<PositionSkipMode> QuickPositionChange { get; private set; }
 
 		public static ConfigEntry<bool> LockFemaleGauge { get; private set; }
@@ -111,6 +112,12 @@ namespace KK_HSceneOptions
 				key: "Interrupt Speech When Force Insert",
 				defaultValue: true,
 				"Interrupt female speech when inserting without asking (blue button), allowing immediate insertion.");
+
+			ControlPadInterrupt = Config.Bind(
+				section: "",
+				key: "Interrupt Speech With Control Pad",
+				defaultValue: true,
+				"Allow skipping voice lines by left clicking the control pad");
 
 			QuickPositionChange = Config.Bind(
 				section: "",
