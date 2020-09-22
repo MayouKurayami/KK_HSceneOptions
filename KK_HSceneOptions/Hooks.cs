@@ -422,12 +422,12 @@ namespace KK_HSceneOptions
 		/// <returns>The value to be pushed onto the stack to replace vanillaValue</returns>
 		public static int OLoopStackOverride(int vanillaValue, int targetValue)
 		{
-			//If forceStopVoice is set to true when forcing to enter orgasm, OLoop should be forcibly stopped. In that case we would return the inverse of the targetValue.
-			//Otherwise, if orgasmTimer is greater 0, that means currently the orgasm timer is still counting down and OLoop should be continued, so we return the targetValue.
+			//If forceStopVoice is set to true when forcing to enter orgasm, OLoop should be forcibly stopped. In that case we would return the inverse of targetValue.
+			//Otherwise, if OLoop is currently being enforced, or if orgasmTimer is greater 0 (meaning the orgasm timer is still counting down), we return targetValue so that OLoop may continue.
 			//If neither of those two conditions are met, return the original value that was on the stack
 			if (animationToggle.forceStopVoice)
 				return targetValue > 0 ? 0 : 1;
-			else if (animationToggle.orgasmTimer > 0)
+			else if (animationToggle.orgasmTimer > 0 || animationToggle.forceOLoop)
 				return targetValue;
 			else
 				return vanillaValue;
