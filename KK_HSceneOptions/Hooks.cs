@@ -540,10 +540,37 @@ namespace KK_HSceneOptions
 		/// </summary>
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HSprite), nameof(HSprite.MainSpriteChange))]
-		public static bool MainSpriteChangePrefix()
+		public static bool MainSpriteChangePrefix(HSprite __instance, HSceneProc.AnimationListInfo _info)
 		{
 			if (motionChangeOld != null)
+			{
+				//To prevent wrong buttons from remaining on display, reset buttons array by setting all buttons to inactive
+				string[] spriteBaseArray = new string[]
+				{
+					"aibu",
+					"houshi",
+					"sonyu",
+					"masturbation",
+					"peeping",
+					null,
+					"houshi3P",
+					"sonyu3P",
+					"houshi3PDark",
+					"sonyu3PDark"
+				};
+				var categoryActionButton = Traverse.Create(__instance).Field(spriteBaseArray[(int)_info.mode]).Field("categoryActionButton").GetValue<HSceneSpriteCategory>();
+				if (categoryActionButton != null)
+				{
+					if (isVR)
+						Traverse.Create(categoryActionButton).Method("SetActive", new Type[] { typeof(bool), typeof(int), typeof(bool)}).GetValue(new object[] { false, -1, true });
+					else
+						Traverse.Create(categoryActionButton).Method("SetActive", new Type[] { typeof(bool), typeof(int) }).GetValue(new object[] { false, -1 });
+				}
+				__instance.objCommonAibuIcon.SetActive(false);
+
+
 				return false;
+			}			
 			else
 				return true;
 		}
