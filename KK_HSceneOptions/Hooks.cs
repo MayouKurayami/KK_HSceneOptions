@@ -114,6 +114,8 @@ namespace KK_HSceneOptions
 			return true;
 		}
 
+		#region Mute all female lines
+
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
 		public static bool VoiceProcPre(ref bool __result)
@@ -127,7 +129,29 @@ namespace KK_HSceneOptions
 				return true;
 		}
 
-		
+		//In 3P service modes, the duration of orgasm is entirely dependent on the duration of the spoken line with no regard to breath, such that if we disable speech completely then the orgasm would only last an instant.
+		//Therefore, here we override the condition for continuing orgasm such that the the animation clip will loop at least 5 times when speech is disabled. 
+		[HarmonyTranspiler]
+		[HarmonyPatch(typeof(H3PHoushi), nameof(H3PHoushi.Proc))]
+		public static IEnumerable<CodeInstruction> H3PHoushiExtendTpl(IEnumerable<CodeInstruction> instructions)
+		{
+			var instructionList = new List<CodeInstruction>(instructions);
+			var targetOperand = AccessTools.Field(typeof(HVoiceCtrl.Voice), nameof(HVoiceCtrl.Voice.state));
+			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(Hooks.H3PHoushiExtendStackOverride));
+
+			FindClipInstructionRange(instructionList, new string[1] { "IN_Loop" }, out int rangeStart, out int rangeEnd);
+
+			return InjectInstruction(instructionList, targetOperand, targetNextOpCode: OpCodes.Brtrue, rangeStart: rangeStart, rangeEnd: rangeEnd,
+				injection: new CodeInstruction[] { new CodeInstruction(OpCodes.Call, injectMethod) });
+		}
+
+		public static int H3PHoushiExtendStackOverride(int vanillaValue)
+			=> (SpeechControlMode.Value == SpeechMode.MuteAll &&  lstFemale[0].getAnimatorStateInfo(0).normalizedTime < 5f) ? 1 : vanillaValue;
+
+
+		#endregion
+
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(HVoiceCtrl), "VoiceProc")]
 		public static void VoiceProcPost(bool __result)
@@ -404,12 +428,11 @@ namespace KK_HSceneOptions
 
 			var instructionList = new List<CodeInstruction>(instructions);
 
-			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(OLoopStackOverride)) ?? throw new ArgumentNullException("Hooks.OLoopExtendOverride not found");
-
 			// Instructions that inject OLoopStackOverride and pass it the value of overrideValue, which is the value required to be on the stack to satisfy the condition to let OLoop continue
+			var injectMethod = AccessTools.Method(typeof(Hooks), nameof(OLoopStackOverride)) ?? throw new ArgumentNullException("Hooks.OLoopExtendOverride not found");		
 			var injection = new CodeInstruction[] { new CodeInstruction(OpCodes.Ldc_I4, overrideValue), new CodeInstruction(OpCodes.Call, injectMethod) };
 			
-			FindOLoopInstructionRange(instructionList, out int rangeStart, out int rangeEnd);
+			FindClipInstructionRange(instructionList, new string[2] { "OLoop", "A_OLoop" }, out int rangeStart, out int rangeEnd);
 			return InjectInstruction(instructionList, targetOperand, injection, targetNextOpCode, rangeStart: rangeStart, rangeEnd: rangeEnd);
 		}
 
@@ -434,39 +457,38 @@ namespace KK_HSceneOptions
 		}
 
 		/// <summary>
-		/// Find a range in the given instructions that begins with a call of UnityEngine.AnimatorStateInfo.IsName with the parameter being either "OLoop" or "A_OLoop",
+		/// Find a range in the given instructions that begins with a call of UnityEngine.AnimatorStateInfo.IsName with the parameter being any strings from clipNames,
 		/// and ends with another call of UnityEngine.AnimatorStateInfo.IsName with the parameter being some other states of animation.
 		/// </summary>
 		/// <param name="instructions">The list of instructions to search through</param>
-		/// <param name="oLoopStart">Outputs the start index of the range of OLoop</param>
-		/// <param name="oLoopEnd">Outputs the end index of the range of OLoop</param>
-		/// <exception cref="InstructionNotFoundException">Thrown if UnityEngine.AnimatorStateInfo.IsName with the parameter "OLoop" or "A_OLoop" is not found</exception>
-		internal static void FindOLoopInstructionRange(List<CodeInstruction> instructions, out int oLoopStart, out int oLoopEnd)
+		/// <param name="rangeStart">Outputs the start index of the range</param>
+		/// <param name="rangeEnd">Outputs the end index of the range</param>
+		/// <exception cref="InstructionNotFoundException">Thrown if no calls of UnityEngine.AnimatorStateInfo.IsName with parameter matching clipNames is found</exception>
+		internal static void FindClipInstructionRange(List<CodeInstruction> instructions, string[] clipNames, out int rangeStart, out int rangeEnd)
 		{
-			oLoopStart = -1;
-			oLoopEnd = instructions.Count;
-			string[] oLoopStrings = new string[2] { "OLoop", "A_OLoop" };
+			rangeStart = -1;
+			rangeEnd = instructions.Count;
 
 			var animatorStateInfoMethod = AccessTools.Method(typeof(AnimatorStateInfo), nameof(AnimatorStateInfo.IsName)) 
 				?? throw new ArgumentNullException("UnityEngine.AnimatorStateInfo.IsName not found");
 
 			for (var i = 0; i < instructions.Count; i++)
 			{
-				if (oLoopStrings.Contains(instructions[i].operand as string) && instructions[i + 1].operand == animatorStateInfoMethod)
+				if (clipNames.Contains(instructions[i].operand as string) && instructions[i + 1].operand == animatorStateInfoMethod)
 				{
-					oLoopStart = i + 2;
+					rangeStart = i + 2;
 					break;
 				}
 			}
 
-			if (oLoopStart < 0)
-				throw new InstructionNotFoundException("OLoop");
+			if (rangeStart < 0)
+				throw new InstructionNotFoundException("Instructions not found that begin with AnimatorStateInfo.IsName(" + clipNames[0] + ")");
 
-			for (var i = oLoopStart + 1; i < instructions.Count; i++)
+			for (var i = rangeStart + 1; i < instructions.Count; i++)
 			{
-				if (instructions[i].operand == animatorStateInfoMethod && !oLoopStrings.Contains(instructions[i - 1].operand as string))
+				if (instructions[i].operand == animatorStateInfoMethod && !clipNames.Contains(instructions[i - 1].operand as string))
 				{
-					oLoopEnd = i;
+					rangeEnd = i;
 					break;
 				}
 			}
