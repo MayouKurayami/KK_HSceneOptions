@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Harmony;
 using HarmonyLib;
 using System;
 using System.Linq;
@@ -81,11 +80,33 @@ namespace KK_HSceneOptions
 		public static ConfigEntry<KeyboardShortcut> TopClothesToggleKey { get; private set; }		
 		public static ConfigEntry<KeyboardShortcut> TriggerVoiceKey { get; private set; }
 
-
+		
 		private void Start()
 		{
+			//Harmony patching
+			var harmony = new Harmony(GUID);
+			try
+			{
+				harmony.PatchAll(typeof(Hooks));
+
+				if (isVR = Application.dataPath.EndsWith("KoikatuVR_Data"))
+					harmony.PatchAll(typeof(Hooks_VR));
+
+				if (isDarkness = Type.GetType("H3PDarkSonyu, Assembly-CSharp") != null)
+					harmony.PatchAll(typeof(Hooks_Darkness));
+				
+			}
+			catch (Exception)
+			{
+				harmony.UnpatchAll(harmony.Id);
+				Destroy(this);
+
+				Logger.LogError("Harmony patch failed, plugin now exiting");
+				throw;
+			}
+
 			/// 
-			/////////////////// Miscellaneous //////////////////////////
+			/////////////////// Miscellaneous Configs //////////////////////////
 			/// 
 
 			AutoSubAccessories = Config.Bind(
@@ -308,18 +329,7 @@ namespace KK_HSceneOptions
 				section: sectionKeys,
 				key: "Trigger Speech",
 				defaultValue: KeyboardShortcut.Empty,
-				"Trigger a voice line based on the current context");
-
-
-
-			//Harmony patching
-			HarmonyWrapper.PatchAll(typeof(Hooks));
-
-			if (isVR = Application.dataPath.EndsWith("KoikatuVR_Data"))
-				HarmonyWrapper.PatchAll(typeof(Hooks_VR));
-
-			if (isDarkness = Type.GetType("H3PDarkSonyu, Assembly-CSharp") != null)
-				HarmonyWrapper.PatchAll(typeof(Hooks_Darkness));
+				"Trigger a voice line based on the current context");			
 		}		
 
 		private void Update()
