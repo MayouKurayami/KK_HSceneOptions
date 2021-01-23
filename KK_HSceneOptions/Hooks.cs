@@ -244,7 +244,7 @@ namespace KK_HSceneOptions
 
 
 		//When changing between service modes, if the male gauge is above the orgasm threshold then after the transition the animation will be forced to OLoop with the menu disabled.
-		//These hooks bypass that behavior when DisableAutoPrecum is set to true.
+		//These hooks bypass that behavior when DisableAutoFinish is set to true.
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(HHoushi), nameof(HHoushi.MotionChange))]
 		[HarmonyPatch(typeof(H3PHoushi), nameof(H3PHoushi.MotionChange))]
@@ -256,7 +256,7 @@ namespace KK_HSceneOptions
 		}
 
 
-		//If service mode is prevented from automatically entering OLoop due to DisableAutoPrecum, the speed gauge would not be reset after orgasm.
+		//If service mode is prevented from automatically entering OLoop due to DisableAutoFinish, the speed gauge would not be reset after orgasm.
 		//As a result, if service is restarted afterward it may start at a really high speed which is a bit unnatural.
 		//This resets the speed guage when cumming in service modes.
 		[HarmonyPostfix]
@@ -301,6 +301,7 @@ namespace KK_HSceneOptions
 		#endregion
 
 
+
 		#region Disable AutoFinish in Service Modes
 
 		[HarmonyTranspiler]
@@ -335,7 +336,7 @@ namespace KK_HSceneOptions
 		}
 
 		/// <summary>
-		/// Designed to modify the stack and override the orgasm threshold from 70 to 110 if DisableAutoPrecum is enabled, effectively making it impossible to pass the threshold.
+		/// Designed to modify the stack and override the orgasm threshold from 70 to 110 if DisableAutoFinish is enabled, effectively making it impossible to pass the threshold.
 		/// Also, manually activate the orgasm menu buttons if male gauge is past 70. 
 		/// </summary>
 		/// <returns>The value to replace the vanilla threshold value</returns>
@@ -353,7 +354,7 @@ namespace KK_HSceneOptions
 		}
 
 		/// <summary>
-		/// Designed to modify the stack and override the orgasm threshold from 70 to 110 if DisableAutoPrecum is enabled, effectively making it impossible to pass the threshold.
+		/// Designed to modify the stack and override the orgasm threshold from 70 to 110 if DisableAutoFinish is enabled, effectively making it impossible to pass the threshold.
 		/// Also, manually activate the orgasm menu buttons if male gauge is past 70. 
 		/// </summary>
 		/// <returns>The value to replace the vanilla threshold value</returns>
@@ -371,6 +372,7 @@ namespace KK_HSceneOptions
 		}
 
 		#endregion
+
 
 
 		#region Override game behavior to extend or exit OLoop based on plugin status
@@ -407,7 +409,7 @@ namespace KK_HSceneOptions
 
 			//Overrides the second condition and return the modified instructions
 			var secondVoiceCheck = AccessTools.Field(typeof(HVoiceCtrl.Voice), nameof(HVoiceCtrl.Voice.state));		
-			return OLoopExtendInstructions(instructionList, secondVoiceCheck, overrideValue: 1, targetNextOpCode: OpCodes.Brfalse);
+			return OLoopExtendInstructions(instructionList, targetOperand: secondVoiceCheck, targetNextOpCode: OpCodes.Brfalse, overrideValue: 1);
 		}
 
 
@@ -456,45 +458,8 @@ namespace KK_HSceneOptions
 				return vanillaValue;
 		}
 
-		/// <summary>
-		/// Find a range in the given instructions that begins with a call of UnityEngine.AnimatorStateInfo.IsName with the parameter being any strings from clipNames,
-		/// and ends with another call of UnityEngine.AnimatorStateInfo.IsName with the parameter being some other states of animation.
-		/// </summary>
-		/// <param name="instructions">The list of instructions to search through</param>
-		/// <param name="rangeStart">Outputs the start index of the range</param>
-		/// <param name="rangeEnd">Outputs the end index of the range</param>
-		/// <exception cref="InstructionNotFoundException">Thrown if no calls of UnityEngine.AnimatorStateInfo.IsName with parameter matching clipNames is found</exception>
-		internal static void FindClipInstructionRange(List<CodeInstruction> instructions, string[] clipNames, out int rangeStart, out int rangeEnd)
-		{
-			rangeStart = -1;
-			rangeEnd = instructions.Count;
-
-			var animatorStateInfoMethod = AccessTools.Method(typeof(AnimatorStateInfo), nameof(AnimatorStateInfo.IsName)) 
-				?? throw new ArgumentNullException("UnityEngine.AnimatorStateInfo.IsName not found");
-
-			for (var i = 0; i < instructions.Count; i++)
-			{
-				if (clipNames.Contains(instructions[i].operand as string) && instructions[i + 1].operand == animatorStateInfoMethod)
-				{
-					rangeStart = i + 2;
-					break;
-				}
-			}
-
-			if (rangeStart < 0)
-				throw new InstructionNotFoundException("Instructions not found that begin with AnimatorStateInfo.IsName(" + clipNames[0] + ")");
-
-			for (var i = rangeStart + 1; i < instructions.Count; i++)
-			{
-				if (instructions[i].operand == animatorStateInfoMethod && !clipNames.Contains(instructions[i - 1].operand as string))
-				{
-					rangeEnd = i;
-					break;
-				}
-			}
-		}
-
 		#endregion
+
 
 
 		#region Quick Position Change
@@ -601,8 +566,8 @@ namespace KK_HSceneOptions
 		[HarmonyPatch(typeof(HSceneProc), "ChangeAnimator")]
 		public static void ChangeAnimatorPost() => motionChangeOld = null;
 
-
 		#endregion
+
 
 
 		#region Start action immediately by interrupting voice

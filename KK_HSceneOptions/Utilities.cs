@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
+using System.Linq;
 using HarmonyLib;
+using UnityEngine;
 using System;
 
 namespace KK_HSceneOptions
@@ -16,6 +18,44 @@ namespace KK_HSceneOptions
 			public InstructionNotFoundException(string message)
 				 : base(message)
 			{
+			}
+		}
+
+		/// <summary>
+		/// Find a range in the given instructions that begins with a call of UnityEngine.AnimatorStateInfo.IsName with the parameter being any strings from clipNames,
+		/// and ends with another call of UnityEngine.AnimatorStateInfo.IsName with the parameter being some other states of animation.
+		/// </summary>
+		/// <param name="instructions">The list of instructions to search through</param>
+		/// <param name="rangeStart">Outputs the start index of the range</param>
+		/// <param name="rangeEnd">Outputs the end index of the range</param>
+		/// <exception cref="InstructionNotFoundException">Thrown if no calls of UnityEngine.AnimatorStateInfo.IsName with parameter matching clipNames is found</exception>
+		internal static void FindClipInstructionRange(List<CodeInstruction> instructions, string[] clipNames, out int rangeStart, out int rangeEnd)
+		{
+			rangeStart = -1;
+			rangeEnd = instructions.Count;
+
+			var animatorStateInfoMethod = AccessTools.Method(typeof(AnimatorStateInfo), nameof(AnimatorStateInfo.IsName))
+				?? throw new ArgumentNullException("UnityEngine.AnimatorStateInfo.IsName not found");
+
+			for (var i = 0; i < instructions.Count; i++)
+			{
+				if (clipNames.Contains(instructions[i].operand as string) && instructions[i + 1].operand == animatorStateInfoMethod)
+				{
+					rangeStart = i + 2;
+					break;
+				}
+			}
+
+			if (rangeStart < 0)
+				throw new InstructionNotFoundException("Instructions not found that begin with AnimatorStateInfo.IsName(" + clipNames[0] + ")");
+
+			for (var i = rangeStart + 1; i < instructions.Count; i++)
+			{
+				if (instructions[i].operand == animatorStateInfoMethod && !clipNames.Contains(instructions[i - 1].operand as string))
+				{
+					rangeEnd = i;
+					break;
+				}
 			}
 		}
 
@@ -63,7 +103,7 @@ namespace KK_HSceneOptions
 				instructions.InsertRange(i + insertAt, injection);
 				inserted = true;
 #if DEBUG
-				UnityEngine.Debug.LogWarning(new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name + " injected instructions after " + targetOperand.ToString() + " at index " + i);
+				UnityEngine.Debug.LogWarning("HSceneOptions: " + new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name + " injected instructions after " + targetOperand.ToString() + " at index " + i);
 #endif
 			}
 

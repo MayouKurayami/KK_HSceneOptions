@@ -22,7 +22,7 @@ namespace KK_HSceneOptions
 
 
 		////////////////////////////////////////////////////////////////////////////////
-		/// See section "Disable AutoFinish in Service Modes" under KKHautoSets.Hooks
+		/// See section "Disable AutoFinish in Service Modes" under KK_HSceneOptions.Hooks
 		/// 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(H3PDarkHoushi), "LoopProc")]
