@@ -386,7 +386,8 @@ namespace KK_HSceneOptions
 		public static IEnumerable<CodeInstruction> OLoopExtendTpl(IEnumerable<CodeInstruction> instructions) 
 			=> OLoopExtendInstructions(
 				instructions,
-				targetOperand: AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }), 
+				targetOperand: AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }),
+				targetNextOpCode: OpCodes.Brtrue,
 				overrideValue: 1);
 
 		[HarmonyTranspiler]
@@ -405,7 +406,10 @@ namespace KK_HSceneOptions
 		{
 			//In Houshi mode's vanilla code there are two conditions that both have to be met for OLoop to be continued.
 			//This injects an override for the first condition
-			List<CodeInstruction> instructionList = (List<CodeInstruction>)OLoopExtendTpl(instructions);
+			List<CodeInstruction> instructionList = (List<CodeInstruction>) OLoopExtendInstructions(
+				instructions,
+				targetOperand: AccessTools.Method(typeof(Voice), nameof(Voice.IsVoiceCheck), new Type[] { typeof(Transform), typeof(bool) }),
+				overrideValue: 1);
 
 			//Overrides the second condition and return the modified instructions
 			var secondVoiceCheck = AccessTools.Field(typeof(HVoiceCtrl.Voice), nameof(HVoiceCtrl.Voice.state));		
@@ -424,9 +428,6 @@ namespace KK_HSceneOptions
 		{
 			if (targetOperand == null)
 				throw new ArgumentNullException("Operand of target instruction not found");
-
-			if (targetNextOpCode == null)
-				targetNextOpCode = OpCodes.Brtrue;
 
 			var instructionList = new List<CodeInstruction>(instructions);
 

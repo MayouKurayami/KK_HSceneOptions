@@ -56,7 +56,10 @@ namespace KK_HSceneOptions
 
 		[HarmonyTranspiler]
 		[HarmonyPatch(typeof(H3PDarkHoushi), nameof(H3PDarkHoushi.Proc))]
-		public static IEnumerable<CodeInstruction> DarkHoushiOLoopExtendTpl(IEnumerable<CodeInstruction> instructions) => H3POLoopExtendTpl(instructions);
+		public static IEnumerable<CodeInstruction> DarkHoushiOLoopExtendTpl(IEnumerable<CodeInstruction> instructions) => OLoopExtendInstructions(
+				instructions,
+				targetOperand: AccessTools.Method(typeof(HActionBase), "IsCheckVoicePlay"),
+				overrideValue: 0);
 
 		#endregion
 
