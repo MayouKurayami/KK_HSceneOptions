@@ -3,8 +3,8 @@
 
 
 ## Prerequisites  
-- Afterschool DLC   
-- BepInEx 5.0.1 and above
+- Afterschool DLC (Included with HF Patch and most repacks)  
+- BepInEx 5.1 and above
 
 
 
@@ -60,6 +60,7 @@ It is recommended to adjust the configs via the in-game plugin settings page ins
   - *Based on Timer* - Automatically trigger speech at set interval.
   - *Mute Idle Speech* - Prevent the girl from speaking at all at idle (she would still speak during events such as insertion).
   - *Mute All Spoken Lines* - Mute all speech other than moans.  
+   *(To prevent issues with the duration of precum or orgasm, set the **Precum Timer** to a few seconds when muting all speech)*  
 
 
 - **Speech Timer** - Sets the time interval at which the girl will randomly speak, from roughly 0.1 to 60 seconds. **(Default: 20)**  
@@ -71,6 +72,7 @@ It is recommended to adjust the configs via the in-game plugin settings page ins
 
 
 - **Precum Timer** - When orgasm is initiated via the keyboard shortcut or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. Set to 0 to disable this feature. **(Default: 0)**  
+ *(It is recommended to set this timer to a few seconds when muting all speech to prevent issues with the duration of precum or orgasm)*
 
 - **Precum Toggle** - Allow toggling through precum loop when right clicking the speed control pad.  **(Default: Enabled)**  
  Toggle order: weak motion > strong motion > precum > back to weak motion
