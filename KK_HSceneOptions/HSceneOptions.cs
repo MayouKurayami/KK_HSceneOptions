@@ -25,7 +25,7 @@ namespace KK_HSceneOptions
 		public const string GUID = "MK.KK_HSceneOptions";
 		public const string PluginName = "HSceneOptions";
 		public const string AssembName = "KK_HSceneOptions";
-		public const string Version = "3.1.3";
+		public const string Version = "3.2.0";
 
 		internal static bool isVR;
 		internal static bool isDarkness;
