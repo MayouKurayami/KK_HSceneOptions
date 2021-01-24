@@ -201,7 +201,8 @@ namespace KK_HSceneOptions
 				"Default Behavior: Disable this feature and return to vanilla behavior" +
 					"\n\nBased on Timer: Automatically trigger speech at set interval" +
 					"\n\nMute Idle Speech: Prevent the girl from speaking at all during idle (she would still speak during events such as insertion)" +
-					"\n\nMute All Spoken Lines: Mute all speech other than moans"); 
+					"\n\nMute All Spoken Lines: Mute all speech other than moans" +
+	 				"\n(To prevent issues with the duration of precum or orgasm, set the Precum Timer to a few seconds when muting all speech)"); 
 
 			SpeechTimer = Config.Bind(
 				section: "Female Speech",
@@ -237,7 +238,8 @@ namespace KK_HSceneOptions
 				key: "Precum Timer",
 				defaultValue: 0f,
 				new ConfigDescription("When orgasm is initiated via the keyboard shortcuts or in-game menu, animation will forcibly exit precum and enter orgasm after this many seconds. " +
-						"\n\nSet to 0 to disable this.",
+						"\n\nSet to 0 to disable this." +
+						"\n(It is recommended to set this timer to a few seconds when muting all speech to prevent issues with the duration of precum or orgasm)",
 					new AcceptableValueRange<float>(0, 13f)));
 
 			PrecumToggle = Config.Bind(
