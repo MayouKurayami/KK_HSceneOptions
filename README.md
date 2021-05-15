@@ -3,7 +3,6 @@
 
 
 ## Prerequisites  
-- Afterschool DLC (Included with HF Patch and most repacks)  
 - BepInEx 5.1 and above
 
 
@@ -111,7 +110,7 @@ It is recommended to adjust the configs via the in-game plugin settings page ins
 <br>
 
 ## Notes and Limitations  
-- Supports JP official VR (untested with steam version VR)
+- Supports official VR (JP and Steam)
 
 - Unknown compatibility with kPlug  
 
